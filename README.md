@@ -10,7 +10,7 @@ MSc in Health Data Science 22/23
 Potential secondary questions: 
 - Would the assessment be different if burden is disaggregated by hospitalisations vs. laboratory confirmed cases? 
 
-**Client:** Sanofi
+**Client:** Sanofi\
 **Supervisor:** Naomi Waterlow, Research Fellow, LSHTM
 
 Members:
