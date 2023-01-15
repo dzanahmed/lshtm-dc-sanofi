@@ -11,7 +11,6 @@ db_flu <- read_csv("data/raw_data/US/FluSurveillance_Custom_Download_Data.csv")
 # Not necessary here, specified during export
 # years <- c("2016-2017", "2017-2018", "2018-2019", "2022-2023")
 
-
 db_flu <- db_flu |> filter(`SEX CATEGORY` == "Overall", 
                       `RACE CATEGORY` == "Overall")
 

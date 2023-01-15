@@ -6,7 +6,7 @@
 library(readr)
 library(dplyr)
 
-db_covid <- read_csv("G:/.shortcut-targets-by-id/1k5jIYGQi1Tv9w4D3u-cE4D3upV3qxt7V/Data Challenge - Sanofi shared/FluNet Data & Data Dictionary/US/COVID-19Surveillance_All_Data.csv")
+db_covid <- read_csv("data/raw_data/US/COVID-19Surveillance_All_Data.csv")
 
 years <- c(2022, 2023)
 
@@ -23,16 +23,16 @@ db_covid_age <- db_covid |> filter(`AGE CATEGORY`!="Overall")
 
 unique(db_covid_age$`AGE CATEGORY`) # Preview groups
 
-#    Some columns will have to be dropped
+# Some columns will have to be dropped
 
 # Overall
 
 db_covid_overall <- db_covid |> filter(`AGE CATEGORY`=="Overall")
 
-# NAs in Age category are for weeks that haven't happened yet
+# Dzan: NAs in Age category are for weeks that haven't happened yet
 
 # Export CSV --------------------------------------------------------------
 
-write_csv(db_covid_age, 'US_CDC_COVID_age.csv')
+write_csv(db_covid_age, 'data/processed_data/US/US_CDC_COVID_age.csv')
 
-write_csv(db_covid_overall, 'US_CDC_COVID_overall.csv')
+write_csv(db_covid_overall, 'data/processed_data/US/US_CDC_COVID_overall.csv')
