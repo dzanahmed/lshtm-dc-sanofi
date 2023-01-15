@@ -1,6 +1,6 @@
 # Data Challenge Project
 
-LSHTM 2491 Data Challenge Module
+LSHTM 2491 Data Challenge Module &nbsp;
 MSc in Health Data Science 22/23
 
 ### How do hospitalisations as a result of the tri-demic of RSV, influenza and SARS-CoV-2 in the 2022 post-pandemic season compare to the 2016 - 2019 pre-pandemic circulation of RSV and influenza?
