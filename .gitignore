@@ -1,4 +1,14 @@
+# R files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+
+# MacOS
+.DS_Store
+._*
+.TemporaryItems
+.Trashes
+.AppleDouble
+.LSOverride
