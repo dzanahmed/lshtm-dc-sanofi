@@ -11,5 +11,5 @@
 
 template.csv is available for data mining. Refer to google doc for harmonization: 
 
-https://docs.google.com/spreadsheets/d/1a1-3xqPRRHLe9nzeIkKiEu56xiE-eYoZgnXn6ZNKe9Q/edit?usp=sharing
+https://docs.google.com/spreadsheets/d/1a1-3xqPRRHLe9nzeIkKiEu56xiE-eYoZgnXn6ZNKe9Q/edit?usp=sharing  
 Don't forget to check the subsheet variable_dictionary for harmonization instructions
