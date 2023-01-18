@@ -1,0 +1,1 @@
+After downloading the csv, top row and total row need to be deleted for proper formatting of the csv.
