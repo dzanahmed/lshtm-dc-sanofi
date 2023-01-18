@@ -8,8 +8,9 @@ DE_premerged <- DE_premerged |> select(-X) # remove ID
 
 # Only totals across all age groups - each week is a row, each pathogen has its column
 DE_premerged_all_age_groups <-
-     DE_premerged |> group_by(Year, Week, Pathogen) |>
-     summarise(age_group = "Total", weekly_inc = Total) |> distinct()
+     DE_premerged |> group_by(year, week, pathogen) |>
+     summarise(age_group = "Total", weekly_inc = Total) |> 
+     distinct()
 
 # Drop totals, pivot long - each week is a row, each pathogen has its column
 DE_premerged_age_groups <-
@@ -19,42 +20,43 @@ DE_premerged_age_groups <-
 
 # Combine the two above
 DE_premerged_overall <- rbind(DE_premerged_age_groups, DE_premerged_all_age_groups) |> 
-     arrange(Year, Week, Pathogen)
+     arrange(year, week, pathogen)
 
+
+DE_premerged_overall <-
+     DE_premerged_overall |> pivot_wider(names_from = pathogen,
+                                         names_prefix = "hsp_rate_",
+                                         values_from = weekly_inc)
 
 # Now let's build a dataframe for the premerged csv
 
-DE_premerged$data_source <- "RKI"
-DE_premerged$country <- "DE"
-DE_premerged$hemisphere <- "NH"
+source(file='scripts/cleaning/helper.R') # Import order of the header columns
 
-# 
-# 
 # id
-# data_source
-# country
-# hemisphere
+DE_premerged_overall$data_source <- "RKI" # data_source
+DE_premerged_overall$country <- "DE" # country
+DE_premerged_overall$hemisphere <- "NH"# hemisphere
 # week
 # year
 # age_group
-# hsp_rate
+DE_premerged_overall$hsp_rate <- NA # hsp_rate
 # hsp_rate_flu
 # hsp_rate_rsv
 # hsp_rate_covid19
-# cases_rate_flu
-# cases_rate_rsv
-# cases_rate_covid19
-# hsp_abs
-# hsp_abs_flu
-# hsp_abs_rsv
-# hsp_abs_covid
-# cases_abs_flu
-# cases_abs_flu
-# cases_abs_flu
-# denominator
-# subtype_a_abs
-# subtype_b_abs
-# subtype_c_abs
-# subtype_a_rate
-# subtype_b_rate
-# subtype_c_rate
+DE_premerged_overall$cases_rate_flu      <- NA     # cases_rate_flu
+DE_premerged_overall$cases_rate_rsv      <- NA     # cases_rate_rsv
+DE_premerged_overall$cases_rate_covid_19      <- NA     # cases_rate_covid19
+DE_premerged_overall$hsp_abs      <- NA     # hsp_abs
+DE_premerged_overall$hsp_abs_flu      <- NA     # hsp_abs_flu
+DE_premerged_overall$hsp_abs_rsv      <- NA     # hsp_abs_rsv
+DE_premerged_overall$hsp_abs_covid      <- NA     # hsp_abs_covid
+DE_premerged_overall$cases_abs_flu      <- NA     # cases_abs_flu
+DE_premerged_overall$cases_abs_rsv      <- NA     # cases_abs_rsv
+DE_premerged_overall$cases_abs_covid     <- NA     # cases_abs_covid
+DE_premerged_overall$denominator_      <- NA     # denominator
+DE_premerged_overall$subtype_a_abs      <- NA     # subtype_a_abs
+DE_premerged_overall$subtype_b_abs      <- NA     # subtype_b_abs
+DE_premerged_overall$subtype_c_abs      <- NA     # subtype_c_abs
+DE_premerged_overall$subtype_a_rate      <- NA     # subtype_a_rate
+DE_premerged_overall$subtype_b_rate      <- NA     # subtype_b_rate
+DE_premerged_overall$subtype_c_rate     <- NA     # subtype_c_rate
