@@ -1,7 +1,7 @@
 # This is to set the order of vars in csvs
 
-order_header_premerge_csv <- c(
-     "id",
+order_header_premerge <- c(
+    # "id",
      "data_source",
      "country",
      "hemisphere",

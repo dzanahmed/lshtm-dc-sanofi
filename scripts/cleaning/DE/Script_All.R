@@ -24,7 +24,7 @@ for (file in files) {
 
 all_data[2:20] <- as.numeric(unlist(all_data[2:20])) # convert to numeric
 
-all_data$pathogen[all_data$Ppathogen=="COV"] <- "covid19" # rename
+all_data$pathogen[all_data$pathogen=="COV"] <- "covid19" # rename
 
 all_data[is.na(all_data)] <- 0 # Set all NAs to 0s
 

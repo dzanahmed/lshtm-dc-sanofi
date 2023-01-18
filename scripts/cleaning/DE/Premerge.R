@@ -43,20 +43,38 @@ DE_premerged_overall$hsp_rate <- NA # hsp_rate
 # hsp_rate_flu
 # hsp_rate_rsv
 # hsp_rate_covid19
-DE_premerged_overall$cases_rate_flu      <- NA     # cases_rate_flu
-DE_premerged_overall$cases_rate_rsv      <- NA     # cases_rate_rsv
-DE_premerged_overall$cases_rate_covid_19      <- NA     # cases_rate_covid19
-DE_premerged_overall$hsp_abs      <- NA     # hsp_abs
-DE_premerged_overall$hsp_abs_flu      <- NA     # hsp_abs_flu
-DE_premerged_overall$hsp_abs_rsv      <- NA     # hsp_abs_rsv
-DE_premerged_overall$hsp_abs_covid      <- NA     # hsp_abs_covid
-DE_premerged_overall$cases_abs_flu      <- NA     # cases_abs_flu
-DE_premerged_overall$cases_abs_rsv      <- NA     # cases_abs_rsv
-DE_premerged_overall$cases_abs_covid     <- NA     # cases_abs_covid
-DE_premerged_overall$denominator_      <- NA     # denominator
-DE_premerged_overall$subtype_a_abs      <- NA     # subtype_a_abs
-DE_premerged_overall$subtype_b_abs      <- NA     # subtype_b_abs
-DE_premerged_overall$subtype_c_abs      <- NA     # subtype_c_abs
-DE_premerged_overall$subtype_a_rate      <- NA     # subtype_a_rate
-DE_premerged_overall$subtype_b_rate      <- NA     # subtype_b_rate
-DE_premerged_overall$subtype_c_rate     <- NA     # subtype_c_rate
+
+# These are all set to NA as Germany provides weekly incidence rate reports
+DE_premerged_overall[order_header_premerge[11:27]]<-NA 
+
+# Equivalent to:
+
+# DE_premerged_overall$cases_rate_flu      <- NA     # cases_rate_flu
+# DE_premerged_overall$cases_rate_rsv      <- NA     # cases_rate_rsv
+# DE_premerged_overall$cases_rate_covid_19      <- NA     # cases_rate_covid19
+# DE_premerged_overall$hsp_abs      <- NA     # hsp_abs
+# DE_premerged_overall$hsp_abs_flu      <- NA     # hsp_abs_flu
+# DE_premerged_overall$hsp_abs_rsv      <- NA     # hsp_abs_rsv
+# DE_premerged_overall$hsp_abs_covid      <- NA     # hsp_abs_covid
+# DE_premerged_overall$cases_abs_flu      <- NA     # cases_abs_flu
+# DE_premerged_overall$cases_abs_rsv      <- NA     # cases_abs_rsv
+# DE_premerged_overall$cases_abs_covid     <- NA     # cases_abs_covid
+# DE_premerged_overall$denominator_      <- NA     # denominator
+# DE_premerged_overall$subtype_a_abs      <- NA     # subtype_a_abs
+# DE_premerged_overall$subtype_b_abs      <- NA     # subtype_b_abs
+# DE_premerged_overall$subtype_c_abs      <- NA     # subtype_c_abs
+# DE_premerged_overall$subtype_a_rate      <- NA     # subtype_a_rate
+# DE_premerged_overall$subtype_b_rate      <- NA     # subtype_b_rate
+# DE_premerged_overall$subtype_c_rate     <- NA     # subtype_c_rate
+
+# Set the order in the CSV
+DE_premerged_overall <- DE_premerged_overall[, order_header_premerge]
+
+# Split to totals and age-stratified
+DE_premerged_total <- DE_premerged_overall |> filter(age_group=="Total")
+DE_premerged_by_age <- DE_premerged_overall |> filter(age_group!="Total")
+
+# Export to .csv for premerge
+
+write_csv(DE_premerged_total, file="data/premerged_data/DE_premerged_total.csv")
+write_csv(DE_premerged_by_age, file="data/premerged_data/DE_premerged_by_age.csv")
