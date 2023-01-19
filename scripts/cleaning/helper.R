@@ -31,7 +31,7 @@ order_header_premerge <- c(
      "subtype_c_rate"
 )
 
-var_types <- c(
+var_type_header <- c(
         id = "integer",
         data_source = "character",
         country = "character",
