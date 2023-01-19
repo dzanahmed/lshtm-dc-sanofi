@@ -32,7 +32,7 @@ DE_premerged_overall <-
 
 source(file='scripts/cleaning/helper.R') # Import order of the header columns
 
-# id
+DE_premerged_overall$id <- NA # id
 DE_premerged_overall$data_source <- "RKI" # data_source
 DE_premerged_overall$country <- "DE" # country
 DE_premerged_overall$hemisphere <- "NH"# hemisphere
@@ -45,7 +45,7 @@ DE_premerged_overall$hsp_rate <- NA # hsp_rate
 # hsp_rate_covid19
 
 # These are all set to NA as Germany provides weekly incidence rate reports
-DE_premerged_overall[order_header_premerge[11:27]]<-NA 
+DE_premerged_overall[order_header_premerge[12:28]]<-NA 
 
 # Equivalent to:
 

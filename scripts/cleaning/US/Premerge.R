@@ -109,16 +109,17 @@ US_premerged_total <- US_premerged_total |> select(-data_source) |>
 
 order_header_premerge
 
+US_premerged_total$id <- NA
 US_premerged_total$data_source <- "CDC" # data_source
 US_premerged_total$country <- "US" # country
 US_premerged_total$hemisphere <- "NH"# hemisphere
 US_premerged_total$hsp_rate <- NA # hsp_rate
 
-# These are all set to NA as Germany provides weekly incidence rate reports
-US_premerged_total[order_header_premerge[11:27]] <- NA
+# These are all set to NA as US provides weekly incidence rate reports
+US_premerged_total[order_header_premerge[12:28]] <- NA
 
 
 # Set the order in the CSV
-US_premerged_overall <- US_premerged_overall[, order_header_premerge]
+US_premerged_total <- US_premerged_total[, order_header_premerge]
 
 write_csv(US_premerged_total, file="data/premerged_data/US_premerged_total.csv")
