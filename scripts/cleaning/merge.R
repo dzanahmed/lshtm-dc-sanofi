@@ -1,5 +1,7 @@
 # Merge script
 
+library(dplyr)
+
 dir <- "data/premerged_data"
 
 files <- list.files(dir, pattern = "*.csv", full.names = TRUE)
@@ -14,10 +16,11 @@ bind_rows(fileList)
 
 varClass <- data.frame(lapply(fileList, function(x) sapply(x, class)))
 
-
+varClass
 # I need to continue with the following
 
 var_types <- c(col1 = "numeric", col2 = "character", col3 = "factor")
+
 
 declare_types <- function(df_list, var_types) {
      
