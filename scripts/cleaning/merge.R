@@ -18,6 +18,12 @@ varClass <- data.frame(lapply(fileList, function(x) sapply(x, class)))
 
 merged_data <- bind_rows(fileList) # Bind them
 
+# All the last columns (after age_group) are numeric. Also, assign new IDs
+
+merged_data <-
+     merged_data |> mutate(across(hsp_rate:subtype_c_rate, as.double)) |>
+     mutate(id = row_number())
+
 readr::write_csv(merged_data, 'data/merged_data/first_output_2022_01_19.csv') # Write a CSV
 
 

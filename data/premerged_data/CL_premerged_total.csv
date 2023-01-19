@@ -1,4 +1,4 @@
-id,data_source,country,hemisphere,week,year,age_group,hsp_rate,hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,cases_rate_flu,cases_rate_rsv,cases_rate_covid19,hsp_abs,hsp_abs_flu,hsp_abs_rsv,hsp_abs_covid,cases_abs_flu,cases_abs_rsv,cases_abs_covid19,denominator,subtype_a_abs,subtype_b_abs,subtype_c_abs,subtype_a_rate,subtype_b_rate,subtype_c_rate
+id,data_source,country,hemisphere,week,year,age_group,hsp_rate,hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,cases_rate_flu,cases_rate_rsv,cases_rate_covid19,hsp_abs,hsp_abs_flu,hsp_abs_rsv,hsp_abs_covid,cases_abs_flu,cases_abs_rsv,cases_abs_covid,denominator,subtype_a_abs,subtype_b_abs,subtype_c_abs,subtype_a_rate,subtype_b_rate,subtype_c_rate
 1,EPI MINSAL - FluNet (Flu cases),chi,sh,1,2016,ALL,0.01,0.01,0,0,0.02,NA,NA,1,1,0,0,3,NA,NA,18167147,NA,NA,NA,NA,NA,NA
 2,EPI MINSAL - FluNet (Flu cases),chi,sh,2,2016,ALL,0.01,0.01,0.01,0,0.02,NA,NA,2,1,1,0,4,NA,NA,18167147,NA,NA,NA,NA,NA,NA
 3,EPI MINSAL - FluNet (Flu cases),chi,sh,3,2016,ALL,0,0,0,0,0.02,NA,NA,0,0,0,0,4,NA,NA,18167147,NA,NA,NA,NA,NA,NA
