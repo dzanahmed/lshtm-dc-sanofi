@@ -18,13 +18,21 @@ varClass <- data.frame(lapply(fileList, function(x) sapply(x, class)))
 
 merged_data <- bind_rows(fileList) # Bind them
 
+epiweeks <- read.csv(file='data/epiweeks_withdate.csv')
+
+epiweeks$start_date <- as.Date(epiweeks$start_date)
+
 # All the last columns (after age_group) are numeric. Also, assign new IDs
 
 merged_data <-
      merged_data |> mutate(across(hsp_rate:subtype_c_rate, as.double)) |>
      mutate(id = row_number())
 
-readr::write_csv(merged_data, 'data/merged_data/first_output_2022_01_19.csv') # Write a CSV
+merged_data_epiweeks <- merge(merged_data, epiweeks)
+
+anti_join(merged_data, merged_data_epiweeks)
+
+readr::write_csv(merged_data_epiweeks, 'data/merged_data/merged_data.csv') # Write a CSV
 
 
 # Goal is to set variable types in each dataframe from a list (preferrably with a function)
