@@ -142,9 +142,6 @@ epi_cal_22_23 <- rbind(szn_22,szn_23)
 date_breaks <- as.Date(epi_cal_22_23$`Start date`,'%d/%m/%Y')
 epi <- epi_cal_22_23$Week
 
-date_breaks
-epi
-
 #plot graph
 uk_22_23_szn <- ggplot() + geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
      geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
@@ -165,6 +162,5 @@ uk_22_23_szn <- ggplot() + geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_
      theme(legend.position = 'bottom')
 uk_22_23_szn
 
-?scale_x_date
 pre_covid <- plot_grid(uk_17_18_szn,uk_18_19_szn,uk_19_20_szn,nrow = 3)
 plot_grid(pre_covid,uk_22_23_szn,rel_heights = c(2,1),nrow=2)
