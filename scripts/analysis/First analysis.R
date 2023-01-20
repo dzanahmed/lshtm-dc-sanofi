@@ -1,9 +1,9 @@
 # This is the first basic analysis
 # DZAJ 19 01 2022
 
-library(dplyr)
+library(tidyverse)
 
-data <- read_csv(file = 'data/merged_data/first_output_2022_01_19.csv')
+data <- read.csv(file = 'data/merged_data/first_output_2022_01_19.csv')
 
 not_all_na <- function(x) any(!is.na(x))
 
@@ -20,7 +20,7 @@ data <- data |> select(where(not_all_na)) |>
 totals <-
      data |> mutate(hemisphere = case_when(hemisphere == "sh" ~ "SH",
                                    TRUE ~ hemisphere)) |> 
-     filter(age_group == "Total" & hemisphere=="NH") 
+     filter(age_group == "Total" & hemisphere=="NH")
 
 
 totals
