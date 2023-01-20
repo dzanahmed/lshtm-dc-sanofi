@@ -1,4 +1,5 @@
 # Merge script
+# Dzan 20 01 2023
 
 library(dplyr)
 
@@ -28,11 +29,9 @@ merged_data <-
      merged_data |> mutate(across(hsp_rate:subtype_c_rate, as.double)) |>
      mutate(id = row_number())
 
-merged_data_epiweeks <- merge(merged_data, epiweeks)
+merged_data <- merge(merged_data, epiweeks)
 
-anti_join(merged_data, merged_data_epiweeks)
-
-readr::write_csv(merged_data_epiweeks, 'data/merged_data/merged_data.csv') # Write a CSV
+readr::write_csv(merged_data, 'data/merged_data/merged_data.csv') # Write a CSV
 
 
 # Goal is to set variable types in each dataframe from a list (preferrably with a function)

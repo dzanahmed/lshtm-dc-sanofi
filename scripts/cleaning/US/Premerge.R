@@ -1,6 +1,4 @@
-library(tidyr)
-library(dplyr)
-library(stringr)
+library(tidyverse)
 
 source(file = 'scripts/cleaning/helper.R')
 
@@ -73,19 +71,41 @@ US_RSV_premerged_total <- db_rsv_overall |> select(
 
 # Age stratified ----------------------------------------------------------
 
-# THIS NEEDS WORK! Problem with stratification
+# This needs more work as age groups for RSV are not the same as for Flu and COVID. 
 
-     # US_premerged_age_groups <-
-     #      bind_rows(
-     #           US_Flu_premerged_age_groups,
-     #           US_RSV_premerged_age_groups,
-     #           US_COVID_premerged_age_groups
-     #      )
-     # 
-     # colnames(US_Flu_premerged_age_groups)
-     # colnames(US_RSV_premerged_age_groups)
-     # colnames(US_COVID_premerged_age_groups)
+US_premerged_age_groups <-
+        bind_rows(
+                US_Flu_premerged_age_groups,
+                US_RSV_premerged_age_groups,
+                US_COVID_premerged_age_groups
+        ) |> mutate(
+                hsp_rate_covid19 = as.numeric(hsp_rate_covid19),
+                hsp_rate_flu = as.numeric(hsp_rate_flu)
+        )
 
+US_premerged_age_groups <- US_premerged_age_groups |> select(-data_source) |>
+        pivot_longer(
+                names_to = "pathogen",
+                cols = c(hsp_rate_flu,
+                         hsp_rate_covid19,
+                         hsp_rate_rsv),
+                values_to = "weekly_rate"
+        ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
+
+US_premerged_age_groups$id <- NA
+US_premerged_age_groups$data_source <- "CDC" # data_source
+US_premerged_age_groups$country <- "US" # country
+US_premerged_age_groups$hemisphere <- "NH"# hemisphere
+US_premerged_age_groups$hsp_rate <- NA # hsp_rate
+
+# These are all set to NA as US provides weekly incidence rate reports
+US_premerged_age_groups[order_header_premerge[12:28]] <- NA
+
+# Set the order in the CSV
+US_premerged_age_groups <- US_premerged_age_groups[, order_header_premerge]
+
+# Write CSV
+write_csv(US_premerged_age_groups, file="data/premerged_data/US_premerged_age_groups.csv")
 
 # Totals ------------------------------------------------------------------
 
@@ -107,8 +127,6 @@ US_premerged_total <- US_premerged_total |> select(-data_source) |>
      ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
 
 
-order_header_premerge
-
 US_premerged_total$id <- NA
 US_premerged_total$data_source <- "CDC" # data_source
 US_premerged_total$country <- "US" # country
@@ -118,8 +136,8 @@ US_premerged_total$hsp_rate <- NA # hsp_rate
 # These are all set to NA as US provides weekly incidence rate reports
 US_premerged_total[order_header_premerge[12:28]] <- NA
 
-
 # Set the order in the CSV
 US_premerged_total <- US_premerged_total[, order_header_premerge]
 
+# Write CSV
 write_csv(US_premerged_total, file="data/premerged_data/US_premerged_total.csv")
