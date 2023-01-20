@@ -30,32 +30,19 @@ uk_data_17 <- uk_data_17 %>% filter(age_group == 'ALL')
 date_breaks <- uk_data_17$start_date
 epi <- uk_data_17$week
 
-ggplot() + geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_flu),color='red') +
-     geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_rsv),color='orange') +
-     geom_col(data=uk_data_17,aes(x=start_date,y=hsp_abs),alpha=0.2) +
+#plot graph
+
+ggplot() + geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
+     geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
+     geom_col(data=uk_data_17,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+     scale_color_manual("", 
+                        breaks = c('Influenza','RSV'),
+                        values = c("Influenza"="red", "RSV"="orange")) +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
      xlab('Epi Week') +
      ylab('No. Hospitalisations') +
      ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2017/18 Season') +
      theme_bw() +
      scale_x_date(breaks = date_breaks,labels=epi) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-
-
-# test plot with week data
-
-uk_data <- data %>% filter(data$country == 'UK')
-
-uk_data_22 <- uk_data %>% filter(uk_data$year == 2022 | uk_data$year == 2023)
-uk_data_22 <- uk_data_22 %>% filter(uk_data_22$age_group == 'ALL')
-
-ggplot() + geom_line(data=uk_data_22,aes(x=week,y=hsp_abs_covid),color='dark blue') +
-     geom_line(data=uk_data_22,aes(x=week,y=hsp_abs_flu),color='red') +
-     geom_line(data=uk_data_22,aes(x=week,y=hsp_abs_rsv),color='orange') +
-     geom_col(data=uk_data_22,aes(x=week,y=hsp_abs),alpha=0.2) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2022/23 Season') +
-     theme_bw()
-
-# test plot with seasons as x axis
 
