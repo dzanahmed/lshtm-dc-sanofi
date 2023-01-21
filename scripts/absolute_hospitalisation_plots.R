@@ -1,6 +1,3 @@
-# set working directory
-setwd("~/lshtm-dc-sanofi")
-
 # set up packages required for analysis
 require(ggplot2)
 require(tidyverse) 
@@ -172,7 +169,7 @@ save_plot(file='uk_hospitalisation_totals.jpeg',plot=uk_final,base_width=15,base
 ## 2016/17 SEASON ##
 
 ger_data_16 <- data_16 %>% dplyr::filter(country == 'DE')
-ger_data_16 <- ger_data_16 %>% dplyr::filter(age_group == 'Total')
+ger_data_16 <- ger_data_16 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with GER population for 2016 == 82.5 million (from Statistisches Bundesamt)
 ger_data_16$denominator <- 82500000
@@ -214,7 +211,7 @@ ger_16_17_szn
 ## 2017/18 SEASON ##
 
 ger_data_17 <- data_17 %>% dplyr::filter(country == 'DE')
-ger_data_17 <- ger_data_17 %>% dplyr::filter(age_group == 'Total')
+ger_data_17 <- ger_data_17 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with GER population for 2017 == 82.7 million (from Statistisches Bundesamt)
 ger_data_17$denominator <- 82700000
@@ -256,7 +253,7 @@ ger_17_18_szn
 ## 2018/19 SEASON ##
 
 ger_data_18 <- data_18 %>% dplyr::filter(country == 'DE')
-ger_data_18 <- ger_data_18 %>% dplyr::filter(age_group == 'Total')
+ger_data_18 <- ger_data_18 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with GER population for 2018 == 82.9 million (from Statistisches Bundesamt)
 ger_data_18$denominator <- 82900000
@@ -298,7 +295,7 @@ ger_18_19_szn
 ## 2019/20 SEASON ##
 
 ger_data_19 <- data_19 %>% dplyr::filter(country == 'DE')
-ger_data_19 <- ger_data_19 %>% dplyr::filter(age_group == 'Total')
+ger_data_19 <- ger_data_19 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with GER population for 2018 == 83.1 million (from Statistisches Bundesamt)
 ger_data_19$denominator <- 83100000
@@ -342,7 +339,7 @@ ger_19_20_szn
 ## 2022/23 SEASON ##
 
 ger_data_22 <- data_22 %>% dplyr::filter(country == 'DE')
-ger_data_22 <- ger_data_22 %>% dplyr::filter(age_group == 'Total')
+ger_data_22 <- ger_data_22 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with GER population for 2018 == 84.3 million (from Statistisches Bundesamt)
 ger_data_22$denominator <- 84300000
@@ -400,7 +397,7 @@ save_plot(file='ger_hospitalisation_totals.jpeg',plot=ger_graph,base_width=15,ba
 ## 2016/17 SEASON ##
 
 usa_data_16 <- data_16 %>% dplyr::filter(country == 'US')
-usa_data_16 <- usa_data_16 %>% dplyr::filter(age_group == 'Overall')
+usa_data_16 <- usa_data_16 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2016 == 323.1 million
 usa_data_16$denominator <- 323100000
@@ -442,7 +439,7 @@ usa_16_17_szn
 ## 2017/18 SEASON ##
 
 usa_data_17 <- data_17 %>% dplyr::filter(country == 'US')
-usa_data_17 <- usa_data_17 %>% dplyr::filter(age_group == 'Overall')
+usa_data_17 <- usa_data_17 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2017 == 325.1 million
 usa_data_17$denominator <- 325100000
@@ -484,7 +481,7 @@ usa_17_18_szn
 ## 2018/19 SEASON ##
 
 usa_data_18 <- data_18 %>% dplyr::filter(country == 'US')
-usa_data_18 <- usa_data_18 %>% dplyr::filter(age_group == 'Overall')
+usa_data_18 <- usa_data_18 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2018 == 326.8 million
 usa_data_18$denominator <- 326800000
@@ -526,7 +523,7 @@ usa_18_19_szn
 ## 2019/20 SEASON ## There is no data for this!!
 
 usa_data_19 <- data_19 %>% dplyr::filter(country == 'US')
-usa_data_19 <- usa_data_19 %>% dplyr::filter(age_group == 'Overall')
+usa_data_19 <- usa_data_19 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2019 == 328.3 million
 usa_data_19$denominator <- 328300000
@@ -568,7 +565,7 @@ usa_19_20_szn
 ## 2022/23 SEASON ##
 
 usa_data_22 <- data_22 %>% dplyr::filter(country == 'US')
-usa_data_22 <- usa_data_22 %>% dplyr::filter(age_group == 'Overall')
+usa_data_22 <- usa_data_22 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2022 == 333.3 million
 usa_data_22$denominator <- 333300000

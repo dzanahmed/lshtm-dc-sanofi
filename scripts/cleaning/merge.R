@@ -24,15 +24,22 @@ merged_data <- bind_rows(fileList)
 epiweeks <- read.csv(file = 'data/epiweeks_withdate.csv')
 epiweeks$start_date <- as.Date(epiweeks$start_date)
 
-# All the last columns (after age_group) are numeric. Also, assign new IDs
-
-merged_data <-
-     merged_data |> mutate(across(hsp_rate:subtype_c_rate, as.double)) |>
-     mutate(id = row_number())
-
 # Merge with epiweeks and reorder merged_data
 merged_data <- merge(merged_data, epiweeks)
-merged_data <- merged_data[order(merged_data$id), order_header_premerge_epiweeks]
+merged_data <-
+     merged_data[order(
+          merged_data$start_date,
+          merged_data$data_source,
+          merged_data$age_group
+     ), order_header_premerge_epiweeks]
+merged_data <- merged_data |> mutate(id=row_number())
+
+# Standardize term for age groups:
+merged_data <- merged_data |> mutate(age_group = case_when(
+     age_group == "Overall" ~ "ALL",
+     age_group == "Total" ~ "ALL",
+     TRUE ~ age_group
+))
 
 # Write a CSV
 readr::write_csv(merged_data, 'data/merged_data/merged_data.csv')
