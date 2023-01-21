@@ -89,7 +89,7 @@ Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |>
      ), 
      plot.title=element_text(hjust=0.5),
      plot.subtitle = element_text(hjust=0.5))+
-     #theme(legend.position = 'none')+
+     theme(legend.position = 'bottom')+
      labs(title="Influenza and RSV hospitalizations in the Southern hemisphere, seasons 2016-2019 and 2022-23",
           subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)", caption="Preliminary output Dzan")
 
@@ -126,7 +126,7 @@ Figure_1_Both
 
 
 ggsave(
-        'output/Hospitalization rates per 100k/Figure_1_NH.png',
+        'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
         Figure_1_NH,
         width=16,
         height=9
@@ -134,14 +134,14 @@ ggsave(
 
 
 ggsave(
-        'output/Hospitalization rates per 100k/Figure_1_SH.png',
+        'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
         Figure_1_SH,
         width=16,
         height=9
 )
 
 ggsave(
-        'output/Hospitalization rates per 100k/Figure_1_Both.png',
+        'output/Fig 01 - Hospitalization rates per 100k/Figure_1_Both.png',
         Figure_1_Both,
         width=16,
         height=9
