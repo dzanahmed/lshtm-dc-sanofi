@@ -32,7 +32,7 @@ merged_data <-
 
 # Merge with epiweeks and reorder merged_data
 merged_data <- merge(merged_data, epiweeks)
-merged_data <- merged_data[order(merged_data$id), order_header_premerge]
+merged_data <- merged_data[order(merged_data$id), order_header_premerge_epiweeks]
 
 # Write a CSV
 readr::write_csv(merged_data, 'data/merged_data/merged_data.csv')

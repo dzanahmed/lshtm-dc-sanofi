@@ -31,6 +31,10 @@ order_header_premerge <- c(
      "subtype_c_rate"
 )
 
+
+order_header_premerge_epiweeks <- c(order_header_premerge, "start_date")
+
+
 var_type_header <- c(
         id = "integer",
         data_source = "character",
