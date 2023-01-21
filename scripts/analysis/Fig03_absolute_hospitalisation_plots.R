@@ -162,7 +162,13 @@ uk_22_23_szn
 pre_covid <- plot_grid(uk_17_18_szn,uk_18_19_szn,uk_19_20_szn,nrow = 3)
 uk_final <- plot_grid(pre_covid,uk_22_23_szn,rel_heights = c(2,1),nrow=2)
 
-save_plot(file='uk_hospitalisation_totals.jpeg',plot=uk_final,base_width=15,base_height=9)
+
+save_plot(
+        file = 'output/Fig 03 - Hospitalization by country/uk_hospitalisation_totals.jpeg',
+        plot = uk_final,
+        base_width = 15,
+        base_height = 9
+)
 
 ####### GERMANY DATA ######
 
@@ -390,7 +396,13 @@ pre_covid_ger <- plot_grid(ger_16_17_szn,ger_17_18_szn,ger_18_19_szn,ger_19_20_s
 ger_graph <- plot_grid(pre_covid_ger,ger_22_23_szn,nrow=2,rel_heights = c(2.2,1))
 ger_graph
 
-save_plot(file='ger_hospitalisation_totals.jpeg',plot=ger_graph,base_width=15,base_height=9)
+
+save_plot(
+        file = 'output/Fig 03 - Hospitalization by country/ger_hospitalisation_totals.jpeg',
+        plot = ger_graph,
+        base_width = 15,
+        base_height = 9
+)
 
 ###### USA DATA ######
 
@@ -518,6 +530,7 @@ usa_18_19_szn <- ggplot() + geom_line(data=usa_data_18,aes(x=start_date,y=hsp_ab
      ylim(0,70000) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
      theme(legend.position = 'none')
+
 usa_18_19_szn
 
 ## 2019/20 SEASON ## There is no data for this!!
@@ -616,4 +629,10 @@ pre_covid_usa <- plot_grid(usa_16_17_szn,usa_17_18_szn,usa_18_19_szn,nrow=3)
 usa_graph <- plot_grid(pre_covid_usa,usa_22_23_szn,nrow=2,rel_heights = c(2.2,1))
 usa_graph
 
-save_plot(file='usa_hospitalisation_totals.jpeg',plot=usa_graph,base_width=15,base_height=9)
+
+save_plot(
+        file = 'output/Fig 03 - Hospitalization by country/usa_hospitalisation_totals.jpeg',
+        plot = usa_graph,
+        base_width = 15,
+        base_height = 9
+)
