@@ -40,7 +40,6 @@ data |> filter(year < 2021, age_group=="ALL") |> ggplot()+
 
 ###
 
-
 Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
      filter(country!="UK" | year!=2020 | week<15) |> 
      ggplot()+
@@ -64,7 +63,7 @@ Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="
      plot.subtitle = element_text(hjust=0.5))+
      theme(legend.position = 'bottom')+
      scale_y_sqrt()+
-     labs(title="Influenza hospitalizations in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+     labs(title="Influenza and RSV hospitalizations in the Northern hemisphere, seasons 2016-2019 and 2022-23",
           subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)", caption="Preliminary output Dzan")
 
 Figure_1_NH
@@ -91,7 +90,7 @@ Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |>
      plot.title=element_text(hjust=0.5),
      plot.subtitle = element_text(hjust=0.5))+
      #theme(legend.position = 'none')+
-     labs(title="Influenza hospitalizations in the Southern hemisphere, seasons 2016-2019 and 2022-23",
+     labs(title="Influenza and RSV hospitalizations in the Southern hemisphere, seasons 2016-2019 and 2022-23",
           subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)", caption="Preliminary output Dzan")
 
 Figure_1_SH
@@ -120,36 +119,31 @@ Figure_1_Both <- data |> filter(age_group=="ALL") |>
      plot.subtitle = element_text(hjust=0.5))+
      scale_y_sqrt()+
      theme(legend.position = 'bottom')+
-     labs(title="Influenza hospitalizations in NH and SH, seasons 2016-2019 and 2022-23",
+     labs(title="Influenza and RSV hospitalizations in NH and SH, seasons 2016-2019 and 2022-23",
           subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)", caption="Preliminary output Dzan")
 
 Figure_1_Both
 
 
-
 ggsave(
-        'Figure_1_NH.png',
+        'output/Hospitalization rates per 100k/Figure_1_NH.png',
         Figure_1_NH,
-        width = 18,
-        height = 12,
-        units = 'cm'
+        width=16,
+        height=9
 )
 
 
 ggsave(
-        'Figure_1_SH.png',
+        'output/Hospitalization rates per 100k/Figure_1_SH.png',
         Figure_1_SH,
-        width = 18,
-        height = 12,
-        units = 'cm'
+        width=16,
+        height=9
 )
 
 ggsave(
-        'Figure_1_Both.png',
+        'output/Hospitalization rates per 100k/Figure_1_Both.png',
         Figure_1_Both,
-        width = 18,
-        height = 12,
-        units = 'cm'
+        width=16,
+        height=9
 )
 
-       
