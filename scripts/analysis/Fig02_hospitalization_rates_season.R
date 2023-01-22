@@ -28,7 +28,9 @@ for(i in c(usa_pop$year)) {
      all_countries$hsp_abs_flu <- ifelse(all_countries$country == "US" & all_countries$year == i, round((all_countries$hsp_rate_flu* usa_pop$pop[usa_pop$year == i])/100000,0),all_countries$hsp_abs_flu)
 }
 
-## Standarised data
+###############################
+###### Standardized data DE and USA #######
+##############################
 
 
 
@@ -82,7 +84,7 @@ db_rect <- data_graph %>%
 # Graph using face grid
 plot1_flu <-  data_graph %>% 
      filter(hemisphere == "NH") %>% 
-     ggplot(aes(as.numeric(week),hsp_rate_flu, group = season, color = season)) +
+     ggplot(aes(as.numeric(week),stand_flu, group = season, color = season)) +
      geom_line(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week)  +
      
@@ -102,12 +104,12 @@ flu_nh2 <- plot1_flu + theme_bw() +
           y = "hospitalization (per 100,000)")
 
 #Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
-     flu_nh2,
-     width=16,
-     height=9
-)
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
+#      flu_nh2,
+#      width=16,
+#      height=9
+# )
 
 #############  RSV PLOTS ###################
 ##############################################
@@ -135,12 +137,12 @@ rsv_nh <- plot1_rsv + theme_bw() +
           y = "hospitalization (per 100,000)")
 
 # Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
-     rsv_nh,
-     width=16,
-     height=9
-)
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
+#      rsv_nh,
+#      width=16,
+#      height=9
+# )
 
 
 
@@ -209,12 +211,12 @@ flu_nh_sh <- plot1_flu_sh + theme(strip.placement = "outside",
           y = "hospitalization (per 100,000)")
 
 # Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
-     flu_nh_sh,
-     width=16,
-     height=9
-)
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
+#      flu_nh_sh,
+#      width=16,
+#      height=9
+# )
 
 
 #############  RSV PLOTS ###################
@@ -241,10 +243,9 @@ rsv_nh_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
           y = "hospitalization (per 100,000)")
 
 # Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
-     rsv_nh_sh,
-     width=16,
-     height=9
-)
-
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
+#      rsv_nh_sh,
+#      width=16,
+#      height=9
+# )
