@@ -101,13 +101,13 @@ flu_nh2 <- plot1_flu + theme_bw() +
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
-# Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig 02 : Hospitalization rates flu - NH.png'),
-#      flu_nh2,
-#      width=16,
-#      height=9
-# )
+#Save
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
+     flu_nh2,
+     width=16,
+     height=9
+)
 
 #############  RSV PLOTS ###################
 ##############################################
@@ -135,12 +135,12 @@ rsv_nh <- plot1_rsv + theme_bw() +
           y = "hospitalization (per 100,000)")
 
 # Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig 02 : Hospitalization rates rsv - NH.png'),
-#      rsv_nh,
-#      width=16,
-#      height=9
-# )
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
+     rsv_nh,
+     width=16,
+     height=9
+)
 
 
 
@@ -209,12 +209,12 @@ flu_nh_sh <- plot1_flu_sh + theme(strip.placement = "outside",
           y = "hospitalization (per 100,000)")
 
 # Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig 02 : Hospitalization rates flu - SH.png'),
-#      flu_nh_sh,
-#      width=16,
-#      height=9
-# )
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
+     flu_nh_sh,
+     width=16,
+     height=9
+)
 
 
 #############  RSV PLOTS ###################
@@ -241,10 +241,10 @@ rsv_nh_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
           y = "hospitalization (per 100,000)")
 
 # Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig 02 : Hospitalization rates rsv - SH.png'),
-#      rsv_nh_sh,
-#      width=16,
-#      height=9
-# )
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
+     rsv_nh_sh,
+     width=16,
+     height=9
+)
 
