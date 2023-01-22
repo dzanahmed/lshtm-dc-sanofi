@@ -204,7 +204,7 @@ flu_nh_sh <- plot1_flu_sh + theme(strip.placement = "outside",
                                    panel.spacing=unit(0.2,"cm"),
                                    legend.position = "bottom", 
                                    legend.direction = "horizontal") +
-     labs(title = "Flu - Suthern Hemisphere",
+     labs(title = "Flu - Southern Hemisphere",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
@@ -236,7 +236,7 @@ rsv_nh_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
                                   panel.spacing=unit(0.2,"cm"),
                                   legend.position = "bottom", 
                                   legend.direction = "horizontal") +
-     labs(title = "RSV - Suthern Hemisphere",
+     labs(title = "RSV - Southern Hemisphere",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
