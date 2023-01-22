@@ -1,0 +1,379 @@
+---
+title: "Cleaning data for Data challenge"
+format:
+  html:
+    theme: flatly
+    code-fold: true
+---
+
+```{r echo = F, warning = F, message = F}
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+library(readr)
+```
+
+:::{.callout-tip  collapse="false"} 
+Epi calendar form 31/12/2021 to 31/12/2023
+
+```{r warning = F, message = F}
+calendar <- read_csv("https://raw.githubusercontent.com/IgnaLeiva/sanofii/main/doc/calendar2022.csv")
+calendar$date <- as.Date(calendar$date, "%d/%m/%Y")
+```
+
+:::
+
+:::{.callout-tip  collapse="false"}
+Population based on INE [Instituto de estadistica](https://www.ine.gob.cl/estadisticas/sociales/demografia-y-vitales/proyecciones-de-poblacion)
+::: 
+
+```{r}
+population <- data.frame(year = c("2016", "2017", "2018", "2019", "2022", "2023"),
+                         popultion = c(18167147, 18419192, 18751405, 19107216, 19828563, 19960889 ))
+print(population)
+```
+
+## Data set all ages for COVID-19 cases
+
+Data produce by Chilean Mistry of health and Science [GitHub](https://github.com/MinCiencia/Datos-COVID19).
+
+The original data set is called: "TotalesNacionales_std.csv" which contains cases under several definitions. It was taken the one called "Casos nuevos totales"
+
+```{r warning = F, message = F}
+national <- read_csv("https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto5/TotalesNacionales_std.csv")
+
+national <-national[national$Dato == "Casos nuevos totales",]
+colnames(national) <- c("dato", "date", "total_cases")
+national_week <- (merge(national, calendar, by = 'date'))
+national_week$year <- as.numeric(format(national_week$date, "%Y"))
+
+national_week_all_age <- national_week %>% 
+                  group_by(year, week) %>% 
+                  summarise("total_cases" = sum(total_cases, na.rm = T)) %>% 
+                  arrange(year, week)
+```
+This data set has `r dim(national)[2]` columns and `r dim(national)[1]` rows.
+
+The final data set es called __national_week_all_age__ which has `r dim(national_week_all_age)[2]` columns and `r dim(national_week_all_age)[1]` rows.
+
+```{r}
+head(national_week_all_age,5)
+```
+
+## Data set all for COVID-19 hospitalization ages
+
+The data set was taken from the same previous source. It is called "HospitalizadosEtario_Acumulado_std.csv". Number represent cumulative number of hospitalised people.
+
+There were 2 measurement per week. I took the last measurement as the representative one. Then for getting the "new number (considering admissions and discharges)" I subtracted the prior week value
+
+```{r warning = F, message = F}
+hospilalised <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto22/HospitalizadosEtario_Acumulado_std.csv')
+colnames(hospilalised) <- c("age_group", "sex", "date", "number")
+
+hospilalised <- (merge(hospilalised, calendar, by = 'date'))
+hospilalised$age_group <- as.factor(hospilalised$age_group)
+hospilalised$year <- format(hospilalised$date, "%Y")
+
+hospilalised_week <- hospilalised %>% 
+                      group_by(date, year, week, age_group) %>% 
+                      summarise("cumul_cases" = sum(number, na.rm = T)) %>% 
+                      arrange(date, year, week,age_group) 
+
+hospilalised_week <-  hospilalised_week %>% 
+                      group_by(year, week, age_group) %>% 
+                      summarise("cumul_cases" = last(cumul_cases)) %>% 
+                      filter(cumul_cases > 0) %>% 
+                      arrange(year, week,age_group) 
+                      
+# Change levels 
+
+hospilalised_week$age_group <-as.character(hospilalised_week$age_group)
+
+hospilalised_week$age_group <- ifelse(hospilalised_week$age_group == "00  5 años", "0-5",
+       ifelse(hospilalised_week$age_group == "5  17 años", "5-17",
+              ifelse(hospilalised_week$age_group == "18  49 años", "18-49",
+                     ifelse(hospilalised_week$age_group == "50  59 años", "50-59",
+                            ifelse(hospilalised_week$age_group == "60  69 años", "60-69",
+                                   ifelse(hospilalised_week$age_group == "70  79 años", "70-79",
+                                          ifelse(hospilalised_week$age_group == "80 y más años", "80+",0)))))))
+
+hospilalised_week$age_group <- factor(hospilalised_week$age_group, levels = c("0-5","5-17","18-49","50-59","60-69","70-79", "80+"))
+hospilalised_week <- arrange(hospilalised_week,year, week,age_group)
+
+# Cases prior week
+hospilalised_week$prior_week <- c(rep(NA,7),hospilalised_week$cumul_cases[-c(379:385)])
+hospilalised_week$daily <- hospilalised_week$cumul_cases - hospilalised_week$prior_week
+
+hospilalised_week$denominator <- ifelse(hospilalised_week$year == 2022, population[5,2],
+                                        ifelse(hospilalised_week$year == 2023, population[6,2], NA))
+
+h1 <- hospilalised_week %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(week,cumul_cases, group = age_group, color = age_group)) +
+  geom_line() 
+
+  
+h2 <-hospilalised_week %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(week,(daily/19000000)*100000, group = age_group, color = age_group)) +
+  geom_line() 
+
+library("gridExtra")
+grid.arrange(h1, h2 , 
+             ncol = 2, nrow = 1)
+```
+
+## Data from SARI cases (sentinel data)
+
+Data extracted from Epe Deparment at [Minstry of Health]((http://epi.minsal.cl/visualizacion-interactiva-influenza/#/))
+
+```{r warning = F, message = F}
+sari_chile <- read_csv('https://raw.githubusercontent.com/IgnaLeiva/sanofii/main/doc/SARI_minsal.csv')
+sari_chile <- sari_chile[,c(1:5)]
+
+sari_chile$virus2 <- ifelse(sari_chile$virus %in% c("Influenza A","Influenza B"),"flu",
+                            ifelse(sari_chile$virus == "VRS", "RSV", sari_chile$virus ))
+
+sari_chile <- filter(sari_chile, !is.na(virus2))
+colnames(sari_chile) <- c("year", "week", "subtipe", "subtipe2", "positive_sample", "virus")
+
+
+sari_chile <- sari_chile %>% 
+                group_by(year, week,virus) %>% 
+                summarise("positive_sample" = sum(positive_sample)) 
+sari_chile <- pivot_wider(sari_chile, names_from = "virus", values_from = "positive_sample")
+
+# set covid previos 2020 to cero
+
+sari_chile$COVID[sari_chile$year != 2022 ] <- 0
+
+
+# sari_chile %>% 
+#   ggplot(aes(week, COVID, group = year, color = year)) +
+#   geom_line()
+  
+```
+
+## Data from fluNet
+
+This data were extracted from [FluNet](https://app.powerbi.com/view?r=eyJrIjoiZTkyODcyOTEtZjA5YS00ZmI0LWFkZGUtODIxNGI5OTE3YjM0IiwidCI6ImY2MTBjMGI3LWJkMjQtNGIzOS04MTBiLTNkYzI4MGFmYjU5MCIsImMiOjh9)
+
+```{r warning = F, message = F}
+flunet_raw <- read_csv("https://raw.githubusercontent.com/IgnaLeiva/sanofii/main/doc/flunet_chile.csv")
+colnames(flunet_raw)[4] <-"Surveillance"
+
+# this for merging sentinel & non-sentinel 2022
+flunet <-flunet_raw %>% 
+  group_by(Year, Week) %>%
+  summarise(A_flu = sum(`A (Total)`),
+            B_flu = sum(`B (Total)`),
+            total = sum(`Influenza positive specimens`))
+
+colnames(flunet)[1:2]  <- c("year", "week")
+```
+
+This data set collects data from different surveillance type as: `r unique(flunet_raw$Surveillance)` Chile has only specified values for 2022
+
+
+# Seting data into group data set
+
+### Attach population to sari cases 
+```{r}
+sari_chile$denominator <- ifelse(sari_chile$year == 2016, population[1,2],
+                                 ifelse(sari_chile$year == 2017, population[2,2],
+                                        ifelse(sari_chile$year == 2018, population[3,2],
+                                               ifelse(sari_chile$year == 2019, population[4,2],
+                                                      ifelse(sari_chile$year == 2022, population[5,2],0)))))
+```
+
+### The data set for all age
+```{r}
+chi_premerged_total <- data.frame(
+  id =1:260,
+  data_source = "EPI MINSAL - FluNet (Flu cases)",
+  country = "CL",
+  hemisphere = "SH",
+  week = sari_chile$week,
+  year = sari_chile$year,
+  age_group = "ALL",
+  hsp_rate = round(((sari_chile$flu + sari_chile$RSV + sari_chile$COVID)/sari_chile$denominator)*100000,2),
+  hsp_rate_flu = round((sari_chile$flu/sari_chile$denominator)*100000,2),
+  hsp_rate_rsv = round((sari_chile$RSV/sari_chile$denominator)*100000,2),
+  hsp_rate_covid19 = round((sari_chile$COVID/sari_chile$denominator)*100000,2),
+  cases_rate_flu = NA,
+  cases_rate_rsv = NA,
+  cases_rate_covid19 = NA,
+  hsp_abs = (sari_chile$flu + sari_chile$RSV + sari_chile$COVID),
+  hsp_abs_flu = sari_chile$flu,
+  hsp_abs_rsv = sari_chile$RSV,
+  hsp_abs_covid = sari_chile$COVID,
+  cases_abs_flu = NA,
+  cases_abs_rsv = NA,
+  cases_abs_covid19 = NA,
+  denominator = sari_chile$denominator,
+  subtype_a_abs = NA,
+  subtype_b_abs = NA,
+  subtype_c_abs = NA,
+  subtype_a_rate = NA,
+  subtype_b_rate = NA,
+  subtype_c_rate = NA
+)
+
+
+
+
+
+chi_premerged_total$cases_abs_covid19 <- left_join(chi_premerged_total, national_week_all_age, by = c("year", "week"))$total_cases
+
+chi_premerged_total$cases_rate_covid19 <- round((chi_premerged_total$cases_abs_covid/chi_premerged_total$denominator)*100000,2)
+
+chi_premerged_total$cases_abs_flu  <-left_join(chi_premerged_total, flunet[,c(1,2,5)], by = c("year", "week"))$total
+
+chi_premerged_total$cases_rate_flu<- round((chi_premerged_total$cases_abs_flu/chi_premerged_total$denominator)*100000,2)
+
+#write_csv(chi_premerged_total, "/Users/igna/Desktop/DataSetChile/premerged_data/chi_premerged_total.csv")
+
+chi_premerged_total %>% 
+  ggplot(aes(week, cases_abs_covid19, group = year, color = year))+
+  geom_line()
+
+```
+## The data set by age for hospitalizations
+
+```{r}
+chi_premerged_by_age <- data.frame(
+  id =1:385,
+  data_source = "EPI MINSAL - Ministry of Science",
+  country = "chi",
+  hemisphere = "sh",
+  week = hospilalised_week$week,
+  year = hospilalised_week$year,
+  age_group = hospilalised_week$age_group,
+  hsp_rate = NA,
+  hsp_rate_flu = NA,
+  hsp_rate_rsv = NA,
+  hsp_rate_covid19 = round((hospilalised_week$daily/hospilalised_week$denominator)*100000,2),
+  cases_rate_flu = NA,
+  cases_rate_rsv = NA,
+  cases_rate_covid19 = NA,
+  hsp_abs = NA,
+  hsp_abs_flu = NA,
+  hsp_abs_rsv = NA,
+  hsp_abs_covid = hospilalised_week$daily,
+  cases_abs_flu = NA,
+  cases_abs_rsv = NA,
+  cases_abs_covid19 = NA,
+  denominator = hospilalised_week$denominator,
+  subtype_a_abs = NA,
+  subtype_b_abs = NA,
+  subtype_c_abs = NA,
+  subtype_a_rate = NA,
+  subtype_b_rate = NA,
+  subtype_c_rate = NA
+)
+
+chi_premerged_by_age <- filter(chi_premerged_by_age, !is.na(denominator))
+
+#write_csv(chi_premerged_by_age, "/Users/igna/Desktop/DataSetChile/premerged_data/chi_premerged_by_age.csv")
+
+chi_premerged_by_age %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(week,hsp_abs_covid, group = age_group , color = age_group)) +
+    geom_line() +
+    ggtitle("ABsolute numbers")
+
+chi_premerged_by_age %>% 
+  filter(year == 2022) %>% 
+  ggplot(aes(week,hsp_rate_covid19, group = age_group , color = age_group)) +
+    geom_line() +
+  ggtitle("Rate numbers")
+```
+
+## Australia
+```{r}
+
+flunet_raw <- read_csv("/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/processed_data/AUS/australia_fluNet.csv")
+
+
+flunet_raw$denominator[flunet_raw$denominator == 25890.8] <- 25978935
+
+
+aus_premerged_total <- data.frame(
+  data_source = flunet_raw$data_source,
+  country = "AUS",
+  hemisphere = "SH",
+  week = flunet_raw$week,
+  year = flunet_raw$year,
+  age_group = "ALL",
+  hsp_rate = NA,
+  hsp_rate_flu = round((flunet_raw$hsp_abs_flu/flunet_raw$denominator)*100000,2),
+  hsp_rate_rsv = round((flunet_raw$hsp_abs_rsv/flunet_raw$denominator)*100000,2),
+  hsp_rate_covid19 = NA,
+  cases_rate_flu = NA,
+  cases_rate_rsv = NA,
+  cases_rate_covid19 = NA,
+  hsp_abs = NA,
+  hsp_abs_flu = flunet_raw$hsp_abs_flu,
+  hsp_abs_rsv = flunet_raw$hsp_abs_rsv,
+  hsp_abs_covid = NA,
+  cases_abs_flu = NA,
+  cases_abs_rsv = NA,
+  cases_abs_covid = NA,
+  denominator = flunet_raw$denominator,
+  subtype_a_abs = flunet_raw$subtype_a_abs,
+  subtype_b_abs = flunet_raw$subtype_b_abs,
+  subtype_c_abs = NA,
+  subtype_a_rate = round((flunet_raw$subtype_a_abs/flunet_raw$denominator)*100000,2),
+  subtype_b_rate = round((flunet_raw$subtype_b_abs/flunet_raw$denominator)*100000,2),
+  subtype_c_rate = NA
+)
+
+#write_csv(aus_premerged_total, "/Users/igna/Documents/LSHTM/Term 2/Data Challenge/sanofii/doc/aus_premerged_total.csv")
+
+```
+
+## France non_sentinel
+```{r}
+preclean_fran_flu<- read_csv("/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/processed_data/FRA/france_fluNet.csv")
+
+preclean_fran_covid<- read_csv("/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/processed_data/FRA/france_covid19.csv")
+
+
+FR_premerged_total <- data.frame(
+  data_source = ifelse(preclean_fran_flu$origin_source == "NONSENTINEL", "FluNet - Non Sentinel","FluNet - Sentinel" ),
+  country = "FR",
+  hemisphere = "NH",
+  week = preclean_fran_flu$week,
+  year = preclean_fran_flu$year,
+  age_group = "ALL",
+  hsp_rate = NA,
+  hsp_rate_flu = round((preclean_fran_flu$hsp_abs_flu/preclean_fran_flu$denominator)*100000,2),
+  hsp_rate_rsv = round((preclean_fran_flu$hsp_abs_rsv/preclean_fran_flu$denominator)*100000,2),
+  hsp_rate_covid19 = NA,
+  cases_rate_flu = NA,
+  cases_rate_rsv = NA,
+  cases_rate_covid19 = NA,
+  hsp_abs = NA,
+  hsp_abs_flu = preclean_fran_flu$hsp_abs_flu,
+  hsp_abs_rsv = preclean_fran_flu$hsp_abs_rsv,
+  hsp_abs_covid = NA,
+  cases_abs_flu = NA,
+  cases_abs_rsv = NA,
+  cases_abs_covid = NA,
+  denominator = preclean_fran_flu$denominator,
+  subtype_a_abs = preclean_fran_flu$subtype_a_abs,
+  subtype_b_abs = preclean_fran_flu$subtype_b_abs,
+  subtype_c_abs = NA,
+  subtype_a_rate = round((preclean_fran_flu$subtype_a_abs/preclean_fran_flu$denominator)*100000,2),
+  subtype_b_rate = round((preclean_fran_flu$subtype_b_abs/preclean_fran_flu$denominator)*100000,2),
+  subtype_c_rate = NA
+)
+
+FR_premerged_total$hsp_abs_covid <- left_join(preclean_fran_flu, preclean_fran_covid, by = c("year", "week"))$hsp_abs_covid19
+
+FR_premerged_total$cases_rate_covid19 <- round((FR_premerged_total$hsp_abs_covid/FR_premerged_total$denominator)*100000,2)
+
+#write_csv(FR_premerged_total, "FR/FR_premerged_total.csv")
+
+```
+
