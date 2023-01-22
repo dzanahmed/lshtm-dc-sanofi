@@ -186,7 +186,7 @@ usa_flu_plots <- usa_flu_16_17_plot +
      plot_layout(ncol = 4)
 
 # save plot
-#save_plot(file = 'output/usa_flu_hosp_agegroup.pdf', plot = usa_flu_plots, base_width=15, base_height=9)
+ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_flu_hosp_agegroup.pdf', plot = usa_flu_plots, width=15, height=9)
 
 #------------------------------------------------------------
 # USA RSV Plots
@@ -204,13 +204,13 @@ usa_rsv_18_19_plot <- ggplot() +
      #geom_line(data = filter(usa_rsv_18, age_group=="18-49 years"), aes(x = start_date, y = hsp_rate_rsv, color='18-49 yr')) +
      #geom_line(data = filter(usa_rsv_18, age_group=="50-64 years"), aes(x = start_date, y = hsp_rate_rsv, color='50-64 yr')) +
      #geom_line(data = filter(usa_rsv_18, age_group=="65+ years"), aes(x = start_date, y = hsp_rate_rsv, color='65+ yr')) +
-     #geom_line(data = filter(usa_rsv_18, age_group=="Overall"), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     geom_line(data = filter(usa_rsv_18, age_group=="Overall"), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
      # scale_color_manual("", 
      #                    breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
      #                    values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", '18-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
      scale_color_manual("", 
-                        breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr'),
-                        values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange")) +
+                        breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', 'Total'),
+                        values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", 'Total'='black')) +
      
      xlab('2018-19 Epi Week') +
      ylab('Hospitalization Rate (per 100,000)') +
@@ -235,13 +235,13 @@ usa_rsv_22_23_plot <- ggplot() +
      #geom_line(data = filter(usa_rsv_22, age_group=="18-49 years"), aes(x = start_date, y = hsp_rate_rsv, color='18-49 yr')) +
      #geom_line(data = filter(usa_rsv_22, age_group=="50-64 years"), aes(x = start_date, y = hsp_rate_rsv, color='50-64 yr')) +
      #geom_line(data = filter(usa_rsv_22, age_group=="65+ years"), aes(x = start_date, y = hsp_rate_rsv, color='65+ yr')) +
-     #geom_line(data = filter(usa_rsv_22, age_group=="Overall"), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     geom_line(data = filter(usa_rsv_22, age_group=="Overall"), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
      # scale_color_manual("", 
      #                    breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
      #                    values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", '18-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
      scale_color_manual("", 
-                        breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr'),
-                        values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange")) +
+                        breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', 'Total'),
+                        values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", 'Total'='black')) +
      
      xlab('2022-23 Epi Week') +
      ylab('') +
@@ -254,7 +254,7 @@ usa_rsv_22_23_plot <- ggplot() +
 usa_rsv_plots <- usa_rsv_18_19_plot + usa_rsv_22_23_plot 
 
 # save plot
-#save_plot(file = 'output/usa_rsv_hosp_agegroup.pdf', plot = usa_rsv_plots, base_width=15, base_height=9)
+ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_rsv_hosp_agegroup.pdf', plot = usa_rsv_plots, width=15, height=9)
 
 #------------------------------------------------------------
 # USA COVID-19 Plots
@@ -274,57 +274,155 @@ usa_covid19_22_23_plot <- ggplot() +
                         values = c("0-6 mos"="red", '6 mos-4 yr'="pink", "5-17 yr"="orange", '18-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
      xlab('2022-23 Epi Week') +
      ylab('Hospitalization Rate (per 100,000)') +
-     ggtitle("US COVID-19 Hospitalization Rate, by Age Group")
+     ggtitle("US COVID-19 Hospitalization Rate, by Age Group") +
      theme_bw() +
      scale_x_date(breaks = date_breaks, labels = epi) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
 
 usa_covid19_22_23_plot
 
-#save_plot(file = 'output/usa_covid19_hosp_agegroup.pdf', plot = usa_covid19_22_23_plot, base_width=15, base_height=9)
+ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_covid19_hosp_agegroup.pdf', plot = usa_covid19_22_23_plot, width=15, height=9)
 
 #------------------------------------------------------------
 # Setting up Germany data frames
 
-# creating separate data frames for each season and virus
-# flu
-ger_flu_16 <- data_16 %>% 
-     filter(country == "DE" & is.na(hsp_rate_flu) == FALSE) %>% 
-     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu)
+# creating separate data frames for each season 
+ger_16 <- data_16 %>% 
+     filter(country == "DE") %>% 
+     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu, hsp_rate_rsv, hsp_rate_covid19)
 
-ger_flu_17 <- data_17 %>% 
-     filter(country == "DE" & is.na(hsp_rate_flu) == FALSE) %>% 
-     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu)
+ger_17 <- data_17 %>% 
+     filter(country == "DE") %>% 
+     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu, hsp_rate_rsv, hsp_rate_covid19)
 
-ger_flu_18 <- data_18 %>% 
-     filter(country == "DE" & is.na(hsp_rate_flu) == FALSE) %>% 
-     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu)
+ger_18 <- data_18 %>% 
+     filter(country == "DE") %>% 
+     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu, hsp_rate_rsv, hsp_rate_covid19)
 
-ger_flu_22 <- data_22 %>% 
-     filter(country == "DE" & is.na(hsp_rate_flu) == FALSE) %>% 
-     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu)
+ger_22 <- data_22 %>% 
+     filter(country == "DE") %>% 
+     select(id, data_source, country, hemisphere, start_date, week, year, age_group, hsp_rate_flu, hsp_rate_rsv, hsp_rate_covid19)
 
 #------------------------------------------------------------
 # Germany Flu Plots
+# commenting this out until we have final germany data
 
-# flu plot (2016 - 17) 
-date_breaks <- ger_flu_16$start_date
-epi <- ger_flu_16$week
+# # flu plot (2016 - 17) 
+# date_breaks <- ger_16$start_date
+# epi <- ger_16$week
+# 
+# ger_flu_16_17_plot <- ggplot() + 
+#      geom_line(data = filter(ger_16, agg_age_group=='0-4'), aes(x = start_date, y = hsp_rate_flu, color = '0-4 yr')) +
+#      geom_line(data = filter(ger_16, agg_age_group=='5-19'), aes(x = start_date, y = hsp_rate_flu, color='5-19 yr')) +
+#      geom_line(data = filter(ger_16, agg_age_group=='20-49'), aes(x = start_date, y = hsp_rate_flu, color='20-49 yr')) +
+#      geom_line(data = filter(ger_16, agg_age_group=='50-64'), aes(x = start_date, y = hsp_rate_flu, color='50-64 yr')) +
+#      geom_line(data = filter(ger_16, agg_age_group=='65+'), aes(x = start_date, y = hsp_rate_flu, color='65+ yr')) +
+#      geom_line(data = filter(ger_16, agg_age_group=='Total'), aes(x = start_date, y = hsp_rate_flu, color='Total'), linetype="dashed") +
+#      scale_color_manual("", 
+#                         breaks = c('0-4 yr','5-19 yr', '20-49 yr', '50-64 yr', '65+ yr', 'Total'),
+#                         values = c("0-4 yr"="red", "5-19 yr"="orange", '20-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
+#      xlab('2016-17 Epi Week') +
+#      ylab('Hospitalization Rate (per 100,000)') +
+#      ggtitle('Germany Influenza Hospitalization Rate, by Age Group') +
+#      theme_bw() +
+#      scale_x_date(breaks = date_breaks, labels = epi) +
+#      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+#      theme(legend.position='none')
 
-ger_flu_16_17_plot <- ggplot() + 
-     geom_line(data = filter(ger_flu_16, agg_age_group=='0-4'), aes(x = start_date, y = hsp_rate_flu, color = '0-4 yr')) +
-     geom_line(data = filter(ger_flu_16, agg_age_group=='5-19'), aes(x = start_date, y = hsp_rate_flu, color='5-19 yr')) +
-     geom_line(data = filter(ger_flu_16, agg_age_group=='20-49'), aes(x = start_date, y = hsp_rate_flu, color='20-49 yr')) +
-     geom_line(data = filter(ger_flu_16, agg_age_group=='50-64'), aes(x = start_date, y = hsp_rate_flu, color='50-64 yr')) +
-     geom_line(data = filter(ger_flu_16, agg_age_group=='65+'), aes(x = start_date, y = hsp_rate_flu, color='65+ yr')) +
-     geom_line(data = filter(ger_flu_16, agg_age_group=='Total'), aes(x = start_date, y = hsp_rate_flu, color='Total'), linetype="dashed") +
-     scale_color_manual("", 
-                        breaks = c('0-4 yr','5-19 yr', '20-49 yr', '50-64 yr', '65+ yr', 'Total'),
-                        values = c("0-4 yr"="red", "5-19 yr"="orange", '20-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
+
+#------------------------------------------------------------
+# Germany RSV Plots
+
+# rsv plot (2016 - 17)
+date_breaks <- ger_16$start_date
+epi <- ger_16$week
+
+ger_rsv_16_17_plot <- ggplot() +
+     geom_line(data = filter(ger_16, age_group=='A00..04'), aes(x = start_date, y = hsp_rate_rsv, color = '0-4 yr')) +
+     geom_line(data = filter(ger_16, age_group=='A05..09'), aes(x = start_date, y = hsp_rate_rsv, color='5-9 yr')) +
+     geom_line(data = filter(ger_16, age_group=='A10..14'), aes(x = start_date, y = hsp_rate_rsv, color='10-14 yr')) +
+     geom_line(data = filter(ger_16, age_group=='Total'), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     scale_color_manual("",
+                        breaks = c('0-4 yr','5-9 yr', '10-14 yr', 'Total'),
+                        values = c("0-4 yr"="red", "5-9 yr"="orange", '10-14 yr'='blue', 'Total'='black')) +
      xlab('2016-17 Epi Week') +
      ylab('Hospitalization Rate (per 100,000)') +
-     ggtitle('Germany Influenza Hospitalization Rate, by Age Group') +
+     ylim(0, 20) + 
+     ggtitle('Germany RSV Hospitalization Rate, by Age Group') +
      theme_bw() +
      scale_x_date(breaks = date_breaks, labels = epi) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
      theme(legend.position='none')
+
+# rsv plot (2017 - 18)
+date_breaks <- ger_17$start_date
+epi <- ger_17$week
+
+ger_rsv_17_18_plot <- ggplot() +
+     geom_line(data = filter(ger_17, age_group=='A00..04'), aes(x = start_date, y = hsp_rate_rsv, color = '0-4 yr')) +
+     geom_line(data = filter(ger_17, age_group=='A05..09'), aes(x = start_date, y = hsp_rate_rsv, color='5-9 yr')) +
+     geom_line(data = filter(ger_17, age_group=='A10..14'), aes(x = start_date, y = hsp_rate_rsv, color='10-14 yr')) +
+     geom_line(data = filter(ger_17, age_group=='Total'), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     scale_color_manual("",
+                        breaks = c('0-4 yr','5-9 yr', '10-14 yr', 'Total'),
+                        values = c("0-4 yr"="red", "5-9 yr"="orange", '10-14 yr'='blue', 'Total'='black')) +
+     xlab('2017-18 Epi Week') +
+     ylab('') +
+     ylim(0, 20) + 
+     #ggtitle('Germany RSV Hospitalization Rate, by Age Group') +
+     theme_bw() +
+     scale_x_date(breaks = date_breaks, labels = epi) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+     theme(legend.position='none')
+
+# rsv plot (2018 - 19)
+date_breaks <- ger_18$start_date
+epi <- ger_18$week
+
+ger_rsv_18_19_plot <- ggplot() +
+     geom_line(data = filter(ger_18, age_group=='A00..04'), aes(x = start_date, y = hsp_rate_rsv, color = '0-4 yr')) +
+     geom_line(data = filter(ger_18, age_group=='A05..09'), aes(x = start_date, y = hsp_rate_rsv, color='5-9 yr')) +
+     geom_line(data = filter(ger_18, age_group=='A10..14'), aes(x = start_date, y = hsp_rate_rsv, color='10-14 yr')) +
+     geom_line(data = filter(ger_18, age_group=='Total'), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     scale_color_manual("",
+                        breaks = c('0-4 yr','5-9 yr', '10-14 yr', 'Total'),
+                        values = c("0-4 yr"="red", "5-9 yr"="orange", '10-14 yr'='blue', 'Total'='black')) +
+     xlab('2018-19 Epi Week') +
+     ylab('') +
+     ylim(0, 20) + 
+     #ggtitle('Germany RSV Hospitalization Rate, by Age Group') +
+     theme_bw() +
+     scale_x_date(breaks = date_breaks, labels = epi) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+     theme(legend.position='none')
+
+# rsv plot (2022 - 23)
+date_breaks <- ger_22$start_date
+epi <- ger_22$week
+
+ger_rsv_22_23_plot <- ggplot() +
+     geom_line(data = filter(ger_22, age_group=='A00..04'), aes(x = start_date, y = hsp_rate_rsv, color = '0-4 yr')) +
+     geom_line(data = filter(ger_22, age_group=='A05..09'), aes(x = start_date, y = hsp_rate_rsv, color='5-9 yr')) +
+     geom_line(data = filter(ger_22, age_group=='A10..14'), aes(x = start_date, y = hsp_rate_rsv, color='10-14 yr')) +
+     geom_line(data = filter(ger_22, age_group=='Total'), aes(x = start_date, y = hsp_rate_rsv, color='Total'), linetype="dashed") +
+     scale_color_manual("",
+                        breaks = c('0-4 yr','5-9 yr', '10-14 yr', 'Total'),
+                        values = c("0-4 yr"="red", "5-9 yr"="orange", '10-14 yr'='blue', 'Total'='black')) +
+     xlab('2022-23 Epi Week') +
+     ylab('') +
+     ylim(0, 20) + 
+     #ggtitle('Germany RSV Hospitalization Rate, by Age Group') +
+     theme_bw() +
+     scale_x_date(breaks = date_breaks, labels = epi) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+
+# arrange plots
+ger_rsv_plots <- ger_rsv_16_17_plot + 
+     ger_rsv_17_18_plot + 
+     ger_rsv_18_19_plot + 
+     ger_rsv_22_23_plot +
+     plot_layout(ncol = 4)
+
+# save plot
+ggsave(filename = 'output/Fig 04 - Hospitalization by age group/ger_rsv_hosp_agegroup.pdf', plot = ger_rsv_plots, width=15, height=9)
+
