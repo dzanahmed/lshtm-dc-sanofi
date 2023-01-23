@@ -148,7 +148,7 @@ data_graph <-  subset_countries_final %>%
      mutate(week = factor(week,levels = c(31:52,1:30)),
             season = as.factor(season),
             breaks_x = as.numeric(week),
-            label_x = week)
+            label_x = week) 
 
 
 ####  ##############################################
@@ -163,8 +163,8 @@ db_rect <- data_graph %>%
 plot1_flu <-  data_graph %>% 
      ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
      geom_line(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week)  +
-     
+     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week, limits = c(10,42))  +
+    
      # create a rectangle 
      geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
      facet_grid(country ~ ., scales = "free_y", ) 
@@ -200,7 +200,7 @@ flu_nh <- plot1_flu + theme_bw() +
 plot1_rsv <-  data_graph %>% 
      ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
      geom_line(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week)  +
+     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
      
      # create a rectangle 
      geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
