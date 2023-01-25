@@ -4,7 +4,7 @@
 library(dplyr)
 
 # Variable order in merged CSV is sourced from here
-source(file = 'scripts/cleaning/helper.R')
+source(file = 'scripts/cleaning/var_order_merged_csv.R')
 
 # Pull data from this folder
 dir <- "data/premerged_data"
