@@ -31,3 +31,8 @@ FR_premerged_total <- data.frame(
      subtype_b_rate = round((preclean_fran_flu$subtype_b_abs/preclean_fran_flu$denominator)*100000,2),
      subtype_c_rate = NA
 )
+
+FR_premerged_total$hsp_abs_covid <- left_join(preclean_fran_flu, preclean_fran_covid, by = c("year", "week"))$hsp_abs_covid19
+FR_premerged_total$cases_rate_covid19 <- round((FR_premerged_total$hsp_abs_covid/FR_premerged_total$denominator)*100000,2)
+#write_csv(FR_premerged_total, "data/premerged_data/FR/FR_premerged_total.csv")
+
