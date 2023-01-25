@@ -274,33 +274,20 @@ covid_nh <- plot1_covid + theme_bw() +
      theme(strip.placement = "outside",
            strip.background = element_rect(fill="grey90", color="grey50"),
            panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal") +
-     labs(title = "Hospitalization rate for COVID, by year",
-          subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
+           legend.position = "none") +
+     labs(title = "Hospitalization rate for COVID",
+          subtitle = "Northern Hemisphere, 2022–23 season",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
-
-# # Plot only 2022-23, to highlight it
-# rsv_nh_last <- rsv_nh +
-#      geom_line(data = data_graph_last_season,
-#                aes(as.numeric(week),rsv_rate),
-#                color = "#FF66CC",
-#                size = 0.75)
 
 
 # Save
 ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
-     rsv_nh,
-     width=16,
-     height=9
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_NH.png'),
+     covid_nh,
+     width=10,
+     height=6
 )
-
-
-
-
-
 
 
 
@@ -418,6 +405,55 @@ ggsave(
      rsv_sh,
      width=16,
      height=9
+)
+
+####  ##############################################
+####  ########### COVID PLOTS SH    ##################
+####  ##############################################
+
+
+data_graph_sh_covid <-  subset_countries_final %>%
+     filter( hemisphere == "SH", season == "2022-23", data_source != "fluNet") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
+     mutate(week = factor(week,levels = c(8:52,1:7)),
+            season = as.factor(season),
+            breaks_x = as.numeric(week),
+            label_x = week)
+
+# to make the rectangle 
+
+db_rect_covid_sh <- data_graph_sh_covid %>% 
+     group_by(country, week) %>% 
+     filter(week == 40, year == 2022, country == "AUS" | country =="CL")
+
+
+# Graph using face grid
+plot1_covid_sh <-  data_graph_sh_covid %>% 
+     ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
+     geom_line(size = 0.5, linetype = 1) +
+     scale_x_continuous(breaks = data_graph_sh_covid$breaks_x, labels = data_graph_sh_covid$week)  +
+     
+     
+     geom_rect(data = db_rect_covid_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
+     facet_grid(country ~ ., scales = "free_y", ) 
+#facet_wrap(vars(country), scales = "free_y")
+
+covid_sh <- plot1_covid_sh + theme_bw() +
+     theme(strip.placement = "outside",
+           strip.background = element_rect(fill="grey90", color="grey50"),
+           panel.spacing=unit(0.1,"cm"),
+           legend.position = "none") +
+     labs(title = "Hospitalization rate for COVID",
+          subtitle = "Southern Hemisphere, 2022–23 season",
+          x= "Calendar week",
+          y = "hospitalization (per 100,000)")
+
+
+# Save
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_SH.png'),
+     covid_sh,
+     width=10,
+     height=4
 )
 
 
