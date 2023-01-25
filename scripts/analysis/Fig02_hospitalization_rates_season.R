@@ -150,9 +150,11 @@ data_graph <-  subset_countries_final %>%
             season = as.factor(season),
             breaks_x = as.numeric(week),
             label_x = week) 
+axis_nh <- length(unique(data_graph$season))-1
 
-data_graph_last_season <- data_graph %>% 
-     filter(season == "2022-23")
+## To create a thicker line
+# data_graph_last_season <- data_graph %>% 
+#      filter(season == "2022-23")
 
 
 ####  ##############################################
@@ -166,10 +168,12 @@ db_rect <- data_graph %>%
 # Graph using face grid
 plot1_flu <-  data_graph %>% 
      ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(size = 0.7, linetype = 1, alpha = 0.6) +
+     geom_line(aes(linetype = season, size = season))+#size = 0.7, linetype = 1, alpha = 0.6) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week, limits = c(10,42))  +
     # scale_color_manual(values=c('#999999','#E69F00', '#E69F00','#E69F00', '#E69F00')) +
-    # scale_linetype_manual(values=c("twodash", "dotted","twodash", "dotted", "dotted"))+
+     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
+     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+
+     
 
      # create a rectangle 
      geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
@@ -188,19 +192,19 @@ flu_nh <- plot1_flu + theme_bw() +
           y = "hospitalization (per 100,000)",
           caption = "(Epi week from 40 to 20)")
 
-# Plot only 2022-23, to highlight it
-flu_nh_last <- flu_nh +
-     geom_line(data = data_graph_last_season,
-               aes(as.numeric(week),flu_rate),
-               color = "#FF66CC",
-               size = 0.75)
+# # Plot only 2022-23, to highlight it
+# flu_nh_last <- flu_nh +
+#      geom_line(data = data_graph_last_season,
+#                aes(as.numeric(week),flu_rate),
+#                color = "#FF66CC",
+#                size = 0.75)
 
 ##
 
 #Save
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
-     flu_nh_last,
+     flu_nh,
      width=16,
      height=9
 )
@@ -214,9 +218,10 @@ ggsave(
 # Graph using face grid
 plot1_rsv <-  data_graph %>% 
      ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(size = 0.4, linetype = 1) +
+     geom_line(aes(linetype = season, size = season)) +#(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
-     
+     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
+     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
      # create a rectangle 
      geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
      facet_grid(country ~ ., scales = "free_y", ) 
@@ -233,18 +238,18 @@ rsv_nh <- plot1_rsv + theme_bw() +
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
-# Plot only 2022-23, to highlight it
-rsv_nh_last <- rsv_nh +
-     geom_line(data = data_graph_last_season,
-               aes(as.numeric(week),rsv_rate),
-               color = "#FF66CC",
-               size = 0.75)
+# # Plot only 2022-23, to highlight it
+# rsv_nh_last <- rsv_nh +
+#      geom_line(data = data_graph_last_season,
+#                aes(as.numeric(week),rsv_rate),
+#                color = "#FF66CC",
+#                size = 0.75)
 
 
 # Save
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
-     rsv_nh_last,
+     rsv_nh,
      width=16,
      height=9
 )
@@ -264,8 +269,11 @@ data_graph_sh <-  subset_countries_final %>%
             breaks_x = as.numeric(week),
             label_x = week)
 
-data_graph_last_season_sh <- data_graph_sh %>% 
-     filter(season == "2022-23")
+axis_sh <- length(unique(data_graph_sh$season))-1
+
+## To create a thicker line
+# data_graph_last_season_sh <- data_graph_sh %>% 
+#      filter(season == "2022-23")
 
 
 
@@ -283,8 +291,10 @@ db_rect_sh <- data_graph_sh %>%
 plot1_flu_sh <-  data_graph_sh %>% 
      filter(hemisphere == "SH") %>% 
      ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(size = 0.4, linetype = 1) +
+     geom_line(aes(linetype = season, size = season)) + #(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week)  +
+     scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
+     scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+          
      
      # create a rectangle 
      geom_rect(data = db_rect_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
@@ -302,18 +312,18 @@ flu_sh <- plot1_flu_sh + theme(strip.placement = "outside",
           y = "hospitalization (per 100,000)")
 
 
-# Plot only 2022-23, to highlight it
-flu_sh_last <- flu_sh +
-     geom_line(data = data_graph_last_season_sh,
-               aes(as.numeric(week),flu_rate),
-               color = "#FF66CC",
-               size = 0.75)
-
+# # Plot only 2022-23, to highlight it
+# flu_sh_last <- flu_sh +
+#      geom_line(data = data_graph_last_season_sh,
+#                aes(as.numeric(week),flu_rate),
+#                color = "#FF66CC",
+#                size = 0.75)
+# 
 
 # Save
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
-     flu_sh_last,
+     flu_sh,
      width=16,
      height=9
 )
@@ -326,8 +336,10 @@ ggsave(
 plot1_rsv_sh <-  data_graph_sh %>% 
      filter(hemisphere == "SH") %>% 
      ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(size = 0.4, linetype = 1) +
+     geom_line(aes(linetype = season, size = season)) + #(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week)  +
+     scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
+     scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+ 
      
      # create a rectangle 
      geom_rect(data = db_rect_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
@@ -344,17 +356,17 @@ rsv_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
-# Plot only 2022-23, to highlight it
-rsv_sh_last <- rsv_sh +
-     geom_line(data = data_graph_last_season_sh,
-               aes(as.numeric(week),rsv_rate),
-               color = "#FF66CC",
-               size = 0.75)
+# # Plot only 2022-23, to highlight it
+# rsv_sh_last <- rsv_sh +
+#      geom_line(data = data_graph_last_season_sh,
+#                aes(as.numeric(week),rsv_rate),
+#                color = "#FF66CC",
+#                size = 0.75)
 
 # Save
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
-     rsv_sh_last,
+     rsv_sh,
      width=16,
      height=9
 )
