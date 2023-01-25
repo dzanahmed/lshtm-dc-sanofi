@@ -254,6 +254,55 @@ ggsave(
      height=9
 )
 
+####  ##############################################
+####  ########### COVID PLOTS NH    ##################
+####  ##############################################
+
+# Graph using face grid
+plot1_covid <-  data_graph %>% 
+     ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
+     geom_line(aes(linetype = season, size = season)) +#(size = 0.4, linetype = 1) +
+     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
+     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
+     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
+     # create a rectangle 
+     geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
+     facet_grid(country ~ ., scales = "free_y", ) 
+#facet_wrap(vars(country), scales = "free_y")
+
+covid_nh <- plot1_covid + theme_bw() +
+     theme(strip.placement = "outside",
+           strip.background = element_rect(fill="grey90", color="grey50"),
+           panel.spacing=unit(0.1,"cm"),
+           legend.position = "bottom", 
+           legend.direction = "horizontal") +
+     labs(title = "Hospitalization rate for COVID, by year",
+          subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
+          x= "Calendar week",
+          y = "hospitalization (per 100,000)")
+
+# # Plot only 2022-23, to highlight it
+# rsv_nh_last <- rsv_nh +
+#      geom_line(data = data_graph_last_season,
+#                aes(as.numeric(week),rsv_rate),
+#                color = "#FF66CC",
+#                size = 0.75)
+
+
+# Save
+ggsave(
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
+     rsv_nh,
+     width=16,
+     height=9
+)
+
+
+
+
+
+
+
 
 #### ################################################## ####
 #### ########## GRAPH SOUTHERN HEMISPHER ############## ####
