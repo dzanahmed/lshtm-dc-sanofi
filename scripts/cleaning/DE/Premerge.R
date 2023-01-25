@@ -30,7 +30,7 @@ DE_premerged_overall <-
 
 # Now let's build a dataframe for the premerged csv
 
-source(file='scripts/cleaning/helper.R') # Import order of the header columns
+source(file='scripts/cleaning/var_order_merged_csv.R') # Import order of the header columns
 
 DE_premerged_overall$id <- NA # id
 DE_premerged_overall$data_source <- "RKI" # data_source

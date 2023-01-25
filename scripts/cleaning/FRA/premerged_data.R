@@ -2,6 +2,8 @@
 
 preclean_fran_flu<- read_csv("data/processed_data/FRA/france_fluNet.csv")
 preclean_fran_covid<- read_csv("data/processed_data/FRA/france_covid19.csv")
+
+
 FR_premerged_total <- data.frame(
      data_source = ifelse(preclean_fran_flu$origin_source == "NONSENTINEL", "FluNet - Non Sentinel","FluNet - Sentinel" ),
      country = "FR",
@@ -33,6 +35,6 @@ FR_premerged_total <- data.frame(
 )
 
 FR_premerged_total$hsp_abs_covid <- left_join(preclean_fran_flu, preclean_fran_covid, by = c("year", "week"))$hsp_abs_covid19
-FR_premerged_total$cases_rate_covid19 <- round((FR_premerged_total$hsp_abs_covid/FR_premerged_total$denominator)*100000,2)
-#write_csv(FR_premerged_total, "data/premerged_data/FR/FR_premerged_total.csv")
+FR_premerged_total$hsp_rate_covid19 <- round((FR_premerged_total$hsp_abs_covid/FR_premerged_total$denominator)*100000,2)
 
+write_csv(FR_premerged_total, "data/premerged_data/FR_premerged_total.csv")
