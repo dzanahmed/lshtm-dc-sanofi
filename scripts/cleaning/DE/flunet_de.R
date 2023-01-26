@@ -6,16 +6,14 @@
 library(tidyverse)
 
 #----------------------------------------------------------------
-# import FluID and FluNet data
-# FluID
-VIW_FID_EPI <- read_csv("data/raw_data/FluNet/VIW_FID_EPI.csv")
+# import FluID and FluNET data
 
 # FluID has numbers on number of total SARI hospitalizations from 2022 onwards
+VIW_FID_EPI <- read_csv("data/raw_data/FluNet/VIW_FID_EPI.csv")
 
-# FluNet
+# FluNET has influenza and RSV numbers from a surveyed ~1% of the population of Germany
 VIW_FNT <- read_csv("data/raw_data/FluNet/VIW_FNT.csv")
 
-# FluNET has influenza and RSV numbers from a monitored ~1% of the population of Germany
 
 #----------------------------------------------------------------
 # Germany

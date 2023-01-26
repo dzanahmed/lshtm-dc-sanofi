@@ -1,3 +1,46 @@
+library(tidyverse)
+library(stringr)
+
+source(file='scripts/cleaning/var_order_merged_csv.R') # Import order of the header columns
+
+WHO_RKI_Hosp_data <- read_csv(file="data/processed_data/DE/WHO_RKI_Hosp_data.csv")
+RKI_Lab_data <- read_csv(file='data/processed_data/DE/RKI_Lab_data.csv')
+
+RKI_Lab_data$age_group[RKI_Lab_data$age_group=="Total"] <- "ALL"
+RKI_Lab_data$age_group <- str_replace_all(RKI_Lab_data$age_group, "\\..", "-")
+RKI_Lab_data <- RKI_Lab_data[,2:7]
+
+WHO_RKI_Hosp_data <- WHO_RKI_Hosp_data |> select(-c(cases_rate_flu, cases_rate_rsv, cases_rate_covid19))
+
+
+DE_premerged2 <-
+        WHO_RKI_Hosp_data |> full_join(RKI_Lab_data, by = c("year", "week", "age_group")) |> 
+        arrange(year, week, age_group)
+
+DE_premerged2 <- DE_premerged2[, order_header_premerge] 
+
+
+# Split to totals and age-stratified
+DE_premerged2_total <- DE_premerged2 |> filter(age_group=="ALL")
+DE_premerged2_by_age <- DE_premerged2 |> filter(age_group!="ALL")
+
+
+# Export to .csv for premerge
+
+write_csv(DE_premerged2_total, file="data/premerged_data/DE_premerged2_total.csv")
+write_csv(DE_premerged2_by_age, file="data/premerged_data/DE_premerged2_by_age.csv")
+
+
+
+
+
+
+
+# This is old -------------------------------------------------------------
+
+
+
+
 library(tidyr)
 library(dplyr)
 
@@ -78,3 +121,6 @@ DE_premerged_by_age <- DE_premerged_overall |> filter(age_group!="Total")
 
 write_csv(DE_premerged_total, file="data/premerged_data/DE_premerged_total.csv")
 write_csv(DE_premerged_by_age, file="data/premerged_data/DE_premerged_by_age.csv")
+
+
+
