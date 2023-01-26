@@ -143,6 +143,8 @@ subset_countries_final <- subset_countries %>%
 #### ########## GRAPH NORTHERN HEMISPHER ############## ####
 #### ################################################## ####
 
+# Dataset for the northern hemisphere 
+
 data_graph <-  subset_countries_final %>%
      filter(season != "2015-16", hemisphere == "NH", season != "2021-22") %>% 
      #week = factor(week,levels = c(40:52,1:39) original
@@ -150,7 +152,13 @@ data_graph <-  subset_countries_final %>%
             season = as.factor(season),
             breaks_x = as.numeric(week),
             label_x = week) 
+
+data_graph$country[data_graph$country == "DE"] <- "GER"
+
 axis_nh <- length(unique(data_graph$season))-1
+
+average_data_nh <- data_graph %>% 
+     filter(season == "2016-17", season == "2017-18", season == "2018-19")
 
 ## To create a thicker line
 # data_graph_last_season <- data_graph %>% 
@@ -163,7 +171,7 @@ axis_nh <- length(unique(data_graph$season))-1
 # to make the rectangle 
 db_rect <- data_graph %>% 
      group_by(country, week) %>% 
-     filter(week == 40, year == 2017, country == "UK" | country =="DE"|country == "US"|country == "FR")
+     filter(week == 40, year == 2017, country == "UK" | country =="GER"|country == "US"|country == "FR")
 
 # Graph using face grid
 plot1_flu <-  data_graph %>% 
@@ -260,10 +268,11 @@ ggsave(
 
 # Graph using face grid
 plot1_covid <-  data_graph %>% 
+     filter(season == "2022-23") %>% 
      ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
      geom_line(aes(linetype = season, size = season)) +#(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
-     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
+     scale_linetype_manual(values=c(rep("solid", axis_nh), "solid"))+
      scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
      # create a rectangle 
      geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
@@ -298,12 +307,25 @@ ggsave(
 # Data ser
 #week = factor(week,levels = c(20:52,1:19)
 
-data_graph_sh <-  subset_countries_final %>%
-     filter(season != "2015-16", hemisphere == "SH", data_source != "AUS DOH", season != "2021-22") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
-     mutate(week = factor(week,levels = c(8:52,1:7)),
-            season = as.factor(season),
+# data_graph_sh <-  subset_countries_final %>%
+#      filter(season != "2015-16", hemisphere == "SH", data_source != "AUS DOH", season != "2021-22") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
+#      mutate(week = factor(week,levels = c(8:52,1:7)),
+#             season = as.factor(season),
+#             breaks_x = as.numeric(week),
+#             label_x = week)
+data_graph_sh <- subset_countries %>% 
+     filter(hemisphere == "SH", data_source != "AUS DOH") %>% 
+     mutate(season = as.factor(year),
             breaks_x = as.numeric(week),
             label_x = week)
+
+# 
+# data_graph_sh <-  subset_countries_final %>%
+#      filter(season != "2015-16", hemisphere == "SH", data_source != "AUS DOH", season != "2021-22") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
+#      mutate(week = factor(week,levels = c(8:52,1:7)),
+#             season = as.factor(season),
+#             breaks_x = as.numeric(week),
+#             label_x = week)
 
 axis_sh <- length(unique(data_graph_sh$season))-1
 
@@ -333,7 +355,7 @@ plot1_flu_sh <-  data_graph_sh %>%
      scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+          
      
      # create a rectangle 
-     geom_rect(data = db_rect_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
+     geom_rect(data = db_rect_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
      facet_grid(country ~ ., scales = "free_y", ) 
 #facet_wrap(vars(country), scales = "free_y")
 
@@ -343,7 +365,7 @@ flu_sh <- plot1_flu_sh + theme(strip.placement = "outside",
                                   legend.position = "bottom", 
                                   legend.direction = "horizontal") +
      labs(title = "Hospitalization rate for influenza, by year",
-          subtitle = "Southern Hemisphere, 2016-17 through 2022–23 seasons",
+          subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
@@ -378,7 +400,7 @@ plot1_rsv_sh <-  data_graph_sh %>%
      scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+ 
      
      # create a rectangle 
-     geom_rect(data = db_rect_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
+     geom_rect(data = db_rect_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
      facet_grid(country ~ ., scales = "free_y", ) 
 #facet_wrap(vars(country), scales = "free_y")
 
@@ -388,7 +410,7 @@ rsv_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
                                   legend.position = "bottom", 
                                   legend.direction = "horizontal") +
      labs(title = "Hospitalization rate for RSV, by year",
-          subtitle = "Southern Hemisphere, 2016-17 through 2022–23 seasons",
+          subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
@@ -413,9 +435,8 @@ ggsave(
 
 
 data_graph_sh_covid <-  subset_countries_final %>%
-     filter( hemisphere == "SH", season == "2022-23", data_source != "fluNet") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
-     mutate(week = factor(week,levels = c(8:52,1:7)),
-            season = as.factor(season),
+     filter( hemisphere == "SH",  data_source != "fluNet", year == 2022) %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
+     mutate(season = as.factor(year),
             breaks_x = as.numeric(week),
             label_x = week)
 
@@ -433,7 +454,7 @@ plot1_covid_sh <-  data_graph_sh_covid %>%
      scale_x_continuous(breaks = data_graph_sh_covid$breaks_x, labels = data_graph_sh_covid$week)  +
      
      
-     geom_rect(data = db_rect_covid_sh, aes(xmin = 7, xmax = 24, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
+     geom_rect(data = db_rect_covid_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
      facet_grid(country ~ ., scales = "free_y", ) 
 #facet_wrap(vars(country), scales = "free_y")
 
@@ -443,7 +464,7 @@ covid_sh <- plot1_covid_sh + theme_bw() +
            panel.spacing=unit(0.1,"cm"),
            legend.position = "none") +
      labs(title = "Hospitalization rate for COVID",
-          subtitle = "Southern Hemisphere, 2022–23 season",
+          subtitle = "Southern Hemisphere, 2022 season",
           x= "Calendar week",
           y = "hospitalization (per 100,000)")
 
@@ -457,3 +478,11 @@ ggsave(
 )
 
 
+
+#### MEAN ###
+
+z <- data_graph %>% 
+     select(country, week, season, flu_rate)
+z <- unique(z)
+
+z <- pivot_wider(z,names_from = week, values_from = flu_rate )
