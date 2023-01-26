@@ -1,19 +1,15 @@
 # import OurWorldinData COVID-19 data and clean data for
 # France
 
-library(tidyr)
 library(tidyverse)
-library(dplyr)
-library(readr)
-
-setwd("~/Desktop/LSHTM/2491. Data Challenge/Project Analysis")
 
 #----------------------------------------------------------------
 # import dataset
-covid19 <- read_csv("weekly-hospital-admissions-covid.csv")
+covid19 <- read_csv("data/raw_data/FRA/weekly-hospital-admissions-covid.csv")
 
 # FluNet
-VIW_FNT <- read_csv("VIW_FNT.csv")
+VIW_FNT <- read_csv("data/raw_data/FluNet/VIW_FNT.csv")
+
 #----------------------------------------------------------------
 # filter for france data
 france_covid19 <- covid19 %>% 
@@ -49,4 +45,4 @@ var_order <- c("data_source", "country", "hemisphere", "week", "year", "denomina
 france_covid19 <- france_covid19[,var_order]
 
 # save and export
-write_csv(france_covid19, file = "france_covid19.csv")
+write_csv(france_covid19, file = "data/processed_data/FRA/france_covid19.csv")

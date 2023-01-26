@@ -1,0 +1,38 @@
+country,code,year,population,source
+Germany,DE,2016,82521653,Destatis - German Federal Statistical Office
+Germany,DE,2017,82792351,Destatis - German Federal Statistical Office
+Germany,DE,2018,83019213,Destatis - German Federal Statistical Office
+Germany,DE,2019,83166711,Destatis - German Federal Statistical Office
+Germany,DE,2020,83155031,Destatis - German Federal Statistical Office
+Germany,DE,2021,83237124,Destatis - German Federal Statistical Office
+Germany,DE,2022,84079811,Destatis - German Federal Statistical Office
+Germany,DE,2023,84300000,ESTIMATE Destatis - German Federal Statistical Office
+France,FR,2016,66688564,Insee - Institut national de la statistique et des etudes economiques
+France,FR,2017,66883321,Insee - Institut national de la statistique et des etudes economiques
+France,FR,2018,67125071,Insee - Institut national de la statistique et des etudes economiques
+France,FR,2019,67356052,Insee - Institut national de la statistique et des etudes economiques
+France,FR,2020,,
+France,FR,2021,,
+France,FR,2022,67885000,Insee - Institut national de la statistique et des etudes economiques
+France,FR,2023,,
+Australia,AU,2016,24103400,Australian Bureau of Statistics
+Australia,AU,2017,24512600,Australian Bureau of Statistics
+Australia,AU,2018,24884600,Australian Bureau of Statistics
+Australia,AU,2019,25269800,Australian Bureau of Statistics
+Australia,AU,2020,,
+Australia,AU,2021,,
+Australia,AU,2022,25978935,Australian Bureau of Statistics
+Australia,AU,2023,25978935,Australian Bureau of Statistics
+USA,US,2016,320640000,Monthly population estimates - census.gov
+USA,US,2017,322940000,Monthly population estimates - census.gov
+USA,US,2018,324990000,Monthly population estimates - census.gov
+USA,US,2019,326690000,Monthly population estimates - census.gov
+USA,US,2020,"331,449,281",Census.gov
+USA,US,2021,331890000,Monthly population estimates - census.gov
+USA,US,2022,332840000,Monthly population estimates - census.gov
+USA,US,2023,333330000,Monthly population estimates - census.gov
+UK,UK,2017,55619430,ONS
+UK,UK,2018,55977178,ONS
+UK,UK,2019,56286961,ONS
+UK,UK,2022,56550138,ONS
+UK,UK,2023,56550138,ONS

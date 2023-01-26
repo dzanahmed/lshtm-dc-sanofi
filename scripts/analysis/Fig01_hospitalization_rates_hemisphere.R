@@ -18,36 +18,47 @@ breaks_mo <- seq(min(data$start_date), max(data$start_date), by="4 months")
 
 # this is messy 
 
-data |> filter(year < 2021, age_group=="ALL") |> ggplot()+
-     geom_line(mapping = aes(start_date, hsp_rate_flu, color='Influenza')) +
-     geom_line(mapping = aes(start_date, hsp_rate_rsv, color='RSV')) +
-     scale_color_manual("", 
-                        breaks = c('Influenza','RSV'),
-                        values = c("Influenza"="red", "RSV"="orange"))+
-     scale_x_date(
-          date_breaks = "4 weeks",
-          date_minor_breaks = "1 week",
-          date_labels = "%b %Y"
-     ) +
-     scale_y_sqrt() +
-     theme_bw() +
-     theme(axis.text.x = element_text(
-          angle = 90,
-          vjust = 0.5,
-          hjust = 1
-     ))+
-     theme(legend.position = 'none')
+# data |> filter(year < 2021, age_group=="ALL") |> ggplot()+
+#      geom_line(mapping = aes(start_date, hsp_rate_flu, color='Influenza')) +
+#      geom_line(mapping = aes(start_date, hsp_rate_rsv, color='RSV')) +
+#      scale_color_manual("", 
+#                         breaks = c('Influenza','RSV'),
+#                         values = c("Influenza"="red", "RSV"="orange"))+
+#      scale_x_date(
+#           date_breaks = "4 weeks",
+#           date_minor_breaks = "1 week",
+#           date_labels = "%b %Y"
+#      ) +
+#      scale_y_sqrt() +
+#      theme_bw() +
+#      theme(axis.text.x = element_text(
+#           angle = 90,
+#           vjust = 0.5,
+#           hjust = 1
+#      ))+
+#      theme(legend.position = 'none')
 
 ###
+
+
+# 
+# data <- data |> mutate(hsp_rate_flu = 
+#                                case_when(country == "FR" ~ (hsp_abs_flu *100000 /(68000000 * 0.007)),
+#                                          TRUE ~ hsp_rate_flu)) |> 
+#         mutate(hsp_rate_rsv = 
+#                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.007)),
+#                                  TRUE ~ hsp_rate_rsv))
+
 
 Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
      filter(country!="UK" | year!=2020 | week<15) |> 
      ggplot()+
      geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
      geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-     scale_color_manual("",
-                        breaks = c('Influenza','RSV'),
-                        values = c("Influenza"="red", "RSV"="orange"))+
+     geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
+        scale_color_manual("", 
+                           breaks = c('Influenza','RSV','SARS_CoV_2'),
+                           values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
      scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
      facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
      theme_bw() +
@@ -62,7 +73,6 @@ Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="
      plot.title=element_text(hjust=0.5),
      plot.subtitle = element_text(hjust=0.5))+
      theme(legend.position = 'bottom')+
-     scale_y_sqrt()+
      labs(title="Influenza and RSV hospitalizations in the Northern hemisphere, seasons 2016-2019 and 2022-23",
           subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)", caption="Preliminary output Dzan")
 
@@ -73,9 +83,9 @@ Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |>
      ggplot()+
         geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
         geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-        scale_color_manual("",
-                           breaks = c('Influenza','RSV'),
-                           values = c("Influenza"="red", "RSV"="orange"))+
+        scale_color_manual("", 
+                           breaks = c('Influenza','RSV','SARS_CoV_2'),
+                           values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
      scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
      facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
      theme_bw() +

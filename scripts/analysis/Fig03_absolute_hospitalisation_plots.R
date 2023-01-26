@@ -535,45 +535,45 @@ usa_18_19_szn
 
 ## 2019/20 SEASON ## There is no data for this!!
 
-usa_data_19 <- data_19 %>% dplyr::filter(country == 'US')
-usa_data_19 <- usa_data_19 %>% dplyr::filter(age_group == 'ALL')
+#usa_data_19 <- data_19 %>% dplyr::filter(country == 'US')
+#usa_data_19 <- usa_data_19 %>% dplyr::filter(age_group == 'ALL')
 
 #replace denominator with USA population for 2019 == 328.3 million
-usa_data_19$denominator <- 328300000
+#usa_data_19$denominator <- 328300000
 
 #calculate absolute values for flu and rsv based on rates data
-flu_rate_19 <- usa_data_19$hsp_rate_flu
-flu_abs_19 <- floor(flu_rate_19*328300000/100000)
-usa_data_19$hsp_abs_flu <- flu_abs_19
+#flu_rate_19 <- usa_data_19$hsp_rate_flu
+#flu_abs_19 <- floor(flu_rate_19*328300000/100000)
+#usa_data_19$hsp_abs_flu <- flu_abs_19
 
-rsv_rate_19 <- usa_data_19$hsp_rate_rsv
-rsv_abs_19 <- floor(rsv_rate_19*(328300000/100000))
-usa_data_19$hsp_abs_rsv <- rsv_abs_19
+#rsv_rate_19 <- usa_data_19$hsp_rate_rsv
+#rsv_abs_19 <- floor(rsv_rate_19*(328300000/100000))
+#usa_data_19$hsp_abs_rsv <- rsv_abs_19
 
-hosp_total <- flu_abs_19 + rsv_abs_19
-usa_data_19$hsp_abs <- hosp_total
+#hosp_total <- flu_abs_19 + rsv_abs_19
+#usa_data_19$hsp_abs <- hosp_total
 
 # create Epi Week Labels - use UK here to get full season
-date_breaks <- uk_data_19$start_date
-epi <- uk_data_19$week
+#date_breaks <- uk_data_19$start_date
+#epi <- uk_data_19$week
 
 #plot graph
-usa_19_20_szn <- ggplot() + geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=usa_data_19,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
-     scale_color_manual("", 
-                        breaks = c('Influenza','RSV'),
-                        values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2019/20 Season') +
-     theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
+#usa_19_20_szn <- ggplot() + geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
+     #geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
+     #geom_col(data=usa_data_19,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+     #scale_color_manual("", 
+     #                   breaks = c('Influenza','RSV'),
+     #                   values = c("Influenza"="red", "RSV"="orange")) +
+     #scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
+     #xlab('Epi Week') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2019/20 Season') +
+     #theme_bw() +
+     #scale_x_date(breaks = date_breaks,labels=epi) +
      #ylim(0,60000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     theme(legend.position = 'none')
-usa_19_20_szn
+     #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     #theme(legend.position = 'none')
+#usa_19_20_szn
 
 ## 2022/23 SEASON ##
 
