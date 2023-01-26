@@ -34,7 +34,6 @@ merged_data <-
      ), order_header_premerge_epiweeks]
 merged_data <- merged_data |> mutate(id=row_number())
 
-merged_data <- 
 
 # Standardize term for age groups:
 merged_data <- merged_data |> mutate(age_group = case_when(
