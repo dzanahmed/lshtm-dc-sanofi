@@ -1,4 +1,4 @@
-﻿country,code,year,population,source
+country,code,year,population,source
 Germany,DE,2016,82521653,Destatis - German Federal Statistical Office
 Germany,DE,2017,82792351,Destatis - German Federal Statistical Office
 Germany,DE,2018,83019213,Destatis - German Federal Statistical Office
@@ -31,3 +31,8 @@ USA,US,2020,"331,449,281",Census.gov
 USA,US,2021,331890000,Monthly population estimates - census.gov
 USA,US,2022,332840000,Monthly population estimates - census.gov
 USA,US,2023,333330000,Monthly population estimates - census.gov
+UK,UK,2017,55619430,ONS
+UK,UK,2018,55977178,ONS
+UK,UK,2019,56286961,ONS
+UK,UK,2022,56550138,ONS
+UK,UK,2023,56550138,ONS
