@@ -21,14 +21,15 @@ list2env(fileList, envir = .GlobalEnv)
 merged_data <- bind_rows(fileList)
 
 # This is to add dates, based on week of the year
-epiweeks <- read.csv(file = 'data/epiweeks_withdate.csv')
-epiweeks$start_date <- as.Date(epiweeks$start_date)
+epiweeks <- read.csv(file = 'data/epi_weeks.csv')
+epiweeks$epi_dates <- as.Date(epiweeks$epi_dates)
+epiweeks <- epiweeks |> dplyr::rename("week"=epi_wk_no)
 
 # Merge with epiweeks and reorder merged_data
 merged_data <- merge(merged_data, epiweeks)
 merged_data <-
      merged_data[order(
-          merged_data$start_date,
+          merged_data$epi_dates,
           merged_data$data_source,
           merged_data$age_group
      ), order_header_premerge_epiweeks]
