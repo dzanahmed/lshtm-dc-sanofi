@@ -74,14 +74,21 @@ US_RSV_premerged_total <- us_rsv_overall |> select(
 
 # Age stratified ----------------------------------------------------------
 
+<<<<<<< HEAD
 unique(US_RSV_premerged_age_groups$age_group)
 
 # RSV age stratified - rename age groups for easier merging with other age stratified files
+=======
+unique(US_Flu_premerged_age_groups$age_group)
+unique(US_RSV_premerged_age_groups$age_group)
+
+>>>>>>> 5ebfa01b4e568eaacdb0f25c17fdfebcf042278e
 US_RSV_premerged_age_groups <-
         US_RSV_premerged_age_groups |> 
         mutate(age_group = str_replace_all(age_group, c("----" = "", " years" = ""))) |> 
         mutate(age_group = case_when(age_group=="18+ (Adults)" ~ "18+", 
                                      age_group=="0-17 (Children)" ~ "0-17",
+<<<<<<< HEAD
                                      age_group=="1-<2" ~ "1-2",
                                      age_group=="0-<6 months" ~ "0-0.5",
                                      age_group=="6-<12 months" ~ "0.5-1",
