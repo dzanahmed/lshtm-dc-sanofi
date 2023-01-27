@@ -13,62 +13,62 @@ rm(us_covid, us_flu, us_rsv) # less items in env
 # Flu
 
 US_Flu_premerged_age_groups <- us_flu_age |> select(
-     data_source = NETWORK,
-     year = `MMWR-YEAR`,
-     week = `MMWR-WEEK`,
-     age_group = `AGE CATEGORY`,
-     hsp_rate_flu = `WEEKLY RATE`
+        data_source = NETWORK,
+        year = `MMWR-YEAR`,
+        week = `MMWR-WEEK`,
+        age_group = `AGE CATEGORY`,
+        hsp_rate_flu = `WEEKLY RATE`
 )
 
 US_Flu_premerged_total <- us_flu_overall |> select(
-     data_source = NETWORK,
-     year = `MMWR-YEAR`,
-     week = `MMWR-WEEK`,
-     age_group = `AGE CATEGORY`,
-     hsp_rate_flu = `WEEKLY RATE`
+        data_source = NETWORK,
+        year = `MMWR-YEAR`,
+        week = `MMWR-WEEK`,
+        age_group = `AGE CATEGORY`,
+        hsp_rate_flu = `WEEKLY RATE`
 )
 
 # COVID-19 ----------------------------------------------------------------
 
 US_COVID_premerged_age_groups <- us_covid_age |> select(
-     data_source = NETWORK,
-     year = `MMWR-YEAR`,
-     week = `MMWR-WEEK`,
-     age_group = `AGE CATEGORY`,
-     hsp_rate_covid19 = `WEEKLY RATE`
+        data_source = NETWORK,
+        year = `MMWR-YEAR`,
+        week = `MMWR-WEEK`,
+        age_group = `AGE CATEGORY`,
+        hsp_rate_covid19 = `WEEKLY RATE`
 )
 
 US_COVID_premerged_total <- us_covid_overall |> select(
-     data_source = NETWORK,
-     year = `MMWR-YEAR`,
-     week = `MMWR-WEEK`,
-     age_group = `AGE CATEGORY`,
-     hsp_rate_covid19 = `WEEKLY RATE`
+        data_source = NETWORK,
+        year = `MMWR-YEAR`,
+        week = `MMWR-WEEK`,
+        age_group = `AGE CATEGORY`,
+        hsp_rate_covid19 = `WEEKLY RATE`
 )
 
 
 # RSV ---------------------------------------------------------------------
 
 US_RSV_premerged_age_groups <- us_rsv_age |> select(
-     data_source = State,
-     year = Season,
-     week = `MMWR Week`,
-     age_group = `Age Category`,
-     hsp_rate_rsv = Rate
+        data_source = State,
+        year = Season,
+        week = `MMWR Week`,
+        age_group = `Age Category`,
+        hsp_rate_rsv = Rate
 ) |> mutate(week = as.numeric(week)) |> mutate(year = case_when(
-     week >= 40 ~ substr(year, start = 1, stop = 4),
-     week < 25 ~ substr(year, start = 6, stop = 9)
+        week >= 40 ~ substr(year, start = 1, stop = 4),
+        week < 25 ~ substr(year, start = 6, stop = 9)
 )) |> mutate(year = as.numeric(year))
 
 US_RSV_premerged_total <- us_rsv_overall |> select(
-     data_source = State,
-     year = Season,
-     week = `MMWR Week`,
-     age_group = `Age Category`,
-     hsp_rate_rsv = Rate
+        data_source = State,
+        year = Season,
+        week = `MMWR Week`,
+        age_group = `Age Category`,
+        hsp_rate_rsv = Rate
 ) |> mutate(week = as.numeric(week)) |> mutate(year = case_when(
-     week >= 40 ~ substr(year, start = 1, stop = 4),
-     week < 25 ~ substr(year, start = 6, stop = 9)
+        week >= 40 ~ substr(year, start = 1, stop = 4),
+        week < 25 ~ substr(year, start = 6, stop = 9)
 )) |> mutate(year = as.numeric(year))
 
 
@@ -98,7 +98,7 @@ US_Flu_premerged_age_groups <- US_Flu_premerged_age_groups |>
                                      age_group=="< 18" ~ "0-17",
                                      age_group=="5-11 " ~ "5-11",
                                      TRUE ~ age_group))
- 
+
 unique(US_Flu_premerged_age_groups$age_group)
 
 unique((US_COVID_premerged_age_groups$age_group)) 
@@ -154,21 +154,21 @@ write_csv(US_premerged_age_groups, file="data/premerged_data/US_premerged_age_gr
 # Totals ------------------------------------------------------------------
 
 US_premerged_total <-
-     bind_rows(US_Flu_premerged_total,
-               US_RSV_premerged_total,
-               US_COVID_premerged_total) |> mutate(
-                    hsp_rate_covid19 = as.numeric(hsp_rate_covid19),
-                    hsp_rate_flu = as.numeric(hsp_rate_flu)
-               )
+        bind_rows(US_Flu_premerged_total,
+                  US_RSV_premerged_total,
+                  US_COVID_premerged_total) |> mutate(
+                          hsp_rate_covid19 = as.numeric(hsp_rate_covid19),
+                          hsp_rate_flu = as.numeric(hsp_rate_flu)
+                  )
 
 US_premerged_total <- US_premerged_total |> select(-data_source) |>
-     pivot_longer(
-          names_to = "pathogen",
-          cols = c(hsp_rate_flu,
-                   hsp_rate_covid19,
-                   hsp_rate_rsv),
-          values_to = "weekly_rate"
-     ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
+        pivot_longer(
+                names_to = "pathogen",
+                cols = c(hsp_rate_flu,
+                         hsp_rate_covid19,
+                         hsp_rate_rsv),
+                values_to = "weekly_rate"
+        ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
 
 
 US_premerged_total$id <- NA
