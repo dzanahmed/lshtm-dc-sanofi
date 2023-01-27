@@ -42,4 +42,4 @@ merged_data <- merged_data |> mutate(age_group = case_when(
 ))
 
 # Write a CSV
-readr::write_csv(merged_data, 'data/merged_data/merged_data.csv')
+readr::write_csv(merged_data, 'data/merged_data/merged_data2.csv')

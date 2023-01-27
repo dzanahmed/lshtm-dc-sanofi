@@ -1,7 +1,7 @@
 library(tidyverse)
 library(lubridate)
 
-data <- read.csv(file='data/merged_data/merged_data.csv')
+data <- read.csv(file='data/merged_data/merged_data2.csv')
 
 # Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
 # (complete time series for full time period: 2016 - 2023)
@@ -40,13 +40,13 @@ breaks_mo <- seq(min(data$start_date), max(data$start_date), by="4 months")
 
 ###
 
-
-# 
-# data <- data |> mutate(hsp_rate_flu = 
-#                                case_when(country == "FR" ~ (hsp_abs_flu *100000 /(68000000 * 0.007)),
-#                                          TRUE ~ hsp_rate_flu)) |> 
-#         mutate(hsp_rate_rsv = 
-#                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.007)),
+#  Modification for France - not sure if applicable
+# #
+# data <- data |> mutate(hsp_rate_flu =
+#                                case_when(country == "FR" ~ (hsp_abs_flu *100000 /(68000000 * 0.3)),
+#                                          TRUE ~ hsp_rate_flu)) |>
+#         mutate(hsp_rate_rsv =
+#                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.3)),
 #                                  TRUE ~ hsp_rate_rsv))
 
 
@@ -79,10 +79,11 @@ Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="
 Figure_1_NH
 
 Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |> 
-     filter(data_source!="AUS DOH") |> 
-     ggplot()+
+     #filter(data_source!="AUS DOH") |> 
+        ggplot()+
         geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
         geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
+        #geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
         scale_color_manual("", 
                            breaks = c('Influenza','RSV','SARS_CoV_2'),
                            values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
@@ -108,12 +109,13 @@ Figure_1_SH
 Figure_1_Both <- data |> filter(age_group=="ALL") |> 
      filter(data_source!="AUS DOH", data_source!="FluNet - Sentinel") |> 
      filter(country!="UK" | year!=2020 | week<15) |> 
-     ggplot()+
+        ggplot()+
         geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
         geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-        scale_color_manual("",
-                           breaks = c('Influenza','RSV'),
-                           values = c("Influenza"="red", "RSV"="orange"))+
+        geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
+        scale_color_manual("", 
+                           breaks = c('Influenza','RSV','SARS_CoV_2'),
+                           values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
      scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
      facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
      theme_bw() +
