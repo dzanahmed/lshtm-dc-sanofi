@@ -1,15 +1,18 @@
 library(tidyverse)
+library(stringr)
 
-source(file = 'scripts/cleaning/helper.R')
+# For template and variable order
+source(file = 'scripts/cleaning/var_order_merged_csv.R')
 
 source(file = 'scripts/cleaning/US/Script_COVID.R')
 source(file = 'scripts/cleaning/US/Script_Flu.R')
 source(file = 'scripts/cleaning/US/Script_RSV.R')
-rm(db_covid, db_flu, db_rsv) # less items in env
+rm(us_covid, us_flu, us_rsv) # less items in env
+
 
 # Flu
 
-US_Flu_premerged_age_groups <- db_flu_age |> select(
+US_Flu_premerged_age_groups <- us_flu_age |> select(
      data_source = NETWORK,
      year = `MMWR-YEAR`,
      week = `MMWR-WEEK`,
@@ -17,7 +20,7 @@ US_Flu_premerged_age_groups <- db_flu_age |> select(
      hsp_rate_flu = `WEEKLY RATE`
 )
 
-US_Flu_premerged_total <- db_flu_overall |> select(
+US_Flu_premerged_total <- us_flu_overall |> select(
      data_source = NETWORK,
      year = `MMWR-YEAR`,
      week = `MMWR-WEEK`,
@@ -27,7 +30,7 @@ US_Flu_premerged_total <- db_flu_overall |> select(
 
 # COVID-19 ----------------------------------------------------------------
 
-US_COVID_premerged_age_groups <- db_covid_age |> select(
+US_COVID_premerged_age_groups <- us_covid_age |> select(
      data_source = NETWORK,
      year = `MMWR-YEAR`,
      week = `MMWR-WEEK`,
@@ -35,7 +38,7 @@ US_COVID_premerged_age_groups <- db_covid_age |> select(
      hsp_rate_covid19 = `WEEKLY RATE`
 )
 
-US_COVID_premerged_total <- db_covid_overall |> select(
+US_COVID_premerged_total <- us_covid_overall |> select(
      data_source = NETWORK,
      year = `MMWR-YEAR`,
      week = `MMWR-WEEK`,
@@ -46,7 +49,7 @@ US_COVID_premerged_total <- db_covid_overall |> select(
 
 # RSV ---------------------------------------------------------------------
 
-US_RSV_premerged_age_groups <- db_rsv_age |> select(
+US_RSV_premerged_age_groups <- us_rsv_age |> select(
      data_source = State,
      year = Season,
      week = `MMWR Week`,
@@ -57,7 +60,7 @@ US_RSV_premerged_age_groups <- db_rsv_age |> select(
      week < 25 ~ substr(year, start = 6, stop = 9)
 )) |> mutate(year = as.numeric(year))
 
-US_RSV_premerged_total <- db_rsv_overall |> select(
+US_RSV_premerged_total <- us_rsv_overall |> select(
      data_source = State,
      year = Season,
      week = `MMWR Week`,
@@ -70,6 +73,47 @@ US_RSV_premerged_total <- db_rsv_overall |> select(
 
 
 # Age stratified ----------------------------------------------------------
+
+unique(US_RSV_premerged_age_groups$age_group)
+
+# RSV age stratified - rename age groups for easier merging with other age stratified files
+US_RSV_premerged_age_groups <-
+        US_RSV_premerged_age_groups |> 
+        mutate(age_group = str_replace_all(age_group, c("----" = "", " years" = ""))) |> 
+        mutate(age_group = case_when(age_group=="18+ (Adults)" ~ "18+", 
+                                     age_group=="0-17 (Children)" ~ "0-17",
+                                     age_group=="1-<2" ~ "1-2",
+                                     age_group=="0-<6 months" ~ "0-0.5",
+                                     age_group=="6-<12 months" ~ "0.5-1",
+                                     TRUE ~ age_group))
+
+unique(US_RSV_premerged_age_groups$age_group)
+
+unique(US_Flu_premerged_age_groups$age_group)
+
+# Flu age stratified - rename age groups for easier merging with other age stratified files
+US_Flu_premerged_age_groups <- US_Flu_premerged_age_groups |> 
+        mutate(age_group=str_replace_all(age_group, " yr", "")) |> 
+        mutate(age_group = case_when(age_group==">= 18" ~ "18+", 
+                                     age_group=="< 18" ~ "0-17",
+                                     age_group=="5-11 " ~ "5-11",
+                                     TRUE ~ age_group))
+ 
+unique(US_Flu_premerged_age_groups$age_group)
+
+unique((US_COVID_premerged_age_groups$age_group)) 
+
+US_COVID_premerged_age_groups <- US_COVID_premerged_age_groups |>  
+        mutate(age_group=str_replace_all(age_group, " yr", "")) |> 
+        mutate(age_group = case_when(age_group==">= 18" ~ "18+", 
+                                     age_group=="< 18" ~ "0-17",
+                                     age_group=="5-11 " ~ "5-11",
+                                     age_group=="0-<6 months" ~ "0-0.5",
+                                     age_group=="6 months-4" ~ "0.5-4",
+                                     TRUE ~ age_group))
+
+
+unique((US_COVID_premerged_age_groups$age_group)) 
 
 # This needs more work as age groups for RSV are not the same as for Flu and COVID. 
 
