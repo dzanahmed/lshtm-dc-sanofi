@@ -1,7 +1,7 @@
 # Read in template
 # This to import merging template into env for variable structure
 
-template <- read_csv(file='data/template.csv')
+template <- read.csv(file='data/template.csv')
 
 # This is to set the order of vars in csvs
 
@@ -36,7 +36,7 @@ order_header_premerge <- c(
      "subtype_c_rate"
 )
 
-order_header_premerge_epiweeks <- c(order_header_premerge, "start_date")
+order_header_premerge_epiweeks <- c(order_header_premerge, "epi_dates")
 
 var_type_header <- c(
         id = "integer",
