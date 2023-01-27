@@ -4,192 +4,32 @@ library(stringr)
 # For template and variable order
 source(file = 'scripts/cleaning/var_order_merged_csv.R')
 
+us_flu <- read_csv(file='data/processed_data/US/US_Flu.csv')
+us_rsv <- read_csv(file='data/processed_data/US/US_RSV.csv')
+us_covid <- read_csv(file='data/processed_data/US/US_COVID.csv')
 
-# Flu
+unique(us_covid$age_group)
 
-US_Flu_premerged_age_groups <- us_flu_age |> select(
-        data_source = NETWORK,
-        year = `MMWR-YEAR`,
-        week = `MMWR-WEEK`,
-        age_group = `AGE CATEGORY`,
-        hsp_rate_flu = `WEEKLY RATE`
-)
+# List dataframes, then drop first column (data source - as they are all CDC data)
+us_data <- list(us_flu, us_rsv, us_covid)
+us_data <- lapply(us_data, function(x){x[,-1]})
 
-US_Flu_premerged_total <- us_flu_overall |> select(
-        data_source = NETWORK,
-        year = `MMWR-YEAR`,
-        week = `MMWR-WEEK`,
-        age_group = `AGE CATEGORY`,
-        hsp_rate_flu = `WEEKLY RATE`
-)
+# Full join on time and age groups
+us_data <- us_data |> reduce(full_join, by=c('year','week','age_group'))
 
-# COVID-19 ----------------------------------------------------------------
+# Join with template for all premerge variables, set order
+us_data <- merge(us_data, template, all.x=TRUE, all.y=TRUE)
+us_data <- us_data[, order_header_premerge]
 
-US_COVID_premerged_age_groups <- us_covid_age |> select(
-        data_source = NETWORK,
-        year = `MMWR-YEAR`,
-        week = `MMWR-WEEK`,
-        age_group = `AGE CATEGORY`,
-        hsp_rate_covid19 = `WEEKLY RATE`
-)
+# Set uniform CSV values
+us_data$data_source <- "CDC FluSurv-Net/RSV-NET/COVID-NET"
+us_data$country <- "US"
+us_data$hemisphere <- "NH"
 
-US_COVID_premerged_total <- us_covid_overall |> select(
-        data_source = NETWORK,
-        year = `MMWR-YEAR`,
-        week = `MMWR-WEEK`,
-        age_group = `AGE CATEGORY`,
-        hsp_rate_covid19 = `WEEKLY RATE`
-)
-
-
-# RSV ---------------------------------------------------------------------
-
-US_RSV_premerged_age_groups <- us_rsv_age |> select(
-        data_source = State,
-        year = Season,
-        week = `MMWR Week`,
-        age_group = `Age Category`,
-        hsp_rate_rsv = Rate
-) |> mutate(week = as.numeric(week)) |> mutate(year = case_when(
-        week >= 40 ~ substr(year, start = 1, stop = 4),
-        week < 25 ~ substr(year, start = 6, stop = 9)
-)) |> mutate(year = as.numeric(year))
-
-US_RSV_premerged_total <- us_rsv_overall |> select(
-        data_source = State,
-        year = Season,
-        week = `MMWR Week`,
-        age_group = `Age Category`,
-        hsp_rate_rsv = Rate
-) |> mutate(week = as.numeric(week)) |> mutate(year = case_when(
-        week >= 40 ~ substr(year, start = 1, stop = 4),
-        week < 25 ~ substr(year, start = 6, stop = 9)
-)) |> mutate(year = as.numeric(year))
-
-
-# Age stratified ----------------------------------------------------------
-
-unique(US_RSV_premerged_age_groups$age_group)
-
-# RSV age stratified - rename age groups for easier merging with other age stratified files
-US_RSV_premerged_age_groups <-
-        US_RSV_premerged_age_groups |> 
-        mutate(age_group = str_replace_all(age_group, c("----" = "", " years" = ""))) |> 
-        mutate(age_group = case_when(age_group=="18+ (Adults)" ~ "18+", 
-                                     age_group=="0-17 (Children)" ~ "0-17",
-                                     age_group=="1-<2" ~ "1-2",
-                                     age_group=="0-<6 months" ~ "0-0.5",
-                                     age_group=="6-<12 months" ~ "0.5-1",
-                                     TRUE ~ age_group))
-
-unique(US_RSV_premerged_age_groups$age_group)
-
-unique(US_Flu_premerged_age_groups$age_group)
-
-# Flu age stratified - rename age groups for easier merging with other age stratified files
-US_Flu_premerged_age_groups <- US_Flu_premerged_age_groups |> 
-        mutate(age_group=str_replace_all(age_group, " yr", "")) |> 
-        mutate(age_group = case_when(age_group==">= 18" ~ "18+", 
-                                     age_group=="< 18" ~ "0-17",
-                                     age_group=="5-11 " ~ "5-11",
-                                     TRUE ~ age_group))
-
-unique(US_Flu_premerged_age_groups$age_group)
-
-unique((US_COVID_premerged_age_groups$age_group)) 
-
-US_COVID_premerged_age_groups <- US_COVID_premerged_age_groups |>  
-        mutate(age_group=str_replace_all(age_group, " yr", "")) |> 
-        mutate(age_group = case_when(age_group==">= 18" ~ "18+", 
-                                     age_group=="< 18" ~ "0-17",
-                                     age_group=="5-11 " ~ "5-11",
-                                     age_group=="0-<6 months" ~ "0-0.5",
-                                     age_group=="6 months-4" ~ "0.5-4",
-                                     TRUE ~ age_group))
-
-
-unique((US_COVID_premerged_age_groups$age_group)) 
-
-# This needs more work as age groups for RSV are not the same as for Flu and COVID. 
-
-US_premerged_age_groups2 <- merge(
-        US_Flu_premerged_age_groups,
-        US_RSV_premerged_age_groups, 
-        by = c("year", "week", "age_group"),
-        all.x=TRUE,
-        all.y=TRUE)
-
-US_premerged_age_groups2 <- merge(US_premerged_age_groups2,
-                                  US_COVID_premerged_age_groups,
-                                  by = c("year", "week", "age_group"),
-                                  all.x=TRUE,
-                                  all.y=TRUE)
-
-US_premerged_age_groups <-
-        bind_rows(
-                US_Flu_premerged_age_groups,
-                US_RSV_premerged_age_groups,
-                US_COVID_premerged_age_groups
-        ) |> mutate(
-                hsp_rate_covid19 = as.numeric(hsp_rate_covid19),
-                hsp_rate_flu = as.numeric(hsp_rate_flu)
-        )
-
-US_premerged_age_groups <- US_premerged_age_groups |> select(-data_source) |>
-        pivot_longer(
-                names_to = "pathogen",
-                cols = c(hsp_rate_flu,
-                         hsp_rate_covid19,
-                         hsp_rate_rsv),
-                values_to = "weekly_rate"
-        ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
-
-US_premerged_age_groups$id <- NA
-US_premerged_age_groups$data_source <- "CDC" # data_source
-US_premerged_age_groups$country <- "US" # country
-US_premerged_age_groups$hemisphere <- "NH"# hemisphere
-US_premerged_age_groups$hsp_rate <- NA # hsp_rate
-
-# These are all set to NA as US provides weekly incidence rate reports
-US_premerged_age_groups[order_header_premerge[12:28]] <- NA
-
-# Set the order in the CSV
-US_premerged_age_groups <- US_premerged_age_groups[, order_header_premerge]
-
-# Write CSV
-write_csv(US_premerged_age_groups, file="data/premerged_data/US_premerged_age_groups.csv")
-
-# Totals ------------------------------------------------------------------
-
-US_premerged_total <-
-        bind_rows(US_Flu_premerged_total,
-                  US_RSV_premerged_total,
-                  US_COVID_premerged_total) |> mutate(
-                          hsp_rate_covid19 = as.numeric(hsp_rate_covid19),
-                          hsp_rate_flu = as.numeric(hsp_rate_flu)
-                  )
-
-US_premerged_total <- US_premerged_total |> select(-data_source) |>
-        pivot_longer(
-                names_to = "pathogen",
-                cols = c(hsp_rate_flu,
-                         hsp_rate_covid19,
-                         hsp_rate_rsv),
-                values_to = "weekly_rate"
-        ) |> drop_na() |> pivot_wider(names_from = pathogen, values_from = weekly_rate)
-
-
-US_premerged_total$id <- NA
-US_premerged_total$data_source <- "CDC" # data_source
-US_premerged_total$country <- "US" # country
-US_premerged_total$hemisphere <- "NH"# hemisphere
-US_premerged_total$hsp_rate <- NA # hsp_rate
-
-# These are all set to NA as US provides weekly incidence rate reports
-US_premerged_total[order_header_premerge[12:28]] <- NA
-
-# Set the order in the CSV
-US_premerged_total <- US_premerged_total[, order_header_premerge]
+# Age-aggregated and age-stratified
+US_premerged_total <- us_data |> filter(age_group=="ALL")
+US_premerged_by_age <- us_data |> filter(age_group!="ALL")
 
 # Write CSV
 write_csv(US_premerged_total, file="data/premerged_data/US_premerged_total.csv")
+write_csv(US_premerged_by_age, file="data/premerged_data/US_premerged_by_age.csv")
