@@ -21,10 +21,6 @@ years <- c(2016:2019, 2022,2023)
 
 source(file="scripts/cleaning/var_order_merged_csv.R")
 
-epiweeks <- read_csv(file = 'data/epi_weeks.csv')
-
-epiweeks <- epiweeks |> rename("Datum" = epi_dates, "week" = epi_wk_no)
-
 # WHO Data: FluID + FluNet ------------------------------------------------
 
 # Hospitalization rate for SARI for all age groups calculated here in hsp_rate variable
