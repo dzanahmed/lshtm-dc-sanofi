@@ -4,11 +4,6 @@ library(stringr)
 # For template and variable order
 source(file = 'scripts/cleaning/var_order_merged_csv.R')
 
-source(file = 'scripts/cleaning/US/Script_COVID.R')
-source(file = 'scripts/cleaning/US/Script_Flu.R')
-source(file = 'scripts/cleaning/US/Script_RSV.R')
-rm(us_covid, us_flu, us_rsv) # less items in env
-
 
 # Flu
 
@@ -116,6 +111,19 @@ US_COVID_premerged_age_groups <- US_COVID_premerged_age_groups |>
 unique((US_COVID_premerged_age_groups$age_group)) 
 
 # This needs more work as age groups for RSV are not the same as for Flu and COVID. 
+
+US_premerged_age_groups2 <- merge(
+        US_Flu_premerged_age_groups,
+        US_RSV_premerged_age_groups, 
+        by = c("year", "week", "age_group"),
+        all.x=TRUE,
+        all.y=TRUE)
+
+US_premerged_age_groups2 <- merge(US_premerged_age_groups2,
+                                  US_COVID_premerged_age_groups,
+                                  by = c("year", "week", "age_group"),
+                                  all.x=TRUE,
+                                  all.y=TRUE)
 
 US_premerged_age_groups <-
         bind_rows(

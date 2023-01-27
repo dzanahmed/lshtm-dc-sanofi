@@ -1,37 +1,39 @@
 # US COVID-19 Cleaning
-
-# 2023-01-15 
 # Author: Dzan
 
-library(readr)
-library(dplyr)
+library(tidyverse)
+library(stringr)
 
 us_covid <- read_csv("data/raw_data/US/COVID-19Surveillance_All_Data.csv")
 
 years <- c(2022, 2023)
 
+# Selet only aggregated data from selected years
 us_covid <- us_covid |> filter(`NETWORK` == "COVID-NET",
                            `SEX` == "Overall",
                            `RACE` == "Overall",
                            `MMWR-YEAR` %in% years)
 
-# Stratified by age
+# Select only variables of interest and rename them for consistency
+us_covid <- us_covid |> select(
+     data_source = NETWORK,
+     year = `MMWR-YEAR`,
+     week = `MMWR-WEEK`,
+     age_group = `AGE CATEGORY`,
+     hsp_rate_covid19 = `WEEKLY RATE`
+) 
 
-us_covid_age <- us_covid |> filter(`AGE CATEGORY`!="Overall")
+# Rename age groups for easier merging with other age stratified files
+us_covid <- us_covid |> mutate(age_group = case_when(age_group==">= 18" ~ "18+", 
+                             age_group=="< 18" ~ "0-17",
+                             age_group=="5-11 " ~ "5-11",
+                             age_group=="0-<6 months" ~ "0-0.5",
+                             age_group=="6 months-4" ~ "0.5-4",
+                             age_group=="Overall" ~ "ALL",
+                             TRUE ~ age_group))
 
-#    Dzan: Further work is needed here to organize age groups.
+# Drop empty values
+us_covid <- us_covid |> filter(hsp_rate_covid19!="null")
 
-unique(us_covid_age$`AGE CATEGORY`) # Preview groups
-
-# Some columns will have to be dropped
-
-# Overall
-
-us_covid_overall <- us_covid |> filter(`AGE CATEGORY`=="Overall")
-
-# Dzan: NAs in Age category are for weeks that haven't happened yet
-
-# Export CSV --------------------------------------------------------------
-
-write_csv(us_covid_age, 'data/processed_data/US/US_CDC_COVID_age.csv')
-write_csv(us_covid_overall, 'data/processed_data/US/US_CDC_COVID_overall.csv')
+# Export CSV
+write_csv(us_covid, 'data/processed_data/US/US_COVID.csv')

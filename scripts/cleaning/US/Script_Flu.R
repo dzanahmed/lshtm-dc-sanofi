@@ -1,37 +1,44 @@
 # US Flu Cleaning
-
-# 2023-01-15 
 # Author: Dzan
 
-library(readr)
-library(dplyr)
+library(tidyverse)
+library(stringr)
 
 us_flu <- read_csv("data/raw_data/US/FluSurveillance_Custom_Download_Data.csv")
 
-# Not necessary here, specified during raw data extraction
+# Not necessary to declare years here, specified during raw data extraction
 # years <- c("2016-2017", "2017-2018", "2018-2019", "2022-2023")
 
+# Aggregated sex and race data only
 us_flu <- us_flu |> filter(`SEX CATEGORY` == "Overall", 
                       `RACE CATEGORY` == "Overall")
 
-# Stratified by age
+# Select only variables of interest and rename them for consistency
+us_flu <- us_flu |> select(
+     data_source = NETWORK,
+     year = `MMWR-YEAR`,
+     week = `MMWR-WEEK`,
+     age_group = `AGE CATEGORY`,
+     hsp_rate_flu = `WEEKLY RATE`
+)
 
-us_flu_age <- us_flu |> filter(`AGE CATEGORY`!="Overall")
+# Flu age stratified - rename age groups for easier merging with other age stratified files
+us_flu <-
+     us_flu |> mutate(age_group = str_replace_all(age_group, c("----" = "", " yr" = ""))) |>
+     mutate(
+          age_group = case_when(
+               age_group == ">= 18" ~ "18+",
+               age_group == "< 18" ~ "0-17",
+               age_group == "5-11 " ~ "5-11",
+               age_group == "0-<6 months" ~ "0-0.5",
+               age_group == "6 months-4" ~ "0.5-4",
+               age_group == "Overall" ~ "ALL",
+               TRUE ~ age_group
+          )
+     )
 
-#    Dzan: Further work is needed here to organize age groups.
+# Drop empty rows
+us_flu <- us_flu |> filter(hsp_rate_flu!="null")
 
-unique(us_flu_age$`AGE CATEGORY`) # Preview groups
-
-#    Some columns will have to be dropped
-
-# Overall
-
-us_flu_overall <- us_flu |> filter(`AGE CATEGORY`=="Overall")
-
-
-# Export CSV --------------------------------------------------------------
-
-write_csv(us_flu_age, 'data/processed_data/US/US_CDC_Flu_age.csv')
-
-write_csv(us_flu_overall, 'data/processed_data/US/US_CDC_Flu_overall.csv')
-
+# Export CSV
+write_csv(us_flu, 'data/processed_data/US/US_Flu.csv')
