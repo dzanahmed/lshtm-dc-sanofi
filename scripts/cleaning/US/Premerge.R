@@ -9,7 +9,6 @@ source(file = 'scripts/cleaning/US/Script_Flu.R')
 source(file = 'scripts/cleaning/US/Script_RSV.R')
 rm(us_covid, us_flu, us_rsv) # less items in env
 
-
 # Flu
 
 US_Flu_premerged_age_groups <- us_flu_age |> select(
@@ -77,6 +76,10 @@ US_RSV_premerged_total <- us_rsv_overall |> select(
 unique(US_RSV_premerged_age_groups$age_group)
 
 # RSV age stratified - rename age groups for easier merging with other age stratified files
+
+unique(US_Flu_premerged_age_groups$age_group)
+unique(US_RSV_premerged_age_groups$age_group)
+
 US_RSV_premerged_age_groups <-
         US_RSV_premerged_age_groups |> 
         mutate(age_group = str_replace_all(age_group, c("----" = "", " years" = ""))) |> 
