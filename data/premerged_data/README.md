@@ -1,3 +1,5 @@
+# DE and FR currently contain deprecated versions of premerged data.
+
 # Premerged data
 
 This data will be merged into one final dataset for plotting and analyses. 
