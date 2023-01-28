@@ -3,37 +3,35 @@ require(ggplot2)
 require(tidyverse) 
 require(cowplot)
 require(rvest)
+require(scales)
 
 #read merged data file
-data <- read.csv('data/merged_data/merged_data.csv')
+data <- read.csv('data/merged_data/merged_data2.csv')
 head(data) 
 
 #change start_date to data
-data$start_date <- as.Date(data$start_date)
+## changed to epi_dates using merged_data2.csv
+data$epi_dates <- as.Date(data$epi_dates)
 
-class(data$start_date)
+class(data$epi_dates)
 
-#set up data sets by season
+#set up data sets by season for NH
 
 # 2016 - start wk - 2016-10-02 --> 2017-05-14
-data_16 <- data %>% filter(start_date >= '2016-10-02')
-data_16 <- data_16 %>% filter(start_date <= '2017-05-14')
+data_16 <- data %>% filter(epi_dates >= '2016-10-02')
+data_16 <- data_16 %>% filter(epi_dates <= '2017-05-14')
 
 # 2017 - start wk - 2017-10-01 --> 2018-05-13
-data_17 <- data %>% filter(start_date >= '2017-10-01')
-data_17 <- data_17 %>% filter(start_date <= '2018-05-13')
+data_17 <- data %>% filter(epi_dates >= '2017-10-01')
+data_17 <- data_17 %>% filter(epi_dates <= '2018-05-13')
 
 # 2018 - start wk - 2018-09-30 --> 2019-05-12
-data_18 <- data %>% filter(start_date >= '2018-09-30')
-data_18 <- data_18 %>% filter(start_date <= '2019-05-12')
-
-# 2019 - start wk - 2019-09-29 --> 2020-05-11
-data_19 <- data %>% filter(start_date >= '2019-09-29')
-data_19 <- data_19 %>% filter(start_date <= '2020-05-11')
+data_18 <- data %>% filter(epi_dates >= '2018-09-30')
+data_18 <- data_18 %>% filter(epi_dates <= '2019-05-12')
 
 # 2022 - start wk - 2022-10-02 --> 2023-01-01
-data_22 <- data %>% filter(start_date >= '2022-10-02')
-data_22 <- data_22 %>% filter(start_date <= '2023-01-01')
+data_22 <- data %>% filter(epi_dates >= '2022-10-02')
+data_22 <- data_22 %>% filter(epi_dates <= '2023-01-01')
 
 ####### UK DATA #######
 
@@ -42,23 +40,28 @@ uk_data_17 <- data_17 %>% filter(country == 'UK')
 uk_data_17 <- uk_data_17 %>% filter(age_group == 'ALL')
 
 # create Epi Week Labels
-date_breaks <- uk_data_17$start_date
+date_breaks <- uk_data_17$epi_dates
 epi <- uk_data_17$week
 
 #plot graph
-uk_17_18_szn <- ggplot() + geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=uk_data_17,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=uk_data_17,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+uk_17_18_szn <- ggplot() + geom_line(data=uk_data_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=uk_data_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=uk_data_17,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2017/18 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 Persons'))) +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2017/18 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n = 7) #try this instead of epi weeks, old code kept until agreed
+                       #date_breaks,
+                  #labels=epi
+                  ) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1,size=10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
      theme(legend.position = 'none')
 
 uk_17_18_szn
@@ -68,50 +71,28 @@ uk_data_18 <- data_18 %>% filter(country == 'UK')
 uk_data_18 <- uk_data_18 %>% filter(age_group == 'ALL')
 
 # create Epi Week Labels
-date_breaks <- uk_data_18$start_date
+date_breaks <- uk_data_18$epi_dates
 epi <- uk_data_18$week
 
 #plot graph
-uk_18_19_szn <- ggplot() + geom_line(data=uk_data_18,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=uk_data_18,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=uk_data_18,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+uk_18_19_szn <- ggplot() + geom_line(data=uk_data_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=uk_data_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=uk_data_18,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2018/19 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     #ylab('Hospitalisations per 100,000 Persons') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2018/19 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n = 7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 uk_18_19_szn
-
-## 2019/20 SEASON ##
-uk_data_19 <- data_19 %>% filter(country == 'UK')
-uk_data_19 <- uk_data_19 %>% filter(age_group == 'ALL')
-
-# create Epi Week Labels
-date_breaks <- uk_data_19$start_date
-epi <- uk_data_19$week
-
-#plot graph
-uk_19_20_szn <- ggplot() + geom_line(data=uk_data_19,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=uk_data_19,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=uk_data_19,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
-     scale_color_manual("", 
-                        breaks = c('Influenza','RSV'),
-                        values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2019/20 Season') +
-     theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     theme(legend.position = 'none')
-uk_19_20_szn
 
 ## 2022/23 SEASON ##
 uk_data_22 <- data_22 %>% filter(country == 'UK')
@@ -140,35 +121,39 @@ date_breaks <- as.Date(epi_cal_22_23$`Start date`,'%d/%m/%Y')
 epi <- epi_cal_22_23$Week
 
 #plot graph
-uk_22_23_szn <- ggplot() + geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_line(data=uk_data_22,aes(x=start_date,y=hsp_abs_covid,color='SARS_CoV_2')) +
-     geom_col(data=uk_data_22,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+uk_22_23_szn_leg <- ggplot() + geom_line(data=uk_data_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=uk_data_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_line(data=uk_data_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS_CoV_2')) +
+     geom_col(data=uk_data_22,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV','SARS_CoV_2'),
                         values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue')) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for UK in 2022/23 Season') +
-     theme_bw() +
-     scale_x_date(breaks = date_breaks,
-                  limits = c(min(date_breaks), max = max(date_breaks)),
-                  labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     theme(legend.position = 'bottom')
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) + 
+     theme_bw() + 
+     scale_x_date(breaks = '1 month',date_labels = '%b') +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank())
+
+#drop legend
+uk_22_23_szn <- uk_22_23_szn_leg + theme(legend.position = 'none')
+     
 uk_22_23_szn
 
-pre_covid <- plot_grid(uk_17_18_szn,uk_18_19_szn,uk_19_20_szn,nrow = 3)
-uk_final <- plot_grid(pre_covid,uk_22_23_szn,rel_heights = c(2,1),nrow=2)
+uk_16_17 <- ggplot() + geom_line() + theme_bw()
 
+legend <- get_legend(uk_22_23_szn_leg + theme(legend.position = 'left'))
 
-save_plot(
-        file = 'output/Fig 03 - Hospitalization by country/uk_hospitalisation_totals.jpeg',
-        plot = uk_final,
-        base_width = 15,
-        base_height = 9
-)
+uk_final <- plot_grid(legend,uk_17_18_szn,uk_18_19_szn,uk_22_23_szn,nrow=1)
+
+uk_final
+#save_plot(
+        #file = 'output/Fig 03 - Hospitalization by country/uk_hospitalisation_totals.jpeg',
+        #plot = uk_final,
+        #base_width = 15,
+        #base_height = 9
+#)
 
 ####### GERMANY DATA ######
 
@@ -176,41 +161,31 @@ save_plot(
 
 ger_data_16 <- data_16 %>% dplyr::filter(country == 'DE')
 ger_data_16 <- ger_data_16 %>% dplyr::filter(age_group == 'ALL')
-
-#replace denominator with GER population for 2016 == 82.5 million (from Statistisches Bundesamt)
-ger_data_16$denominator <- 82500000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_16 <- ger_data_16$hsp_rate_flu
-flu_abs_16 <- floor(flu_rate_16*82500000/100000)
-ger_data_16$hsp_abs_flu <- flu_abs_16
-
-rsv_rate_16 <- ger_data_16$hsp_rate_rsv
-rsv_abs_16 <- floor(rsv_rate_16*(82500000/100000))
-ger_data_16$hsp_abs_rsv <- rsv_abs_16
-
-hosp_total <- flu_abs_16 + rsv_abs_16
-ger_data_16$hsp_abs <- hosp_total
+ger_data_16 <- ger_data_16 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- ger_data_16$start_date
+date_breaks <- ger_data_16$epi_dates
 epi <- ger_data_16$week
 
 #plot graph
-ger_16_17_szn <- ggplot() + geom_line(data=ger_data_16,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=ger_data_16,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=ger_data_16,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+ger_16_17_szn <- ggplot() + geom_line(data=ger_data_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=ger_data_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=ger_data_16,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2016/17 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 Persons'))) +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2016/17 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,60000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     #theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 ger_16_17_szn
 
@@ -219,40 +194,31 @@ ger_16_17_szn
 ger_data_17 <- data_17 %>% dplyr::filter(country == 'DE')
 ger_data_17 <- ger_data_17 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with GER population for 2017 == 82.7 million (from Statistisches Bundesamt)
-ger_data_17$denominator <- 82700000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_17 <- ger_data_17$hsp_rate_flu
-flu_abs_17 <- floor(flu_rate_17*82700000/100000)
-ger_data_17$hsp_abs_flu <- flu_abs_17
-
-rsv_rate_17 <- ger_data_17$hsp_rate_rsv
-rsv_abs_17 <- floor(rsv_rate_17*(82700000/100000))
-ger_data_17$hsp_abs_rsv <- rsv_abs_17
-
-hosp_total <- flu_abs_17 + rsv_abs_17
-ger_data_17$hsp_abs <- hosp_total
+ger_data_17 <- ger_data_17 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- ger_data_17$start_date
+date_breaks <- ger_data_17$epi_dates
 epi <- ger_data_17$week
 
 #plot graph
-ger_17_18_szn <- ggplot() + geom_line(data=ger_data_17,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=ger_data_17,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=ger_data_17,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+ger_17_18_szn <- ggplot() + geom_line(data=ger_data_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=ger_data_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=ger_data_17,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2017/18 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2017/18 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,60000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 ger_17_18_szn
 
@@ -261,148 +227,79 @@ ger_17_18_szn
 ger_data_18 <- data_18 %>% dplyr::filter(country == 'DE')
 ger_data_18 <- ger_data_18 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with GER population for 2018 == 82.9 million (from Statistisches Bundesamt)
-ger_data_18$denominator <- 82900000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_18 <- ger_data_18$hsp_rate_flu
-flu_abs_18 <- floor(flu_rate_18*82900000/100000)
-ger_data_18$hsp_abs_flu <- flu_abs_18
-
-rsv_rate_18 <- ger_data_18$hsp_rate_rsv
-rsv_abs_18 <- floor(rsv_rate_18*(82900000/100000))
-ger_data_18$hsp_abs_rsv <- rsv_abs_18
-
-hosp_total <- flu_abs_18 + rsv_abs_18
-ger_data_18$hsp_abs <- hosp_total
+ger_data_18 <- ger_data_18 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- ger_data_18$start_date
+date_breaks <- ger_data_18$epi_dates
 epi <- ger_data_18$week
 
 #plot graph
-ger_18_19_szn <- ggplot() + geom_line(data=ger_data_18,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=ger_data_18,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=ger_data_18,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+ger_18_19_szn <- ggplot() + geom_line(data=ger_data_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=ger_data_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=ger_data_18,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2018/19 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2018/19 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,60000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 ger_18_19_szn
-
-## 2019/20 SEASON ##
-
-ger_data_19 <- data_19 %>% dplyr::filter(country == 'DE')
-ger_data_19 <- ger_data_19 %>% dplyr::filter(age_group == 'ALL')
-
-#replace denominator with GER population for 2018 == 83.1 million (from Statistisches Bundesamt)
-ger_data_19$denominator <- 83100000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_19 <- ger_data_19$hsp_rate_flu
-flu_abs_19 <- floor(flu_rate_19*83100000/100000)
-ger_data_19$hsp_abs_flu <- flu_abs_19
-
-rsv_rate_19 <- ger_data_19$hsp_rate_rsv
-rsv_abs_19 <- floor(rsv_rate_19*(83100000/100000))
-ger_data_19$hsp_abs_rsv <- rsv_abs_19
-
-hosp_total <- flu_abs_19 + rsv_abs_19
-ger_data_19$hsp_abs <- hosp_total
-
-# create Epi Week Labels - use UK here to get full season
-date_breaks <- uk_data_19$start_date
-epi <- uk_data_19$week
-
-#plot graph
-ger_19_20_szn <- ggplot() + geom_line(data=ger_data_19,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=ger_data_19,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=ger_data_19,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
-     scale_color_manual("", 
-                        breaks = c('Influenza','RSV'),
-                        values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2019/20 Season') +
-     theme_bw() +
-     scale_x_date(breaks = date_breaks,
-                  limits = c(min(date_breaks), max = max(date_breaks)),
-                  labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     theme(legend.position = 'none') +
-     ylim(0,60000) 
-ger_19_20_szn
 
 ## 2022/23 SEASON ##
 
 ger_data_22 <- data_22 %>% dplyr::filter(country == 'DE')
 ger_data_22 <- ger_data_22 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with GER population for 2018 == 84.3 million (from Statistisches Bundesamt)
-ger_data_22$denominator <- 84300000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_22 <- ger_data_22$hsp_rate_flu
-flu_abs_22 <- floor(flu_rate_22*84300000/100000)
-ger_data_22$hsp_abs_flu <- flu_abs_22
-
-rsv_rate_22 <- ger_data_22$hsp_rate_rsv
-rsv_abs_22 <- floor(rsv_rate_22*(84300000/100000))
-ger_data_22$hsp_abs_rsv <- rsv_abs_22
-
-covid_rate_22 <- ger_data_22$hsp_rate_covid19
-covid_abs_22 <- floor(covid_rate_22*(84300000/100000))
-ger_data_22$hsp_abs_covid <- covid_abs_22
-
-hosp_total <- flu_abs_22 + rsv_abs_22 + covid_abs_22
-ger_data_22$hsp_abs <- hosp_total
+ger_data_22 <- ger_data_22 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels - use epi cal data to get full season
 date_breaks <- as.Date(epi_cal_22_23$`Start date`,'%d/%m/%Y')
 epi <- epi_cal_22_23$Week
 
 #plot graph
-ger_22_23_szn <- ggplot() + geom_line(data=ger_data_22,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=ger_data_22,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_line(data=ger_data_22,aes(x=start_date,y=hsp_abs_covid,color='SARS_CoV_2')) +
-     geom_col(data=ger_data_22,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+ger_22_23_szn <- ggplot() + geom_line(data=ger_data_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=ger_data_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_line(data=ger_data_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS_CoV_2')) +
+     geom_col(data=ger_data_22,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV','SARS_CoV_2'),
                         values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue')) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2022/23 Season') +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
+     #xlab('Epi Week') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for GER in 2022/23 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,
-                  limits = c(min(date_breaks), max = max(date_breaks)),
-                  labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     ylim(0,700000) +
-     theme(legend.position = 'bottom')
+     scale_x_date(breaks = scales::pretty_breaks(n=5),date_labels = '%b') +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
+     theme(legend.position = 'none')
 ger_22_23_szn
 
 #cowplot
-pre_covid_ger <- plot_grid(ger_16_17_szn,ger_17_18_szn,ger_18_19_szn,ger_19_20_szn,nrow=4)
-ger_graph <- plot_grid(pre_covid_ger,ger_22_23_szn,nrow=2,rel_heights = c(2.2,1))
+ger_graph <- plot_grid(ger_16_17_szn,ger_17_18_szn,ger_18_19_szn,ger_22_23_szn,nrow=1)
 ger_graph
 
 
-save_plot(
-        file = 'output/Fig 03 - Hospitalization by country/ger_hospitalisation_totals.jpeg',
-        plot = ger_graph,
-        base_width = 15,
-        base_height = 9
-)
+#save_plot(
+        #file = 'output/Fig 03 - Hospitalization by country/ger_hospitalisation_totals.jpeg',
+        #plot = ger_graph,
+        #base_width = 15,
+        #base_height = 9
+#)
 
 ###### USA DATA ######
 
@@ -411,40 +308,31 @@ save_plot(
 usa_data_16 <- data_16 %>% dplyr::filter(country == 'US')
 usa_data_16 <- usa_data_16 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with USA population for 2016 == 323.1 million
-usa_data_16$denominator <- 323100000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_16 <- usa_data_16$hsp_rate_flu
-flu_abs_16 <- floor(flu_rate_16*323100000/100000)
-usa_data_16$hsp_abs_flu <- flu_abs_16
-
-rsv_rate_16 <- usa_data_16$hsp_rate_rsv
-rsv_abs_16 <- floor(rsv_rate_16*(323100000/100000))
-usa_data_16$hsp_abs_rsv <- rsv_abs_16
-
-hosp_total <- flu_abs_16 + rsv_abs_16
-usa_data_16$hsp_abs <- hosp_total
+usa_data_16 <- usa_data_16 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- usa_data_16$start_date
+date_breaks <- usa_data_16$epi_dates
 epi <- usa_data_16$week
 
 #plot graph
-usa_16_17_szn <- ggplot() + geom_line(data=usa_data_16,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=usa_data_16,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=usa_data_16,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+usa_16_17_szn <- ggplot() + geom_line(data=usa_data_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=usa_data_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=usa_data_16,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
      xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2016/17 Season') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 Persons'))) +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2016/17 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,70000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     #theme(axis.title.x = element_blank()) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     #theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 usa_16_17_szn
 
@@ -453,40 +341,31 @@ usa_16_17_szn
 usa_data_17 <- data_17 %>% dplyr::filter(country == 'US')
 usa_data_17 <- usa_data_17 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with USA population for 2017 == 325.1 million
-usa_data_17$denominator <- 325100000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_17 <- usa_data_17$hsp_rate_flu
-flu_abs_17 <- floor(flu_rate_17*325100000/100000)
-usa_data_17$hsp_abs_flu <- flu_abs_17
-
-rsv_rate_17 <- usa_data_17$hsp_rate_rsv
-rsv_abs_17 <- floor(rsv_rate_17*(325100000/100000))
-usa_data_17$hsp_abs_rsv <- rsv_abs_17
-
-hosp_total <- flu_abs_17 + rsv_abs_17
-usa_data_17$hsp_abs <- hosp_total
+usa_data_17 <- usa_data_17 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- usa_data_17$start_date
+date_breaks <- usa_data_17$epi_dates
 epi <- usa_data_17$week
 
 #plot graph
-usa_17_18_szn <- ggplot() + geom_line(data=usa_data_17,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=usa_data_17,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=usa_data_17,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+usa_17_18_szn <- ggplot() + geom_line(data=usa_data_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=usa_data_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=usa_data_17,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
      xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2017/18 Season') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2017/18 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,70000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_text(size=10)) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 usa_17_18_szn
 
@@ -495,138 +374,71 @@ usa_17_18_szn
 usa_data_18 <- data_18 %>% dplyr::filter(country == 'US')
 usa_data_18 <- usa_data_18 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with USA population for 2018 == 326.8 million
-usa_data_18$denominator <- 326800000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_18 <- usa_data_18$hsp_rate_flu
-flu_abs_18 <- floor(flu_rate_18*326800000/100000)
-usa_data_18$hsp_abs_flu <- flu_abs_18
-
-rsv_rate_18 <- usa_data_18$hsp_rate_rsv
-rsv_abs_18 <- floor(rsv_rate_18*(326800000/100000))
-usa_data_18$hsp_abs_rsv <- rsv_abs_18
-
-hosp_total <- flu_abs_18 + rsv_abs_18
-usa_data_18$hsp_abs <- hosp_total
+usa_data_18 <- usa_data_18 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels
-date_breaks <- usa_data_18$start_date
+date_breaks <- usa_data_18$epi_dates
 epi <- usa_data_18$week
 
 #plot graph
-usa_18_19_szn <- ggplot() + geom_line(data=usa_data_18,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=usa_data_18,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_col(data=usa_data_18,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+usa_18_19_szn <- ggplot() + geom_line(data=usa_data_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=usa_data_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=usa_data_18,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV'),
                         values = c("Influenza"="red", "RSV"="orange")) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
      xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2018/19 Season') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2018/19 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,labels=epi) +
-     ylim(0,70000) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+     scale_x_date(breaks = scales::pretty_breaks(n=7)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_text(size=10)) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'none')
 
 usa_18_19_szn
-
-## 2019/20 SEASON ## There is no data for this!!
-
-#usa_data_19 <- data_19 %>% dplyr::filter(country == 'US')
-#usa_data_19 <- usa_data_19 %>% dplyr::filter(age_group == 'ALL')
-
-#replace denominator with USA population for 2019 == 328.3 million
-#usa_data_19$denominator <- 328300000
-
-#calculate absolute values for flu and rsv based on rates data
-#flu_rate_19 <- usa_data_19$hsp_rate_flu
-#flu_abs_19 <- floor(flu_rate_19*328300000/100000)
-#usa_data_19$hsp_abs_flu <- flu_abs_19
-
-#rsv_rate_19 <- usa_data_19$hsp_rate_rsv
-#rsv_abs_19 <- floor(rsv_rate_19*(328300000/100000))
-#usa_data_19$hsp_abs_rsv <- rsv_abs_19
-
-#hosp_total <- flu_abs_19 + rsv_abs_19
-#usa_data_19$hsp_abs <- hosp_total
-
-# create Epi Week Labels - use UK here to get full season
-#date_breaks <- uk_data_19$start_date
-#epi <- uk_data_19$week
-
-#plot graph
-#usa_19_20_szn <- ggplot() + geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     #geom_line(data=usa_data_19,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     #geom_col(data=usa_data_19,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
-     #scale_color_manual("", 
-     #                   breaks = c('Influenza','RSV'),
-     #                   values = c("Influenza"="red", "RSV"="orange")) +
-     #scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
-     #xlab('Epi Week') +
-     #ylab('No. Hospitalisations') +
-     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2019/20 Season') +
-     #theme_bw() +
-     #scale_x_date(breaks = date_breaks,labels=epi) +
-     #ylim(0,60000) +
-     #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     #theme(legend.position = 'none')
-#usa_19_20_szn
 
 ## 2022/23 SEASON ##
 
 usa_data_22 <- data_22 %>% dplyr::filter(country == 'US')
 usa_data_22 <- usa_data_22 %>% dplyr::filter(age_group == 'ALL')
 
-#replace denominator with USA population for 2022 == 333.3 million
-usa_data_22$denominator <- 333300000
-
-#calculate absolute values for flu and rsv based on rates data
-flu_rate_22 <- usa_data_22$hsp_rate_flu
-flu_abs_22 <- floor(flu_rate_22*333300000/100000)
-usa_data_22$hsp_abs_flu <- flu_abs_22
-
-rsv_rate_22 <- usa_data_22$hsp_rate_rsv
-rsv_abs_22 <- floor(rsv_rate_22*(333300000/100000))
-usa_data_22$hsp_abs_rsv <- rsv_abs_22
-
-covid_rate_22 <- usa_data_22$hsp_rate_covid19
-covid_abs_22 <- floor(covid_rate_22*(333300000/100000))
-usa_data_22$hsp_abs_covid <- covid_abs_22
-
-hosp_total <- flu_abs_22 + rsv_abs_22 + covid_abs_22
-usa_data_22$hsp_abs <- hosp_total
+usa_data_22 <- usa_data_22 %>% 
+     rowwise() %>%
+     mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
 
 # create Epi Week Labels - use epi cal data to get full season
 date_breaks <- as.Date(epi_cal_22_23$`Start date`,'%d/%m/%Y')
 epi <- epi_cal_22_23$Week
 
 #plot graph
-usa_22_23_szn <- ggplot() + geom_line(data=usa_data_22,aes(x=start_date,y=hsp_abs_flu,color='Influenza')) +
-     geom_line(data=usa_data_22,aes(x=start_date,y=hsp_abs_rsv,color='RSV')) +
-     geom_line(data=usa_data_22,aes(x=start_date,y=hsp_abs_covid,color='SARS_CoV_2')) +
-     geom_col(data=usa_data_22,aes(x=start_date,y=hsp_abs,fill='Total'),alpha=0.5) +
+usa_22_23_szn <- ggplot() + geom_line(data=usa_data_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=usa_data_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_line(data=usa_data_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS_CoV_2')) +
+     geom_col(data=usa_data_22,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.5) +
      scale_color_manual("", 
                         breaks = c('Influenza','RSV','SARS_CoV_2'),
                         values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue')) +
-     scale_fill_manual('',breaks=c('Total'),values=c('Total'='grey')) +
+     scale_fill_manual('',breaks=c('Total'),values=c('Total'='pink')) +
      xlab('Epi Week') +
-     ylab('No. Hospitalisations') +
-     ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2022/23 Season') +
+     #ylab('No. Hospitalisations') +
+     #ggtitle('Total Hospitalisations and Hospitalisations by Virus for USA in 2022/23 Season') +
      theme_bw() +
-     scale_x_date(breaks = date_breaks,
-                  limits = c(min(date_breaks), max = max(date_breaks)),
-                  labels=epi) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-     ylim(0,75000) +
-     theme(legend.position = 'bottom')
+     scale_x_date(breaks = scales::pretty_breaks(n=5),date_labels = '%b') +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size =10)) +
+     theme(axis.title.x = element_text(size=10)) +
+     theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=10)) +
+     theme(axis.title.y = element_blank()) +
+     theme(legend.position = 'none')
 usa_22_23_szn
 
 #cowplot
-pre_covid_usa <- plot_grid(usa_16_17_szn,usa_17_18_szn,usa_18_19_szn,nrow=3)
-usa_graph <- plot_grid(pre_covid_usa,usa_22_23_szn,nrow=2,rel_heights = c(2.2,1))
+usa_graph <- plot_grid(usa_16_17_szn,usa_17_18_szn,usa_18_19_szn,usa_22_23_szn,nrow=1,rel_widths = c(1,1,1,1))
 usa_graph
 
 
@@ -636,3 +448,32 @@ save_plot(
         base_width = 15,
         base_height = 9
 )
+
+#create overall plot titles
+title_1617 <- ggdraw() + 
+     draw_label("2016/17 Season",fontface = 'bold',x = 0.25,hjust = 0) +theme(plot.margin = margin(0, 0, 0, 0))
+title_1718 <- ggdraw() + 
+     draw_label("2017/18 Season",fontface = 'bold',x = 0.25,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+title_1819 <- ggdraw() + 
+     draw_label("2018/19 Season",fontface = 'bold',x = 0.25,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+title_2223 <- ggdraw() + 
+     draw_label("2022/23 Season",fontface = 'bold',x = 0.25,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+
+title_grid <- plot_grid(title_1617,title_1718,title_1819,title_2223,nrow=1)
+
+#create country labels
+title_uk <- ggdraw() + 
+     draw_label("UK",fontface = 'bold',x = 0.25,hjust = 0,angle = 90)+theme(plot.margin = margin(0, 0, 0, 0))
+title_ger <- ggdraw() + 
+     draw_label("GER",fontface = 'bold',x = 0.25,hjust = 0,angle =90)+theme(plot.margin = margin(0, 0, 0, 0))
+title_usa <- ggdraw() + 
+     draw_label("USA",fontface = 'bold',x = 0.25,hjust = 0,angle=90)+theme(plot.margin = margin(0, 0, 0, 0))
+
+country_grid <- plot_grid(title_uk,title_ger,title_usa,nrow=3)
+country_grid
+## plot three countries together
+graph_grid <- plot_grid(uk_final,ger_graph,usa_graph,nrow=3,rel_heights = c(1,1,1.2))
+
+season_plot <- plot_grid(title_grid,graph_grid,nrow=2,rel_heights = c(0.1,1))
+
+plot_grid(country_grid,season_plot,ncol=2,rel_widths = c(0.1,2))
