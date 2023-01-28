@@ -1,5 +1,5 @@
 # Merge script
-# Dzan 20 01 2023
+# Dzan 
 
 library(dplyr)
 
@@ -23,7 +23,7 @@ merged_data <- bind_rows(fileList)
 # This is to add dates, based on week of the year
 epiweeks <- read.csv(file = 'data/epi_weeks.csv')
 epiweeks$epi_dates <- as.Date(epiweeks$epi_dates)
-epiweeks <- epiweeks |> dplyr::rename("week"=epi_wk_no)
+epiweeks <- epiweeks |> rename("week"=epi_wk_no)
 
 # Merge with epiweeks and reorder merged_data
 merged_data <- merge(merged_data, epiweeks)
@@ -42,5 +42,8 @@ merged_data <- merged_data |> mutate(age_group = case_when(
      TRUE ~ age_group
 ))
 
+# Drop all dates after 10 March 2023
+merged_data <- merged_data |> filter(epi_dates<"2023-03-10")
+
 # Write a CSV
-readr::write_csv(merged_data, 'data/merged_data/merged_data2.csv')
+readr::write_csv(merged_data, 'data/merged_data/merged_data.csv')

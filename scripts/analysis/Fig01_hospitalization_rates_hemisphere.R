@@ -1,44 +1,32 @@
 library(tidyverse)
 library(lubridate)
 
-data <- read.csv(file='data/merged_data/merged_data2.csv')
+data <- read.csv(file='data/merged_data/merged_data.csv')
 
 # Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
 # (complete time series for full time period: 2016 - 2023)
 # Design: line graph
 # X-axis: 2016 - 2023 with a second x-axis label that identifies the seasons
 
-data$start_date <- as.Date(data$start_date)
+data$epi_dates <- as.Date(data$epi_dates)
 
-date_breaks <- data$start_date
+date_breaks <- data$epi_dates
 epi <- data$week
 
-breaks_mo <- seq(min(data$start_date), max(data$start_date), by="4 months")
+breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
 
 
-# this is messy 
-
-# data |> filter(year < 2021, age_group=="ALL") |> ggplot()+
-#      geom_line(mapping = aes(start_date, hsp_rate_flu, color='Influenza')) +
-#      geom_line(mapping = aes(start_date, hsp_rate_rsv, color='RSV')) +
-#      scale_color_manual("", 
-#                         breaks = c('Influenza','RSV'),
-#                         values = c("Influenza"="red", "RSV"="orange"))+
-#      scale_x_date(
-#           date_breaks = "4 weeks",
-#           date_minor_breaks = "1 week",
-#           date_labels = "%b %Y"
-#      ) +
-#      scale_y_sqrt() +
-#      theme_bw() +
-#      theme(axis.text.x = element_text(
-#           angle = 90,
-#           vjust = 0.5,
-#           hjust = 1
-#      ))+
-#      theme(legend.position = 'none')
-
-###
+# X-axis alternative
+# scale_x_date(
+#         date_breaks = "4 weeks",
+#         date_minor_breaks = "1 week",
+#         date_labels = "%b %Y"
+# ) +
+#         theme(axis.text.x = element_text(
+#                 angle = 90,
+#                 vjust = 0.5,
+#                 hjust = 1
+#         ))
 
 #  Modification for France - not sure if applicable
 # #
@@ -49,18 +37,32 @@ breaks_mo <- seq(min(data$start_date), max(data$start_date), by="4 months")
 #                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.3)),
 #                                  TRUE ~ hsp_rate_rsv))
 
+Figure_01_data <-
+        data |> select(data_source:hsp_rate_covid19, epi_dates) |>
+        mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
+                       ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv)+
+                       ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
+        )
 
-Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
-     filter(country!="UK" | year!=2020 | week<15) |> 
+# y <- Figure_01_data |> filter(country=="UK", year=="2018") |> 
+#         mutate(hsp_rate_flu==ifelse(week), 
+#                hsp_rate_rsv, 
+#                hsp_rate_covid19)
+
+
+Figure_1_NH <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
+    # filter(country!="UK" | year!=2020 | week<15) |> 
      ggplot()+
-     geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
-     geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-     geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
+        geom_col(mapping=aes(epi_dates, hsp_rate, fill="Total hospitalizations"))+
+     geom_line(mapping = aes(epi_dates, hsp_rate_flu, color="Influenza")) +
+     geom_line(mapping = aes(epi_dates, hsp_rate_rsv, color="RSV")) +
+     geom_line(mapping=aes(epi_dates,hsp_rate_covid19,color='SARS_CoV_2')) +
+        scale_fill_manual("", breaks=c('Total hospitalizations'), values=c("Total hospitalizations"="grey80"))+
         scale_color_manual("", 
                            breaks = c('Influenza','RSV','SARS_CoV_2'),
                            values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
-     scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
-     facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
+     scale_x_date(date_labels="%b", date_breaks="month", expand=c(0,0)) +
+     facet_grid(country ~ year(epi_dates), space="free_x", scales="free_x", switch="x") +
      theme_bw() +
      theme(strip.placement = "outside",
            strip.background = element_rect(fill="grey90", color="grey50"),
@@ -78,17 +80,20 @@ Figure_1_NH <- data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="
 
 Figure_1_NH
 
-Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |> 
-     #filter(data_source!="AUS DOH") |> 
+x <- Figure_01_data |>  filter(hemisphere=='SH', age_group=="ALL", country=="AUS")
+
+Figure_1_SH <- Figure_01_data |> filter(hemisphere=='SH', age_group=="ALL") |> 
         ggplot()+
-        geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
-        geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-        #geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
+        geom_col(mapping=aes(epi_dates, hsp_rate, fill="Total hospitalizations"))+
+        geom_line(mapping = aes(epi_dates, hsp_rate_flu, color="Influenza")) +
+        geom_line(mapping = aes(epi_dates, hsp_rate_rsv, color="RSV")) +
+        geom_line(mapping=aes(epi_dates,hsp_rate_covid19,color='SARS_CoV_2')) +
+        scale_fill_manual("", breaks=c('Total hospitalizations'), values=c("Total hospitalizations"="grey80"))+
         scale_color_manual("", 
                            breaks = c('Influenza','RSV','SARS_CoV_2'),
                            values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
-     scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
-     facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
+        scale_x_date(date_labels="%b", date_breaks="month", expand=c(0,0)) +
+     facet_grid(country ~ year(epi_dates), space="free_x", scales="free_x", switch="x") +
      theme_bw() +
      theme(strip.placement = "outside",
            strip.background = element_rect(fill="grey90", color="grey50"),
@@ -106,18 +111,20 @@ Figure_1_SH <- data |> filter(hemisphere=='SH', age_group=="ALL") |>
 
 Figure_1_SH
 
-Figure_1_Both <- data |> filter(age_group=="ALL") |> 
+Figure_1_Both <- Figure_01_data |> filter(age_group=="ALL") |> 
      filter(data_source!="AUS DOH", data_source!="FluNet - Sentinel") |> 
      filter(country!="UK" | year!=2020 | week<15) |> 
         ggplot()+
-        geom_line(mapping = aes(start_date, hsp_rate_flu, color="Influenza")) +
-        geom_line(mapping = aes(start_date, hsp_rate_rsv, color="RSV")) +
-        geom_line(mapping=aes(start_date,hsp_rate_covid19,color='SARS_CoV_2')) +
+        geom_col(mapping=aes(epi_dates, hsp_rate, fill="Total hospitalizations"))+
+        geom_line(mapping = aes(epi_dates, hsp_rate_flu, color="Influenza")) +
+        geom_line(mapping = aes(epi_dates, hsp_rate_rsv, color="RSV")) +
+        geom_line(mapping=aes(epi_dates,hsp_rate_covid19,color='SARS_CoV_2')) +
+        scale_fill_manual("", breaks=c('Total hospitalizations'), values=c("Total hospitalizations"="grey80"))+
         scale_color_manual("", 
                            breaks = c('Influenza','RSV','SARS_CoV_2'),
                            values = c("Influenza"="red", "RSV"="orange",'SARS_CoV_2'='blue'))+
-     scale_x_date(date_labels="%b", date_breaks="month", expand=c(0.01,0)) +
-     facet_grid(country ~ year(start_date), space="free_x", scales="free_x", switch="x") +
+        scale_x_date(date_labels="%b", date_breaks="month", expand=c(0,0)) +
+     facet_grid(country ~ year(epi_dates), space="free_x", scales="free_x", switch="x") +
      theme_bw() +
      theme(strip.placement = "outside",
            strip.background = element_rect(fill="grey90", color="grey50"),
