@@ -262,7 +262,7 @@ aus_premerged_total <- data.frame(
 
 ## France non_sentinel
 
-This code takes FR data form processed_data folder (those don't have all the needed columns). This code provides the missing columns
+This code takes FR data from processed_data folder (those don't have all the needed columns). This code provides the missing columns
 
 ```{r}
 preclean_fran_flu<- read_csv("data/processed_data/FRA/france_fluNet.csv")
