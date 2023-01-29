@@ -217,7 +217,7 @@ chi_premerged_by_age <- filter(chi_premerged_by_age, !is.na(denominator)) # dele
 
 ## Australia
 
-This code was meant for fix and the population error (just the last year)
+This code was meant to fix and the population error (just the last year)
 ```{r}
 
 flunet_raw <- read_csv("data/processed_data/AUS/australia_fluNet.csv")
