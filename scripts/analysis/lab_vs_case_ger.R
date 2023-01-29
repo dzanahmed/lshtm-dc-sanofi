@@ -23,20 +23,72 @@ ger_data <- ger_data %>% mutate(season =
 # Drop rows outside of usual seasons
 ger_data <- ger_data %>% drop_na(season)
 
+#filter to only relevant columns for flu
+ger_data_flu <- ger_data %>%
+     select('week','year','hsp_rate_flu','cases_rate_flu','epi_dates','season')
+ger_data_flu <- ger_data_flu %>% pivot_longer(cols = c('hsp_rate_flu','cases_rate_flu'),names_to = 'hos_lab_case',values_to = 'rate')
+
 #create plot for flu
-ggplot() + geom_line(data=ger_data,aes(x=epi_dates,y=cases_rate_flu,group = season),color='red') + 
-     geom_line(data=ger_data,aes(x=epi_dates,y=hsp_rate_flu,group=season),color='blue') +
-     facet_wrap(.~season,scales='free')
+flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+     facet_wrap(.~season,scales='free') +
+     theme_bw() +
+     xlab('Epi Week') +
+     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     theme(axis.title.y = element_text(size=9)) +
+     theme(legend.position = 'none') 
+
+#filter to only relevant columns for rsv
+ger_data_rsv <- ger_data %>%
+     select('week','year','hsp_rate_rsv','cases_rate_rsv','epi_dates','season')
+ger_data_rsv <- ger_data_rsv %>% pivot_longer(cols = c('hsp_rate_rsv','cases_rate_rsv'),names_to = 'hos_lab_case',values_to = 'rate')
 
 #create plot for rsv
-ggplot() + geom_line(data=ger_data,aes(x=epi_dates,y=cases_rate_rsv,group = season),color='red') + 
-     geom_line(data=ger_data,aes(x=epi_dates,y=hsp_rate_rsv,group=season),color='blue') +
-     facet_wrap(.~season,scales='free')
+rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+     facet_wrap(.~season,scales='free') +
+     theme_bw() +
+     xlab('Epi Week') +
+     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     theme(axis.title.y = element_text(size=9)) +
+     theme(legend.position = 'none') 
+
+rsv_plot
+
+#filter to only relevant columns for rsv
+ger_data_covid <- ger_data %>%
+     select('week','year','hsp_rate_covid19','cases_rate_covid19','epi_dates','season')
+ger_data_covid <- ger_data_covid %>% pivot_longer(cols = c('hsp_rate_covid19','cases_rate_covid19'),names_to = 'hos_lab_case',values_to = 'rate')
+ger_data_covid <- ger_data_covid %>% drop_na(rate)
 
 #create plot for covid
-epi_dates_2223 <- ger_data %>% filter(epi_dates >= '2022-10-02' & epi_dates <= '2023-01-01')
-epi_dates_2223 <- epi_dates_2223$epi_dates
-ggplot() + geom_line(data=ger_data,aes(x=epi_dates,y=cases_rate_covid19),color='red') + 
-     geom_line(data=ger_data,aes(x=epi_dates,y=hsp_rate_covid19),color='blue') +
-     scale_x_date(limits = c(min(epi_dates_2223), max = max(epi_dates_2223))) +
-     scale_y_sqrt()
+covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+     facet_wrap(.~season,scales='free') +
+     theme_bw() +
+     xlab('Epi Week') +
+     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     theme(axis.title.y = element_text(size=9)) +
+     theme(legend.position = 'bottom') +
+     scale_color_discrete(name="Laboratory vs. Hospital Case",
+                         breaks=c('hsp_rate_covid19','cases_rate_covid19'),
+                         labels=c('Hospital Case','Laboratory Case'))
+
+covid_plot_no_leg <- covid_plot + theme(legend.position = 'none')
+covid_plot_no_leg
+
+#create legend title
+legend <- get_legend(covid_plot)
+
+#create virus labels
+title_flu <- ggdraw() + 
+     draw_label("Influenza",fontface = 'bold',x = 0.4,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+title_rsv <- ggdraw() + 
+     draw_label("RSV",fontface = 'bold',x = 0.5,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+title_covid <- ggdraw() + 
+     draw_label("SARS-CoV-2",fontface = 'bold',x = 0.35,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
+
+virus_grid <- plot_grid(title_flu,title_rsv,title_covid,nrow=1)
+
+#plot grid
+graph_grid <- plot_grid(flu_plot,rsv_plot,covid_plot_no_leg,nrow=1)
+whole_grid <- plot_grid(graph_grid,legend,nrow = 2, rel_heights = c(1,0.1))
+with_title_grid <- plot_grid(virus_grid,whole_grid,nrow=2,rel_heights = c(0.1,1))
+with_title_grid
