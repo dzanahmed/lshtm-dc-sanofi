@@ -50,7 +50,7 @@ The data set was taken from the same previous source. It is called "Hospitalizad
 There were two measurements per week. I took the last measurement as the representative one. Then to get the "new number (considering admissions and discharges)," I subtracted the prior week's value
 
 ```{r warning = F, message = F}
-hospilalised <- read_csv('https://raw.githubusercontent.com/MinCiencia/Datos-COVID19/master/output/producto22/HospitalizadosEtario_Acumulado_std.csv')
+hospilalised <- read_csv("/data/raw_data/CL/HospitalizadosEtario_Acumulado_std.csv")
 colnames(hospilalised) <- c("age_group", "sex", "date", "number")
 
 hospilalised$date <- as.Date(hospilalised$date, "%d-%m-%Y")
@@ -89,8 +89,8 @@ hospilalised_week <- arrange(hospilalised_week,year, week,age_group)
 hospilalised_week$prior_week <- c(rep(NA,7),hospilalised_week$cumul_cases[-c(379:385)])
 hospilalised_week$daily <- hospilalised_week$cumul_cases - hospilalised_week$prior_week
 
-hospilalised_week$denominator <- ifelse(hospilalised_week$year == 2022, population[7,2],
-                                        ifelse(hospilalised_week$year == 2023, population[8,2], NA))
+hospilalised_week$denominator <- as.numeric(ifelse(hospilalised_week$year == 2022, population[7,2],
+                                        ifelse(hospilalised_week$year == 2023, population[8,2], NA)))
 ```
 
 ## Data from SARI cases (sentinel data)
@@ -121,32 +121,10 @@ sari_chile$COVID[sari_chile$year != 2022 ] <- 0
   
 ```
 
-## Data from fluNet
-
-This data were extracted from [FluNet](https://app.powerbi.com/view?r=eyJrIjoiZTkyODcyOTEtZjA5YS00ZmI0LWFkZGUtODIxNGI5OTE3YjM0IiwidCI6ImY2MTBjMGI3LWJkMjQtNGIzOS04MTBiLTNkYzI4MGFmYjU5MCIsImMiOjh9)
-
-Data not used as we have chilean data from the Ministry of Health
-
-```{r warning = F, message = F}
-flunet_raw <- read_csv("data/raw_data/CL/flunet_chile.csv")
-colnames(flunet_raw)[4] <-"Surveillance"
-
-# this for merging sentinel & non-sentinel 2022
-flunet <-flunet_raw %>% 
-  group_by(Year, Week) %>%
-  summarise(A_flu = sum(`A (Total)`),
-            B_flu = sum(`B (Total)`),
-            total = sum(`Influenza positive specimens`))
-
-colnames(flunet)[1:2]  <- c("year", "week")
-```
-
-This data set collects data from different surveillance type as: `r unique(flunet_raw$Surveillance)` Chile has only specified values for 2022
 
 
-# Seting data into group data set
+### Attaching  population to sari cases 
 
-### Attach population to sari cases 
 ```{r}
 sari_chile$denominator <- as.numeric(ifelse(sari_chile$year == 2016, population[1,2],
                                  ifelse(sari_chile$year == 2017, population[2,2],
@@ -156,7 +134,8 @@ sari_chile$denominator <- as.numeric(ifelse(sari_chile$year == 2016, population[
 
 ```
 
-### The data set for all age
+### The data set for all age - FLU - RSV - COVID from Minsal
+
 It was assumed that sentinel data represent 3% the population. So, the denominator was multiplied by 0.03
 ```{r}
 chi_premerged_total <- data.frame(
@@ -190,21 +169,12 @@ chi_premerged_total <- data.frame(
   subtype_c_rate = NA
 )
 
-# COVID Labs cases - Not included
-# chi_premerged_total$cases_abs_covid19 <- left_join(chi_premerged_total, national_week_all_age, by = c("year", "week"))$total_cases
 
-# chi_premerged_total$cases_rate_covid19 <- round((chi_premerged_total$cases_abs_covid/chi_premerged_total$denominator)*100000,2)
-
-#### Data from flunet. I took it as lab cases, but then it was ruled out.
-
-# chi_premerged_total$cases_abs_flu  <-left_join(chi_premerged_total, flunet[,c(1,2,5)], by = c("year", "week"))$total
-# 
-# chi_premerged_total$cases_rate_flu<- round((chi_premerged_total$cases_abs_flu/chi_premerged_total$denominator)*100000,2)
-
-write_csv(chi_premerged_total, "/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/premerged_data/CL_premerged_total.csv")
+#write_csv(chi_premerged_total, "/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/premerged_data/CL_premerged_total.csv")
 
 ```
-## The data set by age for hospitalizations (only COVID)
+
+## The data set by age for hospitalizations (only COVID) - From Ministry of Science Git-Hub
 
 ```{r}
 chi_premerged_by_age <- data.frame(
@@ -238,13 +208,16 @@ chi_premerged_by_age <- data.frame(
   subtype_c_rate = NA
 )
 
-chi_premerged_by_age <- filter(chi_premerged_by_age, !is.na(denominator))
+chi_premerged_by_age <- filter(chi_premerged_by_age, !is.na(denominator)) # delete 7 first rows
 
 #write_csv(chi_premerged_by_age, "data/premerged_data/chi_premerged_by_age.csv")
 
 ```
 
+
 ## Australia
+
+This code was meant for fix and the population error (just the last year)
 ```{r}
 
 flunet_raw <- read_csv("data/processed_data/AUS/australia_fluNet.csv")
@@ -288,6 +261,9 @@ aus_premerged_total <- data.frame(
 ```
 
 ## France non_sentinel
+
+This code takes FR data form processed_data folder (those don't have all the needed columns). This code provides the missing columns
+
 ```{r}
 preclean_fran_flu<- read_csv("data/processed_data/FRA/france_fluNet.csv")
 
