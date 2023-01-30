@@ -222,6 +222,8 @@ fra_szn_data_rsv <- fra_szn_data_rsv %>% mutate(season_week =
                                              case_when(week >= 40 ~ week-39,
                                                        week <= 20 ~ week+12))
 
+fra_szn_data_rsv <- fra_szn_data_rsv %>% group_by(season) %>% mutate(max=max(cum_rsv))
+
 fra_rsv_cum <- ggplot() + geom_line(data=fra_szn_data_rsv,
                                     aes(x=season_week,y=cum_rsv,col=season),size=2) + 
      scale_color_manual(values = col_seasons_rsv) +
@@ -331,3 +333,102 @@ virus_grid <- plot_grid(flu_grid,rsv_grid,nrow=1)
 
 ### Final Grid ###
 plot_grid(title_grid,virus_grid,nrow=2, rel_heights = c(0.1,1))
+
+### CALCULATE MEDIAN VALUES BY SEASON ###
+# AUS FLU
+med_rows <- aus_szn_data %>% 
+     filter(cum_flu > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_flu))
+
+median_case_table <- merge(aus_szn_data,med_rows,
+                           by.x = c('season','cum_flu'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+#AUS RSV
+med_rows <- aus_szn_data_rsv %>% 
+     filter(cum_rsv > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_rsv))
+
+median_case_table <- merge(aus_szn_data_rsv,med_rows,
+                           by.x = c('season','cum_rsv'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+# CHI FLU
+med_rows <- chi_szn_data %>% 
+     filter(cum_flu > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_flu))
+
+median_case_table <- merge(chi_szn_data,med_rows,
+                           by.x = c('season','cum_flu'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+#CHI RSV
+med_rows <- chi_szn_data_rsv %>% 
+     filter(cum_rsv > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_rsv))
+
+median_case_table <- merge(chi_szn_data_rsv,med_rows,
+                           by.x = c('season','cum_rsv'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+# FRA FLU
+med_rows <- fra_szn_data %>% 
+     filter(cum_flu > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_flu))
+
+median_case_table <- merge(fra_szn_data,med_rows,
+                           by.x = c('season','cum_flu'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+# FRA RSV
+med_rows <- fra_szn_data_rsv %>% 
+     filter(cum_rsv > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_rsv))
+
+median_case_table <- merge(fra_szn_data_rsv,med_rows,
+                           by.x = c('season','cum_rsv'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+# UK FLU
+med_rows <- uk_szn_data %>% 
+     filter(cum_flu > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_flu))
+
+median_case_table <- merge(uk_szn_data,med_rows,
+                           by.x = c('season','cum_flu'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+# UK RSV
+med_rows <- uk_szn_data_rsv %>% 
+     filter(cum_rsv > (max/2)) %>% 
+     group_by(season) %>% 
+     summarise(median_case_no = min(cum_rsv))
+
+median_case_table <- merge(uk_szn_data_rsv,med_rows,
+                           by.x = c('season','cum_rsv'),
+                           by.y = c('season','median_case_no'))
+
+median_case_table %>% select(1:4)
+
+                                                         
