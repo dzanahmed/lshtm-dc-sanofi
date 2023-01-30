@@ -304,7 +304,7 @@ ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_covid19_hosp
 
 
 # arrange all plots together
-all_plots <- ((usa_rsv_18_19_plot | usa_rsv_22_23_plot) | usa_covid19_22_23_plot) / (usa_flu_plots) + 
+all_plots <- (usa_flu_plots) / ((usa_rsv_18_19_plot | usa_rsv_22_23_plot) | usa_covid19_22_23_plot) + 
      plot_annotation(title = 'USA Hospitalisation Rates by Age Group')
 
 ggsave(filename = 'output/Fig 04 - Hospitalization by age group/hosp_byage_plots.pdf', plot = all_plots, width=15, height=9)
