@@ -44,21 +44,52 @@ breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
 #                                  TRUE ~ hsp_rate_rsv))
 
 
+
 epi_weeks <- read_csv(file="data/epi_weeks.csv")
 
-NH_seasons <- data.frame(season=c("2016-2017","2017-2018","2018-2019", "2019-2020", "2021-2022", "2022-2023"),
-                         beginning=c("2016-10-02", "2017-10-01","2018-09-30","2019-09-29", "2021-10-01", "2022-10-02"),
-                         end=c("2017-05-14","2018-05-13","2019-05-12","2020-05-11","2022-05-15", "2023-02-15")) |> 
-    mutate(beginning=as_date(beginning), end=as_date(end))
+# This is to create a table of season dates in the NH
+NH_seasons <- epi_weeks |>
+  filter(epi_wk_no == 20 | epi_wk_no == 40) |> 
+  filter(row_number() != 1 & row_number() != 12) |>
+  mutate(season_threshold = case_when(epi_wk_no == 40 ~ "Start",
+                                      TRUE ~ "End")) |>
+  pivot_wider(id_cols = year,
+              names_from = season_threshold,
+              values_from = epi_dates) |>
+  mutate(year = as.character(paste0(year, "/", year + 1)))
+
+# Shift End upward by one row to correct for merging on year
+NH_seasons$End <- data.table::shift(NH_seasons$End, n = -1) 
+
+# Drop 2023/2024
+NH_seasons <- NH_seasons[1:nrow(NH_seasons) - 1,]
 
 
+Figure_01_data_pivoted <- data |> select(data_source:hsp_rate_covid19, epi_dates) |>
+  mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
+           ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv)+
+           ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)) |> 
+  pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
+          values_to = "hsp_rate_pathogen") |> 
+  filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel")
 
+# 
+# x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel") |> 
+#   select(country:hsp_rate_covid19, epi_dates, hsp_rate) |> 
+#   # select(-hsp_rate) |> 
+#   pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
+#                values_to = "hsp_rate_pathogen") |> 
+#   mutate(pathogen = case_when(pathogen=="hsp_rate_flu"~"Influenza",
+#                               pathogen=="hsp_rate_rsv"~"RSV",
+#                               pathogen=="hsp_rate_covid19"~"COVID-19")) |> 
+#   mutate(hsp_rate = hsp_rate_pathogen |> summarize(sum(na.rm=TRUE)))
+  
 
 Figure_01_data <-
     data |> select(data_source:hsp_rate_covid19, epi_dates) |>
     mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
                ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv)+
-               ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
+               ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19) |> pivot_longer()
     )
 
 # y <- Figure_01_data |> filter(country=="UK", year=="2018") |> 
@@ -126,7 +157,6 @@ Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNe
     scale_x_cut(breaks=c("2019-12-31","2022-01-01"), which=c(1,2,3), scales=c(3.5, 0, 1), space=0.1)
 
 
-epiweek("2019-12-31")
 
 Figure_01_data |> filter(hemisphere == 'NH',
                          age_group == "ALL",
@@ -167,11 +197,9 @@ x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source !=
                  values_to = "hsp_rate_pathogen") |> 
     mutate(pathogen = case_when(pathogen=="hsp_rate_flu"~"Influenza",
                                 pathogen=="hsp_rate_rsv"~"RSV",
-                                pathogen=="hsp_rate_covid19"~"COVID-19")) |> 
-    mutate(hsp_rate = hsp_rate_pathogen |> summarize(sum(na.rm=TRUE)))
+                                pathogen=="hsp_rate_covid19"~"COVID-19"))
 
 
-#|> 
    # mutate(hsp_rate= group_by(country, week, year) |> summarize(sum(hsp_rate_pathogen, na.rm=TRUE)))
 
 
@@ -190,7 +218,7 @@ x |> group_by(week, year) |> summarize(px=sum(hsp_rate_pathogen, na.rm=TRUE))
 # Break data between seasons
 
 x |> filter(epi_dates>"2016-08-08") |> ggplot()+
-    geom_rect(mapping=aes(xmin=beginning, xmax=end, ymin=-Inf, ymax=Inf), data=NH_seasons, alpha=0.05, fill="#00bb00")+
+    geom_rect(mapping=aes(xmin=Start, xmax=End, ymin=-Inf, ymax=Inf), data=NH_seasons, alpha=0.05, fill="#00bb00")+
     geom_histogram(mapping = aes(epi_dates, y = hsp_rate_pathogen, fill=pathogen),
                    stat = "identity") +
     scale_x_date(
