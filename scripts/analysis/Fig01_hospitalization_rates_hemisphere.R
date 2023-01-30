@@ -1,5 +1,13 @@
+# Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
+# (complete time series for full time period: 2016 - 2023)
+# Design: line graph
+# X-axis: 2016 - 2023 with a second x-axis label that identifies the seasons
+
 # install.packages("ggbreak")
 # install.packages("patchwork")
+
+
+# INIT --------------------------------------------------------------------
 
 library(tidyverse)
 library(lubridate)
@@ -8,18 +16,36 @@ library(ggbreak)
 library(patchwork)
 
 data <- read.csv(file='data/merged_data/merged_data.csv')
-
-# Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
-# (complete time series for full time period: 2016 - 2023)
-# Design: line graph
-# X-axis: 2016 - 2023 with a second x-axis label that identifies the seasons
+epi_weeks <- read_csv(file="data/epi_weeks.csv")
 
 data$epi_dates <- as.Date(data$epi_dates)
 
-date_breaks <- data$epi_dates
-epi <- data$week
+# This is to create a table of season dates in the NH
+NH_seasons <- epi_weeks |>
+  filter(epi_wk_no == 20 | epi_wk_no == 40) |> 
+  filter(row_number() != 1 & row_number() != 12) |>
+  mutate(season_threshold = case_when(epi_wk_no == 40 ~ "Start",
+                                      TRUE ~ "End")) |>
+  pivot_wider(id_cols = year,
+              names_from = season_threshold,
+              values_from = epi_dates) |>
+  mutate(year = as.character(paste0(year, "/", year + 1)))
 
-breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
+# Shift End upward by one row to correct for merging on year
+NH_seasons$End <- data.table::shift(NH_seasons$End, n = -1) 
+
+# Drop 2023/2024
+NH_seasons <- NH_seasons[1:nrow(NH_seasons) - 1,]
+
+
+
+# Consider deleting -------------------------------------------------------
+
+
+
+#date_breaks <- data$epi_dates
+
+# breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
 
 
 # X-axis alternative
@@ -44,26 +70,7 @@ breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
 #                                  TRUE ~ hsp_rate_rsv))
 
 
-
-epi_weeks <- read_csv(file="data/epi_weeks.csv")
-
-# This is to create a table of season dates in the NH
-NH_seasons <- epi_weeks |>
-  filter(epi_wk_no == 20 | epi_wk_no == 40) |> 
-  filter(row_number() != 1 & row_number() != 12) |>
-  mutate(season_threshold = case_when(epi_wk_no == 40 ~ "Start",
-                                      TRUE ~ "End")) |>
-  pivot_wider(id_cols = year,
-              names_from = season_threshold,
-              values_from = epi_dates) |>
-  mutate(year = as.character(paste0(year, "/", year + 1)))
-
-# Shift End upward by one row to correct for merging on year
-NH_seasons$End <- data.table::shift(NH_seasons$End, n = -1) 
-
-# Drop 2023/2024
-NH_seasons <- NH_seasons[1:nrow(NH_seasons) - 1,]
-
+# Data preparation --------------------------------------------------------
 
 Figure_01_data_pivoted <- data |> select(data_source:hsp_rate_covid19, epi_dates) |>
   mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
@@ -72,6 +79,40 @@ Figure_01_data_pivoted <- data |> select(data_source:hsp_rate_covid19, epi_dates
   pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
           values_to = "hsp_rate_pathogen") |> 
   filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel")
+
+
+# This graph should show all hospitalizations as geom_col
+
+# This graph should show all hospitalizations by virus as geom_line
+
+# X-axis 2016-2019 (3 seasons) - consider implementing more breaks 
+# X-axis 08/2022 - X/2023
+
+head(Figure_01_data_pivoted)
+
+Total_hosp <-
+  data |> select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |>
+  mutate(
+    hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu) +
+      ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv) +
+      ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
+  ) |> group_by(hemisphere, epi_dates) |> summarise(total_hsp_rate = sum(hsp_rate, na.rm =
+                                                                     TRUE))
+
+
+ggplot(data = (Total_hosp |> filter(hemisphere == "NH"))) +
+  geom_col(mapping = aes(epi_dates, total_hsp_rate)) +
+  geom_rect(mapping = aes(xmin = Start, xmax = End, 
+                          ymin = -Inf, ymax = Inf),
+    data = NH_seasons, alpha = 0.05,  fill = "#00bb00"
+  ) +
+  scale_x_date(
+    date_breaks = "2 months",    # labels every 2 months
+    date_minor_breaks = "1 month",    # gridlines every month
+    date_labels = '%b\n%y' # Mon 'YR
+  )
+  
+  
 
 # 
 # x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel") |> 
@@ -139,8 +180,6 @@ format_dates <- function(x) {
             true = paste(months, years, sep = "\n"), 
             false = months)
 }
-
-format_dates(as.Date(c("2018-09-30", "2018-12-31", "2019-03-31", "2019-06-30")))
 
 
 Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
