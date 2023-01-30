@@ -43,6 +43,17 @@ breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
 #                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.3)),
 #                                  TRUE ~ hsp_rate_rsv))
 
+
+epi_weeks <- read_csv(file="data/epi_weeks.csv")
+
+NH_seasons <- data.frame(season=c("2016-2017","2017-2018","2018-2019", "2019-2020", "2021-2022", "2022-2023"),
+                         beginning=c("2016-10-02", "2017-10-01","2018-09-30","2019-09-29", "2021-10-01", "2022-10-02"),
+                         end=c("2017-05-14","2018-05-13","2019-05-12","2020-05-11","2022-05-15", "2023-02-15")) |> 
+    mutate(beginning=as_date(beginning), end=as_date(end))
+
+
+
+
 Figure_01_data <-
     data |> select(data_source:hsp_rate_covid19, epi_dates) |>
     mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
@@ -150,19 +161,33 @@ Figure_01_data |> filter(hemisphere == 'NH',
 # This can be ignored for now
 
 x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel") |> 
-    select(country:hsp_rate_covid19, epi_dates) |> 
-    select(-hsp_rate) |> 
+    select(country:hsp_rate_covid19, epi_dates, hsp_rate) |> 
+  # select(-hsp_rate) |> 
     pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
                  values_to = "hsp_rate_pathogen") |> 
     mutate(pathogen = case_when(pathogen=="hsp_rate_flu"~"Influenza",
                                 pathogen=="hsp_rate_rsv"~"RSV",
-                                pathogen=="hsp_rate_covid19"~"COVID-19"))
+                                pathogen=="hsp_rate_covid19"~"COVID-19")) |> 
+    mutate(hsp_rate = hsp_rate_pathogen |> summarize(sum(na.rm=TRUE)))
 
+
+#|> 
+   # mutate(hsp_rate= group_by(country, week, year) |> summarize(sum(hsp_rate_pathogen, na.rm=TRUE)))
+
+
+
+x |> group_by(week, year) |> summarize(px=sum(hsp_rate_pathogen, na.rm=TRUE))
 
 # This is the best one so far - prefer this for hospitalizations. 
 # More thinking on colors, axis labeling (any way to solve years + months?)
 # Annotation for seasons
 # Annotation for countries
+
+
+# !! DONT FORGET THIS
+# Main message here: Total hospitalizations in the hemisphere
+# Create one with a histogram, and one with total as columns+lines 
+# Break data between seasons
 
 x |> filter(epi_dates>"2016-08-08") |> ggplot()+
     geom_rect(mapping=aes(xmin=beginning, xmax=end, ymin=-Inf, ymax=Inf), data=NH_seasons, alpha=0.05, fill="#00bb00")+
@@ -206,20 +231,20 @@ x |> filter(epi_dates>"2016-08-08") |> ggplot()+
     
     # Not bad, needs vectorization and removal of top bold row
     
-    annotate("text", x=ymd('2017-01-26'), y=95, 
+    annotate("text", x=ymd('2017-01-26'), y=50, 
              label = 'atop(bold("Season"),"2016/2017")',
              colour = "#66c2a5", parse = TRUE)+
     
-    annotate("text", x=ymd('2018-01-25'), y=95, 
+    annotate("text", x=ymd('2018-01-25'), y=50, 
              label = 'atop(bold("Season"),"2017/2018")',
              colour = "#66c2a5", parse = TRUE)+
     
-    annotate("text", x=ymd('2019-01-24'), y=95, 
+    annotate("text", x=ymd('2019-01-24'), y=50, 
              label = 'atop(bold("Season"),"2018/2019")',
              colour = "#66c2a5", parse = TRUE)+
     
     
-    annotate("text", x=ymd('2022-03-01'), y=95, 
+    annotate("text", x=ymd('2022-03-01'), y=50, 
              label = 'atop(bold("Season"),"2021/2022")',
              colour = "#66c2a5", parse = TRUE)
     
@@ -231,11 +256,11 @@ x |> filter(epi_dates>"2016-08-08") |> ggplot()+
 # Not bad for complete display of situation in northern hemisphere, 
 
 x |> filter(epi_dates>"2016-08-08") |> 
-    filter(epi_dates < "2019-07-31" | epi_dates>"2021-12-31") |> 
+    filter(epi_dates < "2019-07-31" | epi_dates>"2021-12-31", country=="DE") |> 
     ggplot()+
     geom_rect(mapping=aes(xmin=beginning, xmax=end, ymin=-Inf, ymax=Inf), data=NH_seasons, alpha=0.05, fill="#00bb00")+
-    geom_histogram(mapping = aes(epi_dates, y = hsp_rate_pathogen, fill=pathogen),
-                   stat = "identity") +
+    geom_line(mapping=aes(epi_dates, hsp_rate_pathogen, color=pathogen))+
+    #geom_histogram(mapping = aes(epi_dates, y = hsp_rate_pathogen, fill=pathogen), stat = "identity") +
     scale_x_date(date_breaks = "2 months", 
                          minor_breaks = NULL,
                          #expand=expand_scale(add=15),
@@ -258,7 +283,9 @@ x |> filter(epi_dates>"2016-08-08") |>
     theme(axis.text.x = element_text(  hjust = 1), 
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5))+
-    theme(legend.position = 'bottom')+
+    theme(legend.position = 'bottom',
+          axis.line.x = element_line(colour = 'black', size = 1),
+          axis.ticks.x = element_line(colour='black', size = 1))+
     labs(title="Influenza and RSV hospitalizations in the Northern hemisphere, seasons 2016-2019 and 2022-23",
          subtitle="Rates per 100,000", x="Time", y="Hospitalizations (n/100,000)")+
     theme(axis.text.x.top = element_blank(),
@@ -290,14 +317,6 @@ x |> filter(epi_dates>"2016-08-08") |>
 #          fill = "grey", alpha = 0.15)+
 # geom_rect(mapping=aes(xmin="2016-10-02", xmax="201"))
 
-
-epi_weeks <- read_csv(file="data/epi_weeks.csv")
-
-
-NH_seasons <- data.frame(season=c("2016-2017","2017-2018","2018-2019", "2019-2020", "2021-2022", "2022-2023"),
-                         beginning=c("2016-10-02", "2017-10-01","2018-09-30","2019-09-29", "2021-10-01", "2022-10-02"),
-                         end=c("2017-05-14","2018-05-13","2019-05-12","2020-05-11","2022-05-15", "2023-02-15")) |> 
-    mutate(beginning=as_date(beginning), end=as_date(end))
 
 
 
