@@ -102,42 +102,27 @@ x <- checking$UK
 
 ######################################################
 ######## RATE USING 3% OF THE POPULATION ############
-#############    AUS - FR - CL      #################
+#############    AUS - FR      #################
 
 # Subset varibales
 subset_countries <- all_countries %>% 
-     select(country, data_source, hemisphere, week, year, age_group, denominator, hsp_rate_flu, hsp_abs_flu,hsp_rate_rsv, hsp_abs_rsv, hsp_rate_covid19, hsp_abs_covid,start_date, season) %>% 
+     select(country, data_source, hemisphere, week, year, age_group, denominator, hsp_rate_flu, hsp_abs_flu,hsp_rate_rsv, hsp_abs_rsv, hsp_rate_covid19, hsp_abs_covid,epi_dates, season) %>% 
      filter(age_group == "ALL",data_source !='FluNet - Non Sentinel' )
 
 # New flu considering 3% population
-subset_countries$flu_rate <- ifelse(subset_countries$country == "CL",
-                                    round((subset_countries$hsp_abs_flu/(subset_countries$denominator*0.03))*100000,2),
-                                    ifelse(subset_countries$country == "AUS",
-                                           round((subset_countries$hsp_abs_flu/(subset_countries$denominator*0.03))*100000,2),
-                                           ifelse(subset_countries$country == "FR",
-                                                  round((subset_countries$hsp_abs_flu/(subset_countries$denominator*0.03))*100000,2), subset_countries$hsp_rate_flu)))
+subset_countries$flu_rate <- ifelse(subset_countries$country == "AUS" |subset_countries$country == "FR",subset_countries$hsp_rate_flu/.03,subset_countries$hsp_rate_flu)
 
 # New RSV considering 3% population
-subset_countries$rsv_rate <- ifelse(subset_countries$country == "CL",
-                                    round((subset_countries$hsp_abs_rsv/(subset_countries$denominator*0.03))*100000,2),
-                                    ifelse(subset_countries$country == "AUS",
-                                           round((subset_countries$hsp_abs_rsv/(subset_countries$denominator*0.03))*100000,2),
-                                           ifelse(subset_countries$country == "FR",
+subset_countries$rsv_rate <- ifelse(subset_countries$country == "AUS" | subset_countries$country == "FR",subset_countries$hsp_rate_rsv/.03,subset_countries$hsp_rate_rsv)
 
-                                                  
-                                                                                                   round((subset_countries$hsp_abs_rsv/(subset_countries$denominator*0.03))*100000,2), subset_countries$hsp_rate_rsv)))
-# New COVID-19 considering 3% population
-subset_countries$covid_rate <- ifelse(subset_countries$country == "CL",
-                                    round((subset_countries$hsp_abs_covid/(subset_countries$denominator*0.03))*100000,2),
-                                    ifelse(subset_countries$country == "AUS",
-                                           round((subset_countries$hsp_abs_covid/(subset_countries$denominator*0.03))*100000,2),
-                                           ifelse(subset_countries$country == "FR",
-                                                  round((subset_countries$hsp_abs_covid/(subset_countries$denominator*0.03))*100000,2), subset_countries$hsp_rate_covid19)))
+#New COVID-19 considering 3% population
+subset_countries$covid_rate <- ifelse(subset_countries$country == "AUS" | subset_countries$country == "FR",subset_countries$hsp_rate_covid19/.03, subset_countries$hsp_rate_covid19)
+
 
 # Re-select 
 
 subset_countries_final <- subset_countries %>% 
-     select(country, data_source, hemisphere,start_date, year,week, year, season, flu_rate, rsv_rate, covid_rate)
+     select(country, data_source, hemisphere,epi_dates, year,week, year, season, flu_rate, rsv_rate, covid_rate)
 
 #### ################################################## ####
 #### ########## GRAPH NORTHERN HEMISPHER ############## ####
@@ -157,6 +142,7 @@ data_graph$country[data_graph$country == "DE"] <- "GER"
 
 axis_nh <- length(unique(data_graph$season))-1
 
+# tried to get the mean of pre-covid season.(problem with 0 VS NA DATA)
 average_data_nh <- data_graph %>% 
      filter(season == "2016-17", season == "2017-18", season == "2018-19")
 
