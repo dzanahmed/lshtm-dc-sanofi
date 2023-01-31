@@ -22,59 +22,11 @@ epi_weeks <- read_csv(file="data/epi_weeks.csv")
 
 data$epi_dates <- as.Date(data$epi_dates)
 
-# This is to create a table of season dates in the NH
-NH_seasons <- epi_weeks |>
-  filter(epi_wk_no == 20 | epi_wk_no == 40) |> 
-  filter(row_number() != 1 & row_number() != 12) |>
-  mutate(season_threshold = case_when(epi_wk_no == 40 ~ "Start",
-                                      TRUE ~ "End")) |>
-  pivot_wider(id_cols = year,
-              names_from = season_threshold,
-              values_from = epi_dates) |>
-  mutate(year = as.character(paste0(year, "/", year + 1)))
 
-# Shift End upward by one row to correct for merging on year
-NH_seasons$End <- data.table::shift(NH_seasons$End, n = -1) 
-
-# Drop 2023/2024
-NH_seasons <- NH_seasons[1:nrow(NH_seasons) - 1,]
-
-# Artificial ending of the season, for better plot rendering
-NH_seasons[5,3] <- as.Date("2023-03-01")
-
-br <- sort(c(NH_seasons$End, NH_seasons$Start))
-
-br <-
-  c(
-    "2017-05-14", # end 16-17
-    "2017-10-01", # beginning 17-18
-    "2018-05-13", # end 17-18
-    "2018-09-30", # beginning 18-19
-    "2019-05-12", # ending 18-19
-    "2022-10-02", # beginning 22-23
-    "2023-03-01"
-  )
 
 # Consider deleting -------------------------------------------------------
 
 
-
-#date_breaks <- data$epi_dates
-
-# breaks_mo <- seq(min(data$epi_dates), max(data$epi_dates), by="4 months")
-
-
-# X-axis alternative
-# scale_x_date(
-#         date_breaks = "4 weeks",
-#         date_minor_breaks = "1 week",
-#         date_labels = "%b %Y"
-# ) +
-#         theme(axis.text.x = element_text(
-#                 angle = 90,
-#                 vjust = 0.5,
-#                 hjust = 1
-#         ))
 
 #  Modification for France - not sure if applicable
 # #
@@ -86,28 +38,15 @@ br <-
 #                                  TRUE ~ hsp_rate_rsv))
 
 
+
+
+
+
+
 # Data preparation --------------------------------------------------------
 
-Figure_01_data_pivoted <- data |> select(data_source:hsp_rate_covid19, epi_dates) |>
-  mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
-           ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv)+
-           ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)) |> 
-  pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
-          values_to = "hsp_rate_pathogen") |> 
-  filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel")
 
-
-# This graph should show all hospitalizations as geom_col
-
-# This graph should show all hospitalizations by virus as geom_line
-
-# X-axis 2016-2019 (3 seasons) - consider implementing more breaks 
-# X-axis 08/2022 - X/2023
-
-head(Figure_01_data_pivoted)
-
-
-# Preparation for graphs by hemispheres ------------------------------------
+## Preparation for graphs by hemispheres ------------------------------------
 
 # Total_hosp extracts data and transforms hsp_rate for breakdown by week, aggregated for hemisphere
 # Total_hosp_virus extracts data and transforms it for breakdown by week, aggregated for hemisphere and virus
@@ -135,7 +74,7 @@ Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop F
   summarise(total_hsp_rate = sum(hsp_rate_pathogen, na.rm = TRUE))
 
 
-## Preparation of data for NH -----------------------------------------
+### Preparation of data for NH -----------------------------------------
 
 
 # Filter on NH, exclude dates outside range, remove 0 values from COVID-19 entries
@@ -183,49 +122,139 @@ NH_season_labels <-
     "Season 2022/2023"
   )
 
-NH_seasonLabels <- data.frame(seq.Date(as.Date("2017-03-10"), as.Date("2023-03-10"), by="1 year"),116,NH_season_labels)
+NH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-03-10"), as.Date("2023-03-10"), by="1 year"),y=116,NH_season_labels)
 
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
 
 Total_hosp_NH |> ggplot() +
-  geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalizations'), data = Total_hosp_NH) +
+  geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_NH) +
   geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_NH) +
   scale_x_date(
-    date_breaks = "1 months",    # labels every 2 months
-    #date_minor_breaks = "1 week",    # gridlines every month
-    date_labels = '%b' # Mon 'YR
+    date_breaks = "1 months",    # labels for every month
+    date_labels = '%b' # Short month Name
   ) +
- scale_x_break(breaks = NH_breaks)+
-  scale_y_continuous(breaks=seq(0,140,20))+
+ scale_x_break(breaks = NH_breaks)+ # This is ggbreak, breaks up from specified vector
+  scale_y_continuous(breaks=seq(0,140,20))+ # Organize y axis
   scale_color_brewer(palette = "Set2") +
-  scale_fill_manual("", breaks=c('Total hospitalizations'), values=c("Total hospitalizations"="grey80"))+
+  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="grey80"))+
   theme_bw() +
   theme(
     legend.position = "bottom", 
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
+    # Styling of X axis
     axis.line.x = element_line(colour = 'black', size = 1),
     axis.ticks.x = element_line(colour = 'black', size = 1),
+    # These are fixes to remove double axis introduced by scale x break
     axis.text.x.top = element_blank(),
     axis.ticks.x.top = element_blank(),
     axis.line.x.top = element_blank(),
     axis.title.x.bottom = element_blank()
     ) +
   labs(
-    title = "Hospitalization rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
-    subtitle = "Total hospitalization rate and breakdown by virus",
+    title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+    subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
     y = "Hospitalizations (n/100,000)"
-  )+
-  geom_text(mapping = aes(x,y,label=NH_season_labels), NH_seasonLabels)
+  ) +
+  geom_text(mapping = aes(x, y, label = NH_season_labels), NH_seasons_geom) # Provide season labels
   
 
-## Preparation of data for SH ----------------------------------------------
+
+### Preparation of data for SH ----------------------------------------------
+
+Total_hosp_SH <-
+  Total_hosp |> filter(hemisphere == "SH" 
+                        & epi_dates > "2017-03-22" 
+                        & epi_dates < "2022-11-01"
+                       )
 
 
-Total_hosp_SH <- Total_hosp |> filter(hemisphere == "SH")
+Total_hosp_virus_SH <-
+  Total_hosp_virus |> filter(hemisphere == "SH"
+                             & epi_dates > "2017-03-22"
+                             & epi_dates < "2022-11-01"
+                             ) |>
+  filter(
+    Virus == "RSV" |
+      Virus == "Influenza" |
+      (Virus == "COVID-19" & epi_dates > "2021-12-31")
+  )
 
+# Empty row to show the rest of this 22/23 season
+#Total_hosp_SH[nrow(Total_hosp_SH) + 1, ] <-
+ # list("SH", as.Date("2023-05-15"), 0)
+
+# Create breaks for X axis for NH
+SH_breaks <-
+  c(
+    "2017-11-01", # end 16-17
+    "2018-03-22", # beginning 17-18
+    "2018-11-01", # end 17-18
+    "2019-03-22", # beginning 18-19
+    "2019-11-01", # ending 18-19
+    "2022-03-22"  # beginning 22-23 
+    #"2022-11-01",   # end  22-23
+    #"2023-03-22"
+  )
+
+# Create Season labels for plots
+SH_season_labels <-
+  c(
+    "Season 2016/2017",
+    "Season 2017/2018",
+    "Season 2018/2019",
+    "Season 2019/2020",
+    "Season 2020/2021",
+    #"Season 2021/2022",
+    "Season 2022/2023"
+    #"Season 2023/2024"
+  )
+
+SH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-09-01"), as.Date("2022-09-01"), by="1 year"),y=76,SH_season_labels)
+
+
+
+## Total hospitalizations in the NH - overall and by virus -----------------
+
+
+Total_hosp_SH |> ggplot() +
+  geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
+  geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_SH) +
+  scale_x_date(
+    date_breaks = "1 months",    # labels for every month
+    date_labels = '%b' # Short month Name
+  ) +
+  scale_x_break(breaks = SH_breaks)+ # This is ggbreak, breaks up from specified vector
+  scale_y_continuous(breaks=seq(0,80,20))+ # Organize y axis
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="grey80"))+
+  theme_bw() +
+  theme(
+    legend.position = "bottom", 
+    plot.title=element_text(hjust=0.5),
+    plot.subtitle = element_text(hjust=0.5),
+    # Styling of X axis
+    axis.line.x = element_line(colour = 'black', size = 1),
+    axis.ticks.x = element_line(colour = 'black', size = 1),
+    # These are fixes to remove double axis introduced by scale x break
+    axis.text.x.top = element_blank(),
+    axis.ticks.x.top = element_blank(),
+    axis.line.x.top = element_blank(),
+    axis.title.x.bottom = element_blank()
+  ) +
+  labs(
+    title = "Hospitalisation rate in the Southern hemisphere, seasons 2016-2019 and 2022-23",
+    subtitle = "Total hospitalisation rate and hospitalisations by virus",
+    x = "Time",
+    y = "Hospitalizations (n/100,000)"
+  ) +
+  geom_text(mapping = aes(x, y, label = SH_season_labels), SH_seasons_geom) # Provide season labels
+
+
+
+# Drop after this ---------------------------------------------------------
 
 
 
@@ -335,16 +364,7 @@ x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source !=
 
 x |> group_by(week, year) |> summarize(px=sum(hsp_rate_pathogen, na.rm=TRUE))
 
-# This is the best one so far - prefer this for hospitalizations. 
-# More thinking on colors, axis labeling (any way to solve years + months?)
-# Annotation for seasons
-# Annotation for countries
 
-
-# !! DONT FORGET THIS
-# Main message here: Total hospitalizations in the hemisphere
-# Create one with a histogram, and one with total as columns+lines 
-# Break data between seasons
 
 x |> filter(epi_dates>"2016-08-08") |> ggplot()+
     geom_rect(mapping=aes(xmin=Start, xmax=End, ymin=-Inf, ymax=Inf), data=NH_seasons, alpha=0.05, fill="#00bb00")+
