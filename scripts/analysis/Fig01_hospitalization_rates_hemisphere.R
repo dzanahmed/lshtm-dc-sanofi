@@ -12,8 +12,10 @@
 library(tidyverse)
 library(lubridate)
 
+library(RColorBrewer)
+
 library(ggbreak)
-library(patchwork)
+library(patchwork) # Not sure if necessary after updates
 
 data <- read.csv(file='data/merged_data/merged_data.csv')
 epi_weeks <- read_csv(file="data/epi_weeks.csv")
@@ -37,7 +39,21 @@ NH_seasons$End <- data.table::shift(NH_seasons$End, n = -1)
 # Drop 2023/2024
 NH_seasons <- NH_seasons[1:nrow(NH_seasons) - 1,]
 
+# Artificial ending of the season, for better plot rendering
+NH_seasons[5,3] <- as.Date("2023-03-01")
 
+br <- sort(c(NH_seasons$End, NH_seasons$Start))
+
+br <-
+  c(
+    "2017-05-14", # end 16-17
+    "2017-10-01", # beginning 17-18
+    "2018-05-13", # end 17-18
+    "2018-09-30", # beginning 18-19
+    "2019-05-12", # ending 18-19
+    "2022-10-02", # beginning 22-23
+    "2023-03-01"
+  )
 
 # Consider deleting -------------------------------------------------------
 
@@ -90,53 +106,128 @@ Figure_01_data_pivoted <- data |> select(data_source:hsp_rate_covid19, epi_dates
 
 head(Figure_01_data_pivoted)
 
+
+# Preparation for graphs by hemispheres ------------------------------------
+
+# Total_hosp extracts data and transforms hsp_rate for breakdown by week, aggregated for hemisphere
+# Total_hosp_virus extracts data and transforms it for breakdown by week, aggregated for hemisphere and virus
+
 Total_hosp <-
-  data |> select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |>
+  data |> 
+  select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |>
   mutate(
     hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu) +
       ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv) +
       ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
-  ) |> group_by(hemisphere, epi_dates) |> summarise(total_hsp_rate = sum(hsp_rate, na.rm =
-                                                                     TRUE))
+  ) |>
+  group_by(hemisphere, epi_dates) |>
+  summarise(total_hsp_rate = sum(hsp_rate, na.rm = TRUE))
 
 
-ggplot(data = (Total_hosp |> filter(hemisphere == "NH"))) +
-  geom_col(mapping = aes(epi_dates, total_hsp_rate)) +
-  geom_rect(mapping = aes(xmin = Start, xmax = End, 
-                          ymin = -Inf, ymax = Inf),
-    data = NH_seasons, alpha = 0.05,  fill = "#00bb00"
-  ) +
-  scale_x_date(
-    date_breaks = "2 months",    # labels every 2 months
-    date_minor_breaks = "1 month",    # gridlines every month
-    date_labels = '%b\n%y' # Mon 'YR
+Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop FR subset of data
+  select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |> 
+  pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
+               values_to = "hsp_rate_pathogen") |> 
+  mutate(Virus = case_when(pathogen=="hsp_rate_flu"~"Influenza",
+                              pathogen=="hsp_rate_rsv"~"RSV",
+                              pathogen=="hsp_rate_covid19"~"COVID-19")) |>
+  group_by(hemisphere, Virus, epi_dates) |>
+  summarise(total_hsp_rate = sum(hsp_rate_pathogen, na.rm = TRUE))
+
+
+## Preparation of data for NH -----------------------------------------
+
+
+# Filter on NH, exclude dates outside range, remove 0 values from COVID-19 entries
+
+Total_hosp_NH <-
+  Total_hosp |> filter(hemisphere == "NH" 
+                       & epi_dates > "2016-09-25" 
+                       & epi_dates < "2023-05-15")
+
+
+Total_hosp_virus_NH <-
+  Total_hosp_virus |> filter(hemisphere == "NH"
+                             & epi_dates > "2016-09-14"
+                             & epi_dates < "2023-05-15") |>
+  filter(
+    Virus == "RSV" |
+      Virus == "Influenza" |
+      (Virus == "COVID-19" & epi_dates > "2021-12-31")
   )
-  
+
+# Empty row to show the rest of this 22/23 season
+Total_hosp_NH[nrow(Total_hosp_NH) + 1, ] <-
+  list("NH", as.Date("2023-05-15"), 0)
+
+# Create breaks for X axis for NH
+NH_breaks <-
+  c(
+    "2017-05-14", # end 16-17
+    "2017-09-25", # beginning 17-18
+    "2018-05-13", # end 17-18
+    "2018-09-25", # beginning 18-19
+    "2019-05-12", # ending 18-19
+    "2022-09-25"  # beginning 22-23 
+  )
+
+# Create Season labels for plots
+NH_season_labels <-
+  c(
+    "Season 2016/2017",
+    "Season 2017/2018",
+    "Season 2018/2019",
+    "Season 2019/2020",
+    "Season 2020/2021",
+    "Season 2021/2022",
+    "Season 2022/2023"
+  )
+
+NH_seasonLabels <- data.frame(seq.Date(as.Date("2017-03-10"), as.Date("2023-03-10"), by="1 year"),116,NH_season_labels)
+
+
+## Total hospitalizations in the NH - overall and by virus -----------------
+
+Total_hosp_NH |> ggplot() +
+  geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalizations'), data = Total_hosp_NH) +
+  geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_NH) +
+  scale_x_date(
+    date_breaks = "1 months",    # labels every 2 months
+    #date_minor_breaks = "1 week",    # gridlines every month
+    date_labels = '%b' # Mon 'YR
+  ) +
+ scale_x_break(breaks = NH_breaks)+
+  scale_y_continuous(breaks=seq(0,140,20))+
+  scale_color_brewer(palette = "Set2") +
+  scale_fill_manual("", breaks=c('Total hospitalizations'), values=c("Total hospitalizations"="grey80"))+
+  theme_bw() +
+  theme(
+    legend.position = "bottom", 
+    plot.title=element_text(hjust=0.5),
+    plot.subtitle = element_text(hjust=0.5),
+    axis.line.x = element_line(colour = 'black', size = 1),
+    axis.ticks.x = element_line(colour = 'black', size = 1),
+    axis.text.x.top = element_blank(),
+    axis.ticks.x.top = element_blank(),
+    axis.line.x.top = element_blank(),
+    axis.title.x.bottom = element_blank()
+    ) +
+  labs(
+    title = "Hospitalization rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+    subtitle = "Total hospitalization rate and breakdown by virus",
+    x = "Time",
+    y = "Hospitalizations (n/100,000)"
+  )+
+  geom_text(mapping = aes(x,y,label=NH_season_labels), NH_seasonLabels)
   
 
-# 
-# x <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source != "FluNet - Sentinel") |> 
-#   select(country:hsp_rate_covid19, epi_dates, hsp_rate) |> 
-#   # select(-hsp_rate) |> 
-#   pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
-#                values_to = "hsp_rate_pathogen") |> 
-#   mutate(pathogen = case_when(pathogen=="hsp_rate_flu"~"Influenza",
-#                               pathogen=="hsp_rate_rsv"~"RSV",
-#                               pathogen=="hsp_rate_covid19"~"COVID-19")) |> 
-#   mutate(hsp_rate = hsp_rate_pathogen |> summarize(sum(na.rm=TRUE)))
-  
+## Preparation of data for SH ----------------------------------------------
 
-Figure_01_data <-
-    data |> select(data_source:hsp_rate_covid19, epi_dates) |>
-    mutate(hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu)+
-               ifelse(is.na(hsp_rate_rsv) == TRUE, 0, hsp_rate_rsv)+
-               ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19) |> pivot_longer()
-    )
 
-# y <- Figure_01_data |> filter(country=="UK", year=="2018") |> 
-#         mutate(hsp_rate_flu==ifelse(week), 
-#                hsp_rate_rsv, 
-#                hsp_rate_covid19)
+Total_hosp_SH <- Total_hosp |> filter(hemisphere == "SH")
+
+
+
 
 
 Figure_1_NH <- Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNet - Sentinel") |> 
@@ -194,7 +285,6 @@ Figure_01_data |> filter(hemisphere=='NH', age_group=="ALL", data_source!="FluNe
     theme(axis.text.x = element_text(hjust = -0.1),  
           axis.title = element_blank())+
     scale_x_cut(breaks=c("2019-12-31","2022-01-01"), which=c(1,2,3), scales=c(3.5, 0, 1), space=0.1)
-
 
 
 Figure_01_data |> filter(hemisphere == 'NH',
@@ -297,7 +387,7 @@ x |> filter(epi_dates>"2016-08-08") |> ggplot()+
           axis.line.x.top = element_blank())+
     
     # Not bad, needs vectorization and removal of top bold row
-    
+  
     annotate("text", x=ymd('2017-01-26'), y=50, 
              label = 'atop(bold("Season"),"2016/2017")',
              colour = "#66c2a5", parse = TRUE)+
