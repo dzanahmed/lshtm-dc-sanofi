@@ -26,8 +26,6 @@ data$epi_dates <- as.Date(data$epi_dates)
 
 # Consider deleting -------------------------------------------------------
 
-
-
 #  Modification for France - not sure if applicable
 # #
 # data <- data |> mutate(hsp_rate_flu =
@@ -36,11 +34,6 @@ data$epi_dates <- as.Date(data$epi_dates)
 #         mutate(hsp_rate_rsv =
 #                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.3)),
 #                                  TRUE ~ hsp_rate_rsv))
-
-
-
-
-
 
 
 # Data preparation --------------------------------------------------------
@@ -60,8 +53,8 @@ Total_hosp <-
       ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
   ) |>
   group_by(hemisphere, epi_dates) |>
-  summarise(total_hsp_rate = sum(hsp_rate, na.rm = TRUE))
-
+  summarise(total_hsp_rate = sum(hsp_rate, na.rm = TRUE)
+  )
 
 Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop FR subset of data
   select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |> 
@@ -127,7 +120,7 @@ NH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-03-10"), as.Date("2023-03
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
 
-Total_hosp_NH |> ggplot() +
+Figure_1_NH <- Total_hosp_NH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_NH) +
   geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_NH) +
   scale_x_date(
@@ -212,14 +205,12 @@ SH_season_labels <-
     #"Season 2023/2024"
   )
 
-SH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-09-01"), as.Date("2022-09-01"), by="1 year"),y=76,SH_season_labels)
-
+SH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-09-01"), as.Date("2022-09-01"), by="1 year"),y=65,SH_season_labels)
 
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
 
-
-Total_hosp_SH |> ggplot() +
+Figure_1_SH <- Total_hosp_SH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
   geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_SH) +
   scale_x_date(
@@ -254,8 +245,27 @@ Total_hosp_SH |> ggplot() +
 
 
 
-# Drop after this ---------------------------------------------------------
+# Plot to PNG -------------------------------------------------------------
 
+
+ggsave(
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
+  Figure_1_NH,
+  width=16,
+  height=5
+)
+
+
+ggsave(
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
+  Figure_1_SH,
+  width=16,
+  height=5
+)
+
+
+
+# Drop after this ---------------------------------------------------------
 
 
 
@@ -585,4 +595,3 @@ ggsave(
     width=16,
     height=9
 )
-
