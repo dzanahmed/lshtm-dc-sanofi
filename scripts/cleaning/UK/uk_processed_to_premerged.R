@@ -62,4 +62,4 @@ combined <- combined %>% rowwise() %>%
      mutate(hsp_rate = hsp_abs/(denominator/100000))
 
 #export as pre_merged csv
-write.csv(combined,'data/premerged_data/uk_premerged_total_updated.csv')
+write.csv(combined,'data/premerged_data/uk_premerged_total.csv')

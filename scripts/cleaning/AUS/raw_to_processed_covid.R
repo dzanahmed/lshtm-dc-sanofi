@@ -2,7 +2,7 @@ library(tidyverse)
 library(readr)
 setwd('~/lshtm-dc-sanofi')
 
-aus_covid <- read.csv('data/raw_data/AUS/aus_national_covid_raw.csv')
+aus_covid <- read.csv('data/raw_data/AUS/aus_covid_national_update.csv')
 epi_wks <- read.csv('data/epi_weeks.csv')
 aus_covid <- aus_covid %>% rowwise() %>%
      mutate(date = paste0(Date,'/',X))
@@ -22,4 +22,4 @@ merged_data$X <- NULL
 colnames(merged_data) <- c("epi_dates","epi_wk_no","year","hsp_abs_covid" )
 
 #save as csv in processed folder
-write.csv(merged_data,'data/processed_data/AUS/australia_covid_all.csv')
+write.csv(merged_data,'data/processed_data/AUS/australia_covid_all_updated.csv')

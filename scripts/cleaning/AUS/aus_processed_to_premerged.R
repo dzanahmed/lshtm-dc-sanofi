@@ -4,7 +4,7 @@ library(readr)
 setwd('~/lshtm-dc-sanofi')
 
 #read in csv files for merging
-aus_covid <- read.csv('data/processed_data/AUS/australia_covid_all.csv')
+aus_covid <- read.csv('data/processed_data/AUS/australia_covid_all_updated.csv')
 aus_flu_rsv <- read.csv('data/processed_data/AUS/australia_fluNet.csv')
 
 ## read in template file for premerged csv
