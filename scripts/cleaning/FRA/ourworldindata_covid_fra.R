@@ -1,7 +1,7 @@
 # import OurWorldinData COVID-19 data and clean data for
 # France
 
-library(tidyverse)
+#library(tidyverse)
 
 #----------------------------------------------------------------
 # import dataset
