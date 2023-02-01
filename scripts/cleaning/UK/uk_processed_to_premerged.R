@@ -4,10 +4,10 @@ library(readr)
 setwd('~/lshtm-dc-sanofi')
 
 #open processed files
-rsv <- read.csv('data/processed_data/UK/rsv_all_yrs_all_ages.csv')
-flu <- read.csv('data/processed_data/UK/flu_rates_all_ages.csv')
+rsv <- read.csv('data/processed_data/UK/rsv_all_yrs_all_ages_updated.csv')
+flu <- read.csv('data/processed_data/UK/flu_rates_all_ages_updated.csv')
 flu <- flu %>% select(!X)
-covid <- read.csv('data/processed_data/UK/hsp_rates_cov_flu_2223.csv')
+covid <- read.csv('data/processed_data/UK/hsp_rates_cov_flu_2223_updated.csv')
 covid <- covid %>% select(!hsp_flu_rate)
 
 
@@ -62,4 +62,4 @@ combined <- combined %>% rowwise() %>%
      mutate(hsp_rate = hsp_abs/(denominator/100000))
 
 #export as pre_merged csv
-write.csv(combined,'data/premerged_data/uk_premerged_total.csv')
+write.csv(combined,'data/premerged_data/uk_premerged_total_updated.csv')
