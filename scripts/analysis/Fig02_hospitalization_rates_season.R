@@ -475,8 +475,8 @@ db_rect_covid_sh <- data_graph_sh_covid %>%
 # Graph using face grid
 plot1_covid_sh <-  data_graph_sh_covid %>% 
      ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
-     geom_line(size = 0.5, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh_covid$breaks_x, labels = data_graph_sh_covid$week)  +
+     geom_line(size = 1, linetype = 1) +
+     scale_x_continuous(breaks = data_graph_sh_covid$breaks_x, labels = data_graph_sh_covid$week, expand = c(0, 0))  +
      
      
      geom_rect(data = db_rect_covid_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
@@ -484,10 +484,18 @@ plot1_covid_sh <-  data_graph_sh_covid %>%
 #facet_wrap(vars(country), scales = "free_y")
 
 covid_sh <- plot1_covid_sh + theme_bw() +
-     theme(strip.placement = "outside",
-           strip.background = element_rect(fill="grey90", color="grey50"),
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
            panel.spacing=unit(0.1,"cm"),
-           legend.position = "none") +
+           legend.position = "bottom", 
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold")) +
+     
      labs(title = "Hospitalization rate for COVID",
           subtitle = "Southern Hemisphere, 2022 season",
           x= "Calendar week",
