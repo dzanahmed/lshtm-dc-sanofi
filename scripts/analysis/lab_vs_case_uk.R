@@ -81,4 +81,3 @@ plot_2223 <- plot_grid(hosp_2223,lab_2223,nrow=1)
 plot_grid(plot_1819,plot_2223,nrow=2)
 
 
-?scale_x_date
