@@ -1,8 +1,42 @@
 library(tidyverse)
 library(RColorBrewer)
+library(ggsankey)
 library(DiagrammeR)
 
 data_journey <- read_csv(file='data/other/data_journey.csv')
+colnames(data_journey)
+
+df <- data_journey |> make_long("Database (Raw data source)", "Processed data",
+                                "Country data", "Merged data")
+                                
+sankey_data_journey <- ggplot(df, aes(x = x, 
+               next_x = next_x, 
+               node = node, 
+               next_node = next_node,
+               fill = factor(node),
+               label = node)) +
+     geom_sankey(flow.alpha = 0.7, node.color = 1) +
+     geom_sankey_label(size = 5, color = 1, fill = "white") +
+     scale_fill_viridis_d(option="B") +
+     theme_sankey(base_size = 18) +
+     guides(fill = guide_legend(title = "Title"))+
+     theme(legend.position = "none",
+           axis.title = element_blank())
+
+sankey_data_journey
+
+ggsave(
+     sankey_data_journey,
+     file = 'output/data_journey_sankey_flowchart.png',
+     width = 16,
+     height = 9
+)
+
+
+
+# Alterantive -------------------------------------------------------------
+
+
 
 grViz("digraph flow {
 graph [layout = dot, rankdir = LR]
