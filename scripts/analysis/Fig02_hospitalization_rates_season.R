@@ -162,7 +162,7 @@ db_rect <- data_graph %>%
 # Graph using face grid
 plot1_flu <-  data_graph %>% 
      ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season, size = season))+#size = 0.7, linetype = 1, alpha = 0.6) +
+     geom_line(aes(linetype = season), size = 1)+#size = 0.7, linetype = 1, alpha = 0.6) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week, limits = c(10,42))  +
     # scale_color_manual(values=c('#999999','#E69F00', '#E69F00','#E69F00', '#E69F00')) +
      scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
@@ -175,16 +175,23 @@ plot1_flu <-  data_graph %>%
 #facet_wrap(vars(country), scales = "free_y")
 
 flu_nh <- plot1_flu + theme_bw() +
-     theme(strip.placement = "outside",
-           strip.background = element_rect(fill="grey90", color="grey50"),
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
            panel.spacing=unit(0.1,"cm"),
            legend.position = "bottom", 
-           legend.direction = "horizontal") +
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold")) +
+     
      labs(title = "Hospitalization rate for influenza, by year",
           subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
           x= "Calendar week",
           y = "hospitalization (per 100,000)",
-          caption = "(Epi week from 40 to 20)")
+          caption = "")
 
 # # Plot only 2022-23, to highlight it
 # flu_nh_last <- flu_nh +
@@ -199,7 +206,7 @@ flu_nh <- plot1_flu + theme_bw() +
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
      flu_nh,
-     width=16,
+     width=9,
      height=9
 )
 
@@ -212,7 +219,7 @@ ggsave(
 # Graph using face grid
 plot1_rsv <-  data_graph %>% 
      ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season, size = season)) +#(size = 0.4, linetype = 1) +
+     geom_line(aes(linetype = season), size = 1) +#(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
      scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
      scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
@@ -222,15 +229,23 @@ plot1_rsv <-  data_graph %>%
 #facet_wrap(vars(country), scales = "free_y")
 
 rsv_nh <- plot1_rsv + theme_bw() +
-     theme(strip.placement = "outside",
-           strip.background = element_rect(fill="grey90", color="grey50"),
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
            panel.spacing=unit(0.1,"cm"),
            legend.position = "bottom", 
-           legend.direction = "horizontal") +
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold")) +
+
+
      labs(title = "Hospitalization rate for RSV, by year",
           subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
           x= "Calendar week",
-          y = "hospitalization (per 100,000)")
+          y = "hospitalization (per 100,000)") 
 
 # # Plot only 2022-23, to highlight it
 # rsv_nh_last <- rsv_nh +
@@ -244,7 +259,7 @@ rsv_nh <- plot1_rsv + theme_bw() +
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
      rsv_nh,
-     width=16,
+     width=9,
      height=9
 )
 
@@ -256,7 +271,7 @@ ggsave(
 plot1_covid <-  data_graph %>% 
      filter(season == "2022-23") %>% 
      ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season, size = season)) +#(size = 0.4, linetype = 1) +
+     geom_line(aes(linetype = season), size = 1) +#(size = 0.4, linetype = 1) +
      scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
      scale_linetype_manual(values=c(rep("solid", axis_nh), "solid"))+
      scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
@@ -266,10 +281,18 @@ plot1_covid <-  data_graph %>%
 #facet_wrap(vars(country), scales = "free_y")
 
 covid_nh <- plot1_covid + theme_bw() +
-     theme(strip.placement = "outside",
-           strip.background = element_rect(fill="grey90", color="grey50"),
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
            panel.spacing=unit(0.1,"cm"),
-           legend.position = "none") +
+           legend.position = "bottom", 
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold"))+
+     
      labs(title = "Hospitalization rate for COVID",
           subtitle = "Northern Hemisphere, 2022–23 season",
           x= "Calendar week",
@@ -277,12 +300,12 @@ covid_nh <- plot1_covid + theme_bw() +
 
 
 # Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_NH.png'),
-     covid_nh,
-     width=10,
-     height=6
-)
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_NH.png'),
+#      covid_nh,
+#      width=10,
+#      height=6
+# )
 
 
 
@@ -335,8 +358,8 @@ db_rect_sh <- data_graph_sh %>%
 plot1_flu_sh <-  data_graph_sh %>% 
      filter(hemisphere == "SH") %>% 
      ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season, size = season)) + #(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week)  +
+     geom_line(aes(linetype = season), size = 1) + #(size = 0.4, linetype = 1) +
+     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week, expand = c(0, 0))  +
      scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
      scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+          
      
@@ -345,11 +368,19 @@ plot1_flu_sh <-  data_graph_sh %>%
      facet_grid(country ~ ., scales = "free_y", ) 
 #facet_wrap(vars(country), scales = "free_y")
 
-flu_sh <- plot1_flu_sh + theme(strip.placement = "outside",
-                                  strip.background = element_rect(fill="grey90", color="grey50"),
-                                  panel.spacing=unit(0.2,"cm"),
-                                  legend.position = "bottom", 
-                                  legend.direction = "horizontal") +
+flu_sh <- plot1_flu_sh + theme_bw() +
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
+           panel.spacing=unit(0.1,"cm"),
+           legend.position = "bottom", 
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold")) +
+     
      labs(title = "Hospitalization rate for influenza, by year",
           subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
           x= "Calendar week",
@@ -368,7 +399,7 @@ flu_sh <- plot1_flu_sh + theme(strip.placement = "outside",
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
      flu_sh,
-     width=16,
+     width=9,
      height=9
 )
 
@@ -380,8 +411,8 @@ ggsave(
 plot1_rsv_sh <-  data_graph_sh %>% 
      filter(hemisphere == "SH") %>% 
      ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season, size = season)) + #(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week)  +
+     geom_line(aes(linetype = season),size = 1) + #(size = 0.4, linetype = 1) +
+     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week, expand = c(0, 0))  +
      scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
      scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+ 
      
@@ -390,11 +421,19 @@ plot1_rsv_sh <-  data_graph_sh %>%
      facet_grid(country ~ ., scales = "free_y", ) 
 #facet_wrap(vars(country), scales = "free_y")
 
-rsv_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
-                                  strip.background = element_rect(fill="grey90", color="grey50"),
-                                  panel.spacing=unit(0.2,"cm"),
-                                  legend.position = "bottom", 
-                                  legend.direction = "horizontal") +
+rsv_sh <- plot1_rsv_sh + theme_bw() +
+     theme(plot.title = element_text(size = 14, face = "bold"),
+           axis.title.x = element_text(size=12, face = "bold"),
+           axis.title.y = element_text(size=12, face = "bold"),
+           strip.placement = "outside",
+           strip.background = element_rect(fill="white", color="white"),
+           panel.spacing=unit(0.1,"cm"),
+           legend.position = "bottom", 
+           legend.direction = "horizontal",
+           legend.title=element_text(size=12, face = "bold"), 
+           legend.text=element_text(size=11),
+           strip.text = element_text(size = 12, face = "bold")) +
+     
      labs(title = "Hospitalization rate for RSV, by year",
           subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
           x= "Calendar week",
@@ -411,7 +450,7 @@ rsv_sh <- plot1_rsv_sh + theme(strip.placement = "outside",
 ggsave(
      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
      rsv_sh,
-     width=16,
+     width=9,
      height=9
 )
 
@@ -456,12 +495,12 @@ covid_sh <- plot1_covid_sh + theme_bw() +
 
 
 # Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_SH.png'),
-     covid_sh,
-     width=10,
-     height=4
-)
+# ggsave(
+#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_SH.png'),
+#      covid_sh,
+#      width=10,
+#      height=4
+# )
 
 
 
