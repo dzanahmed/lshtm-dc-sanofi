@@ -1,0 +1,14 @@
+Database (Raw data source),Processed data,Country data,Merged data
+SARI Watch,"UK Influenza, RSV, COVID-19",UK,Final aggregated dataset
+CDC FluSurv-NET,USA Influenza,USA,Final aggregated dataset
+CDC RSV-NET,USA RSV,USA,Final aggregated dataset
+CDC COVID-NET,USA COVID-19,USA,Final aggregated dataset
+Robert Koch Institut GitHub,Germany COVID-19 (Hospital data),Germany,Final aggregated dataset
+Robert Koch Institut SurvStat 2.0,Germany COVID-19 (Lab data),Germany,Final aggregated dataset
+Australian Ministry of Health,Australia COVID-19,Australia,Final aggregated dataset
+Chile Ministry of Health,Chile COVID-19 (age-stratified),Chile,Final aggregated dataset
+Chile Ministry of Science,"Chile Influenza, RSV, COVID-19",Chile,Final aggregated dataset
+Sante Publique,France COVID-19,France,Final aggregated dataset
+WHO FluNet,"France Influenza, RSV",France,Final aggregated dataset
+WHO FluNet,"Australia Influenza, RSV",Australia,Final aggregated dataset
+WHO FluNet,"Germany Influenza, RSV",Germany,Final aggregated dataset

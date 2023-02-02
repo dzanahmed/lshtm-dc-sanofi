@@ -1,3 +1,13 @@
-# Minor issue
+# US CDC data
 
-Weekly_Rates_of_Laboratory-Confirmed_RSV_Hospitalizations_from_the_RSV-NET_Surveillance_System.csv is quite large ~90MB
+RSV Data from:
+https://data.cdc.gov/Case-Surveillance/Weekly-Rates-of-Laboratory-Confirmed-RSV-Hospitali/29hc-w46k  
+Last update 26th Jan
+
+COVID data from:
+https://gis.cdc.gov/grasp/COVIDNet/COVID19_3.html  
+Last update 21st Jan
+
+Influenza data from:
+https://gis.cdc.gov/GRASP/Fluview/FluHospRates.html  
+Last update 21st Jan

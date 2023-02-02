@@ -1,20 +1,17 @@
 # import WHO FluNet FluID RSV data and collate into one dataset for 
   # France
 
-library(tidyr)
 library(tidyverse)
-library(dplyr)
-library(readr)
 
-setwd("~/Desktop/LSHTM/2491. Data Challenge/Project Analysis")
+#setwd("~/Desktop/LSHTM/Github/lshtm-dc-sanofi")
 
 #----------------------------------------------------------------
 # import FluID and FluNet data
 # FluID
-VIW_FID_EPI <- read_csv("VIW_FID_EPI.csv")
+VIW_FID_EPI <- read_csv("data/raw_data/FluNet/VIW_FID_EPI.csv")
 
 # FluNet
-VIW_FNT <- read_csv("VIW_FNT.csv")
+VIW_FNT <- read_csv("data/raw_data/FluNet/VIW_FNT.csv")
 
 #----------------------------------------------------------------
 # france
@@ -71,4 +68,4 @@ var_order <- c("data_source", "country", "hemisphere", "week", "year", "origin_s
 france_fnt <- france_fnt[,var_order]
 
 # save and export
-write_csv(france_fnt, file = "france_fluNet.csv")
+write_csv(france_fnt, file = "data/processed_data/FRA/france_fluNet.csv")

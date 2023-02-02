@@ -5,7 +5,19 @@ library(cowplot)
 setwd('~/lshtm-dc-sanofi')
 
 #read in merged data csv - USING MERGED CSV 2 FOR NOW
-data <- read.csv('data/merged_data/merged_data2.csv')
+data <- read.csv('data/merged_data/merged_data.csv')
+
+#create dummy data for complete 22/23 season
+data[nrow(data) + 1,] = c(99999999,NA,'DE','NH',20,2023,'ALL',0,NA,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,'2023-05-14')
+
+data$hsp_rate <- as.numeric(data$hsp_rate)
+data$epi_dates <- as.Date(data$epi_dates)
+data$hsp_rate_covid19 <- as.numeric(data$hsp_rate_covid19)
+data$hsp_rate_rsv <- as.numeric(data$hsp_rate_rsv)
+data$hsp_rate_flu <- as.numeric(data$hsp_rate_flu)
+data$cases_rate_covid19 <- as.numeric(data$cases_rate_covid19)
+data$cases_rate_rsv <- as.numeric(data$cases_rate_rsv)
+data$cases_rate_flu <- as.numeric(data$cases_rate_flu)
 
 #filter for germany and all age groups
 ger_data <- data %>% filter(country == 'DE' & age_group == 'ALL')
@@ -16,7 +28,7 @@ ger_data <- ger_data %>% mutate(season =
                                    case_when(epi_dates >= '2016-10-02' & epi_dates <= '2017-05-14' ~ '16/17',
                                              epi_dates >= '2017-10-01' & epi_dates <= '2018-05-13' ~ '17/18',
                                              epi_dates >= '2018-09-30' & epi_dates <= '2019-05-12' ~ '18/19',
-                                             epi_dates >= '2022-10-02' & epi_dates <= '2023-01-01' ~ '22/23'
+                                             epi_dates >= '2022-10-02' & epi_dates <= '2023-05-14' ~ '22/23'
                                    )
 )
 
@@ -33,7 +45,7 @@ flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=ho
      facet_wrap(.~season,scales='free') +
      theme_bw() +
      xlab('Epi Week') +
-     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     ylab(expression(paste('Rate per 100,000 Persons'))) +
      theme(axis.title.y = element_text(size=9)) +
      theme(legend.position = 'none') 
 
@@ -47,7 +59,7 @@ rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=ho
      facet_wrap(.~season,scales='free') +
      theme_bw() +
      xlab('Epi Week') +
-     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     ylab(expression(paste('Rate per 100,000 Persons'))) +
      theme(axis.title.y = element_text(size=9)) +
      theme(legend.position = 'none') 
 
@@ -64,7 +76,7 @@ covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,co
      facet_wrap(.~season,scales='free') +
      theme_bw() +
      xlab('Epi Week') +
-     ylab(expression(paste('Hospitalisations per 100,000 Persons'))) +
+     ylab(expression(paste('Rate per 100,000 Persons'))) +
      theme(axis.title.y = element_text(size=9)) +
      theme(legend.position = 'bottom') +
      scale_color_discrete(name="Laboratory vs. Hospital Case",
