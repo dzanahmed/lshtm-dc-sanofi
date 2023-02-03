@@ -46,7 +46,7 @@ data$epi_dates <- as.Date(data$epi_dates)
 # Total_hosp_virus extracts data and transforms it for breakdown by week, aggregated for hemisphere and virus
 
 Total_hosp <-
-  data |> 
+  data |>
   select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |>
   mutate(
     hsp_rate = ifelse(is.na(hsp_rate_flu) == TRUE, 0, hsp_rate_flu) +
@@ -54,22 +54,31 @@ Total_hosp <-
       ifelse(is.na(hsp_rate_covid19) == TRUE, 0, hsp_rate_covid19)
   ) |>
   group_by(hemisphere, epi_dates) |>
-  summarise(total_hsp_rate = sum(hsp_rate, na.rm = TRUE)
-  )
+  summarise(total_hsp_rate = sum(hsp_rate, na.rm = TRUE))
 
-Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop FR subset of data
-  select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |> 
-  pivot_longer(cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"), names_to = "pathogen",
-               values_to = "hsp_rate_pathogen") |> 
-  mutate(Virus = case_when(pathogen=="hsp_rate_flu"~"Influenza",
-                              pathogen=="hsp_rate_rsv"~"RSV",
-                              pathogen=="hsp_rate_covid19"~"SARS-CoV-2")) |>
+Total_hosp_virus <-
+  data |> filter(data_source != "FluNet - Sentinel") |> # Drop FR subset of data
+  select(country:hsp_rate_covid19, epi_dates) |> filter(age_group == "ALL") |>
+  pivot_longer(
+    cols = c("hsp_rate_flu", "hsp_rate_rsv", "hsp_rate_covid19"),
+    names_to = "pathogen",
+    values_to = "hsp_rate_pathogen"
+  ) |>
+  mutate(
+    Virus = case_when(
+      pathogen == "hsp_rate_flu" ~ "Influenza",
+      pathogen == "hsp_rate_rsv" ~ "RSV",
+      pathogen == "hsp_rate_covid19" ~ "SARS-CoV-2"
+    )
+  ) |>
   group_by(hemisphere, Virus, epi_dates) |>
   summarise(total_hsp_rate = sum(hsp_rate_pathogen, na.rm = TRUE))
 
 
 ### Preparation of data for NH -----------------------------------------
 
+space<-strrep(" ", 15) # Spacing for labeled titles (Seasons)
+years <- 2016:2022
 
 # Filter on NH, exclude dates outside range, remove 0 values from SARS-CoV-2 entries
 
@@ -105,8 +114,7 @@ NH_breaks <-
   )
 
 # Labels for NH seasons
-space<-strrep(" ", 15)
-years <- 2016:2022
+
 NH_seasons_geom <-
   data.frame(
     A = space,
@@ -118,26 +126,6 @@ NH_seasons_geom <-
     x = seq.Date(as.Date("2017-01-18"), as.Date("2023-01-18"), by = "1 year"), # X label position
     y = 149 # Y label position
   ) |> mutate(label = paste(A, B, as.character(C), D, as.character(E), F))
-
-# 
-# # Create Season labels for plots
-# NH_season_labels <-
-#   c(
-#     "                  Season 2016/2017                  ",
-#     "                  Season 2017/2018                  ",
-#     "                  Season 2018/2019                  ",
-#     "                  Season 2019/2020                  ",
-#     "                  Season 2020/2021                  ",
-#     "                  Season 2021/2022                  ",
-#     "                  Season 2022/2023                  "
-#   )
-# 
-# 
-# NH_seasons_geom <-
-#   data.frame(x = seq.Date(as.Date("2017-01-18"), as.Date("2023-01-18"), by =
-#                             "1 year"),
-#              y = 150,
-#              NH_season_labels)
 
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
@@ -159,7 +147,7 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
   scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    #legend.position = "left",
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
     axis.title.y.left = element_text(hjust=0.7),
@@ -221,9 +209,7 @@ SH_breaks <-
   )
 
 # Labels for NH seasons
-space<-strrep(" ", 15)
-years <- 2016:2022
-SH_seasons_geom2 <-
+SH_seasons_geom <-
   data.frame(
     A = space,
     B = "Season",
@@ -249,25 +235,9 @@ SH_breaks <-
     #"2023-03-22"
   )
 
-# Create Season labels for plots
-SH_season_labels <-
-  c(
-    "Season 2016/2017",
-    "Season 2017/2018",
-    "Season 2018/2019",
-    "Season 2019/2020",
-    "Season 2020/2021",
-    #"Season 2021/2022",
-    "Season 2022/2023"
-    #"Season 2023/2024"
-  )
-
-SH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-09-01"), as.Date("2022-09-01"), by="1 year"),y=65,SH_season_labels)
-
-
 ## Total hospitalizations in the NH - overall and by virus -----------------
 
-Figure_1_SH2 <- Total_hosp_SH |> ggplot() +
+Figure_1_SH <- Total_hosp_SH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
   geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_SH, alpha=0.8) +
   scale_x_date(
@@ -276,7 +246,7 @@ Figure_1_SH2 <- Total_hosp_SH |> ggplot() +
     limits = as.Date(c("2016-04-01", "2022-11-01"))
   ) +
   scale_x_break(breaks = SH_breaks)+ # This is ggbreak, breaks up from specified vector
-  scale_y_continuous(breaks=seq(0,80,20))+ # Organize y axis
+  scale_y_continuous(breaks=seq(0,60,20), limits=c(0,75))+ # Organize y axis
   #scale_colour_viridis_d(option="B")+
   # scale_color_brewer(palette="Set2")+
   scale_colour_manual("", 
@@ -285,7 +255,7 @@ Figure_1_SH2 <- Total_hosp_SH |> ggplot() +
   scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    legend.position = "none",
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
     axis.title.y.left = element_text(hjust=0.7),
@@ -304,13 +274,47 @@ Figure_1_SH2 <- Total_hosp_SH |> ggplot() +
     x = "Time",
     y = "Hospitalisations per 100,000 persons"
   ) +
-  geom_label(mapping = aes(x, y, label = label), SH_seasons_geom2, fill="grey80", size=4,
-             label.padding=unit(0.5, "lines")) # Provide season labels
+  geom_label(mapping = aes(x, y, label = label), SH_seasons_geom, fill="grey80", size=4,
+             label.padding=unit(0.6, "lines")) # Provide season labels
 
 
-Figure_1_SH2
+Figure_1_SH
 
 
+# Plot to PNG -------------------------------------------------------------
+
+
+ggsave(
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
+  Figure_1_NH,
+  width=12,
+  height=5
+)
+
+
+ggsave(
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
+  Figure_1_SH,
+  width=12,
+  height=5
+)
+
+
+# Patchwork experiment ----------------------------------------------------
+
+x <- Figure_1_NH / Figure_1_SH + plot_annotation(tag_levels = 'A')
+
+
+x
+
+ggsave(
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_X.png',
+  x,
+  width=12,
+  height=8.5
+)
+
+# Old SH ---------------------------------------------------------------
 
 Figure_1_SH <- Total_hosp_SH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
@@ -320,7 +324,7 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
     date_labels = '%b' # Short month Name
   ) +
   scale_x_break(breaks = SH_breaks)+ # This is ggbreak, breaks up from specified vector
-  scale_y_continuous(breaks=seq(0,80,20))+ # Organize y axis
+  scale_y_continuous(breaks=seq(0,80,20), limits = c(0,70))+ # Organize y axis
   scale_color_brewer(palette = "Set2") +
   scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="grey80"))+
   theme_bw() +
@@ -347,24 +351,6 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
 
 
 Figure_1_SH
-
-# Plot to PNG -------------------------------------------------------------
-
-
-ggsave(
-  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
-  Figure_1_NH,
-  width=12,
-  height=4
-)
-
-
-ggsave(
-  'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
-  Figure_1_SH2,
-  width=12,
-  height=4
-)
 
 
 
