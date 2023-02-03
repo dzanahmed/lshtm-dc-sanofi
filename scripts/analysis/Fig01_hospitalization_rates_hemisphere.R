@@ -147,7 +147,7 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
   scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    #legend.position = "left",
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
     axis.title.y.left = element_text(hjust=0.7),
@@ -255,7 +255,7 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
   scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    legend.position = "none",
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
     axis.title.y.left = element_text(hjust=0.7),
