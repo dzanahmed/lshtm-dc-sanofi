@@ -107,9 +107,9 @@ usa_flu_16_17_plot <- ggplot() +
      scale_color_manual("", 
                          breaks = c('0-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                          values = c("0-4 yr"="deepskyblue2", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
-     xlab('2016-17 Epi Week') +
-     ylab('Hospitalization Rate (per 100,000)') +
-     ggtitle('Influenza') +
+     xlab('Epi Week') +
+     ylab('Hospitalisations per 100,000 persons') +
+     ggtitle(label = 'A. Influenza', subtitle = '2016-17') +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
@@ -132,9 +132,10 @@ usa_flu_17_18_plot <- ggplot() +
      scale_color_manual("", 
                         breaks = c('0-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                         values = c("0-4 yr"="deepskyblue2", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
-     xlab('2017-18 Epi Week') +
+     xlab('Epi Week') +
      ylab("") +
      theme_bw() +
+     ggtitle(label = '', subtitle = '2017-18') + 
      scale_x_date(
           date_breaks = "2 weeks",
           date_labels = '%U',
@@ -156,16 +157,17 @@ usa_flu_18_19_plot <- ggplot() +
      scale_color_manual("", 
                         breaks = c('0-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                         values = c("0-4 yr"="deepskyblue2", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
-     xlab('2018-19 Epi Week') +
+     xlab('Epi Week') +
      ylab('') +
+     ggtitle(label = '', subtitle = '2018-19') +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
           date_labels = '%U',
-          limits = c(as.Date(min(usa_flu_18$epi_dates) + 4), as.Date(max(usa_flu_18$epi_dates)))
+          limits = c(as.Date(min(usa_flu_18$epi_dates) + 6), as.Date(max(usa_flu_18$epi_dates) + 5))
      ) +
      ylim(0, 50) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank()) +
      theme(legend.position='none')
 
 # flu plot (2022 - 23) 
@@ -180,13 +182,14 @@ usa_flu_22_23_plot <- ggplot() +
      scale_color_manual("", 
                         breaks = c('0-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                         values = c("0-4 yr"="deepskyblue2", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
-     xlab('2022-23 Epi Week') +
+     xlab('Epi Week') +
      ylab("") +
+     ggtitle(label = '', subtitle = '2022-23') +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
           date_labels = '%U',
-          limits = c(as.Date(min(usa_flu_22$epi_dates) - 2), as.Date(max(usa_flu_22$epi_dates)))
+          limits = c(as.Date(min(usa_flu_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
      ylim(0, 50) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank())
@@ -212,22 +215,15 @@ usa_rsv_18_19_plot <- ggplot() +
      geom_line(data = filter(usa_rsv_18, age_group=="1-2"), aes(x = epi_dates, y = hsp_rate_rsv, color='1-<2 yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_18, age_group=="2-4"), aes(x = epi_dates, y = hsp_rate_rsv, color='2-4 yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_18, age_group=="5-17"), aes(x = epi_dates, y = hsp_rate_rsv, color='5-17 yr'), size = 1.25) +
-# commenting out these older age groups     
-     #geom_line(data = filter(usa_rsv_18, age_group=="18-49"), aes(x = epi_dates, y = hsp_rate_rsv, color='18-49 yr'), size = 1.25) +
-     #geom_line(data = filter(usa_rsv_18, age_group=="50-64"), aes(x = epi_dates, y = hsp_rate_rsv, color='50-64 yr'), size = 1.25) +
-     #geom_line(data = filter(usa_rsv_18, age_group=="65+"), aes(x = epi_dates, y = hsp_rate_rsv, color='65+ yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_18, age_group=="ALL"), aes(x = epi_dates, y = hsp_rate_rsv, color='Total'), linetype="dashed", size = 1.25) +
-     # scale_color_manual("", 
-     #                    breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
-     #                    values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", '18-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
      scale_color_manual("", 
                         breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', 'Total'),
-                        values = c("0-<6 mos"="deepskyblue2", '6-<12 mos'="orange", '1-<2 yr'="forestgreen", '2-4 yr'="purple", "5-17 yr"="indianred", 'Total'='black')) +
+                        values = c("0-<6 mos"="cornflowerblue", '6-<12 mos'="cyan3", '1-<2 yr'="cadetblue2", '2-4 yr'="dodgerblue3", "5-17 yr"="orange", 'Total'='black')) +
      
-     xlab('2018-19 Epi Week') +
-     ylab('Hospitalization Rate (per 100,000)') +
+     xlab('Epi Week') +
+     ylab('Hospitalisations per 100,000 persons') +
      ylim(0, 300) +
-     ggtitle('RSV') +
+     ggtitle(label = 'B. RSV', subtitle = '2018-19') +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
@@ -245,25 +241,20 @@ usa_rsv_22_23_plot <- ggplot() +
      geom_line(data = filter(usa_rsv_22, age_group=="1-2"), aes(x = epi_dates, y = hsp_rate_rsv, color='1-<2 yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_22, age_group=="2-4"), aes(x = epi_dates, y = hsp_rate_rsv, color='2-4 yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_22, age_group=="5-17"), aes(x = epi_dates, y = hsp_rate_rsv, color='5-17 yr'), size = 1.25) +
-     #geom_line(data = filter(usa_rsv_22, age_group=="18-49"), aes(x = epi_dates, y = hsp_rate_rsv, color='18-49 yr'), size = 1.25) +
-     #geom_line(data = filter(usa_rsv_22, age_group=="50-64"), aes(x = epi_dates, y = hsp_rate_rsv, color='50-64 yr'), size = 1.25) +
-     #geom_line(data = filter(usa_rsv_22, age_group=="65+"), aes(x = epi_dates, y = hsp_rate_rsv, color='65+ yr'), size = 1.25) +
      geom_line(data = filter(usa_rsv_22, age_group=="ALL"), aes(x = epi_dates, y = hsp_rate_rsv, color='Total'), linetype="dashed", size = 1.25) +
-     # scale_color_manual("", 
-     #                    breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
-     #                    values = c("0-<6 mos"="red", '6-<12 mos'="pink", '1-<2 yr'="lightblue", '2-4 yr'="darkorange", "5-17 yr"="orange", '18-49 yr'='blue', '50-64 yr'='purple', '65+ yr'='green', 'Total'='black')) +
      scale_color_manual("", 
                         breaks = c('0-<6 mos', '6-<12 mos', '1-<2 yr', '2-4 yr','5-17 yr', 'Total'),
-                        values = c("0-<6 mos"="deepskyblue2", '6-<12 mos'="orange", '1-<2 yr'="forestgreen", '2-4 yr'="purple", "5-17 yr"="indianred", 'Total'='black')) +
+                        values = c("0-<6 mos"="cornflowerblue", '6-<12 mos'="cyan3", '1-<2 yr'="cadetblue2", '2-4 yr'="dodgerblue3", "5-17 yr"="orange", 'Total'='black')) +
      
-     xlab('2022-23 Epi Week') +
+     xlab('Epi Week') +
      ylab('') +
+     ggtitle(label = '', subtitle = '2022-23') + 
      ylim(0, 300) +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
           date_labels = '%U',
-          limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date(max(usa_covid19_22$epi_dates)))
+          limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank()) 
 
@@ -286,15 +277,15 @@ usa_covid19_22_23_plot <- ggplot() +
      geom_line(data = filter(usa_covid19_22, age_group=="ALL"), aes(x = epi_dates, y = hsp_rate_covid19, color='Total'), linetype="dashed", size = 1.25) +
      scale_color_manual("",
                         breaks = c('0-6 mos', '6 mos-4 yr', '5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
-                        values = c("0-6 mos"="deepskyblue2", '6 mos-4 yr'="orchid3", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
-     xlab('2022-23 Epi Week') +
-     ylab('Hospitalization Rate (per 100,000)') +
-     ggtitle("SARS-CoV-2") +
+                        values = c("0-6 mos"="cornflowerblue", '6 mos-4 yr'="darkslategray3", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
+     xlab('Epi Week') +
+     ylab('Hospitalisations per 100,000 persons') +
+     ggtitle(label = "C. SARS-CoV-2", subtitle = '2022-23') +
      theme_bw() +
      scale_x_date(
           date_breaks = "2 weeks",
           date_labels = '%U',
-          limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date(max(usa_covid19_22$epi_dates)))
+          limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
 
@@ -304,8 +295,7 @@ ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_covid19_hosp
 
 
 # arrange all plots together
-all_plots <- (usa_flu_plots) / ((usa_rsv_18_19_plot | usa_rsv_22_23_plot) | usa_covid19_22_23_plot) + 
-     plot_annotation(title = 'USA Hospitalisation Rates by Age Group')
+all_plots <- (usa_flu_plots) / ((usa_rsv_18_19_plot | usa_rsv_22_23_plot) | usa_covid19_22_23_plot)
 
 ggsave(filename = 'output/Fig 04 - Hospitalization by age group/hosp_byage_plots.pdf', plot = all_plots, width=15, height=9)
 

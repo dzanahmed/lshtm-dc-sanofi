@@ -75,13 +75,13 @@ Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop F
 Total_hosp_NH <-
   Total_hosp |> filter(hemisphere == "NH" 
                        & epi_dates > "2016-09-25" 
-                       & epi_dates < "2023-05-15")
+                       & epi_dates < "2023-05-11") 
 
 
 Total_hosp_virus_NH <-
   Total_hosp_virus |> filter(hemisphere == "NH"
-                             & epi_dates > "2016-09-14"
-                             & epi_dates < "2023-05-15") |>
+                             & epi_dates > "2016-09-25"
+                             & epi_dates < "2023-02-05") |>
   filter(
     Virus == "RSV" |
       Virus == "Influenza" |
@@ -90,7 +90,7 @@ Total_hosp_virus_NH <-
 
 # Empty row to show the rest of this 22/23 season
 Total_hosp_NH[nrow(Total_hosp_NH) + 1, ] <-
-  list("NH", as.Date("2023-05-15"), 0)
+  list("NH", as.Date("2023-05-11"), 0)
 
 # Create breaks for X axis for NH
 NH_breaks <-
@@ -122,15 +122,17 @@ NH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-03-10"), as.Date("2023-03
 
 Figure_1_NH <- Total_hosp_NH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_NH) +
-  geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_NH) +
+  geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_NH, alpha=0.8) +
   scale_x_date(
     date_breaks = "1 months",    # labels for every month
     date_labels = '%b' # Short month Name
   ) +
  scale_x_break(breaks = NH_breaks)+ # This is ggbreak, breaks up from specified vector
   scale_y_continuous(breaks=seq(0,140,20))+ # Organize y axis
-  scale_color_brewer(palette = "Set2") +
-  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="grey80"))+
+  #scale_colour_viridis_d(option="B")+
+ # scale_color_brewer(palette="Set2")+
+  scale_colour_manual("", values=c("#ff880d", "#99d326", "#00337C"))+
+  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#D9F0FF"))+
   theme_bw() +
   theme(
     legend.position = "bottom", 
@@ -146,14 +148,15 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
     axis.title.x.bottom = element_blank()
     ) +
   labs(
-    title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
-    subtitle = "Total hospitalisation rate and hospitalisations by virus",
+   # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+    # subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
     y = "Hospitalizations (n/100,000)"
   ) +
   geom_text(mapping = aes(x, y, label = NH_season_labels), NH_seasons_geom) # Provide season labels
   
 
+Figure_1_NH
 
 ### Preparation of data for SH ----------------------------------------------
 
@@ -251,16 +254,16 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
   Figure_1_NH,
-  width=16,
-  height=5
+  width=12,
+  height=4
 )
 
 
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
   Figure_1_SH,
-  width=16,
-  height=5
+  width=8,
+  height=2.5
 )
 
 
