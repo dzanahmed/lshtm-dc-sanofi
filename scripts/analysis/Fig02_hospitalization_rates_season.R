@@ -1,50 +1,33 @@
+################
+### Packages ###
+################
 library(tidyverse)
 library(ggplot2)
 library(readr)
-library(ftplottools) #themes
 library(cowplot)
-library(grid)
-library(ggpubr)
-
-# Data
-all_countries <- read_csv("data/merged_data/merged_data.csv")
 
 
-####################################################################
-##### ABSOLUTES NUMBER FOR THOSE COUNTRIES WITH ONLY RATES #########
-####################################################################
-# Code won't use it as the y-axis will be rates
-# Germany
-# germany_pop <- data.frame(year = c(2016:2019, 2022, 2022),
-#                           pop = c(82500000, 82700000, 82900000, 83100000, 84300000, 84300000))
-# # USA
-# usa_pop <- data.frame(year = c(2016:2019, 2022, 2023),
-#                       pop = c(323100000, 325100000, 326800000, 328300000, 333300000, 333300000))
-# 
-# # Absolute flu number Germany
-# for(i in c(germany_pop$year)) {
-#      all_countries$hsp_abs_flu <- ifelse(all_countries$country == "DE" & all_countries$year == i, round((all_countries$hsp_rate_flu* germany_pop$pop[germany_pop$year == i])/100000,0),all_countries$hsp_abs_flu)
-# }
-# 
-# # Absolute flu number USA
-# for(i in c(usa_pop$year)) {
-#      all_countries$hsp_abs_flu <- ifelse(all_countries$country == "US" & all_countries$year == i, round((all_countries$hsp_rate_flu* usa_pop$pop[usa_pop$year == i])/100000,0),all_countries$hsp_abs_flu)
-# }
+### Data last update 2/2/23 ###
+###############################
 
+data <- read_csv("/data/merged_data/merged_data.csv")
 
-##########################################################
-########### NEW VARABLE: SEASON #########################
-#########################################################
+data$country[data$country == "DE"] <- "GER"
+data$country[data$country == "FR"] <- "FRA"
+data$country[data$country == "CL"] <- "CHI"
+data$country[data$country == "US"] <- "USA"
 
+#################################
+##### NEW VARABLE: SEASON #######
+#################################
 
 seasons <- data.frame(start = c(2015:2022),
                       end = c(2016:2023),
                       seas = c("2015-16","2016-17","2017-18", "2018-19","2019-20","2020-21","2021-22","2022-23"))
 
+data$season <- NA # Create the variable
 
-all_countries$season <- NA # Create the variable
-
-## For loop to iterate the all_countries dataset
+## For loop to iterate the "data" dataset
 
 for(i in c(seasons$start)) {
      year_start <- i
@@ -52,462 +35,592 @@ for(i in c(seasons$start)) {
      p_season <- (seasons$seas[seasons$start== i])
      
      # Differentiate NH VS SH
-     all_countries$season <-
-     ifelse((all_countries$hemisphere == "NH" & all_countries$year == year_start & all_countries$week %in% c(40:52)) | 
-                (all_countries$hemisphere == "NH" & all_countries$year == year_end & all_countries$week %in% c(1:39)), p_season,
-            ifelse(
-                   (all_countries$hemisphere == "SH"& all_countries$year == year_start & all_countries$week   %in% c(14:52)) |
-                    (all_countries$hemisphere == "SH"& all_countries$year == year_end & all_countries$week %in% c(1:13)),p_season,all_countries$season))
-            
- }
-
-# Check the season created
-
-countries <- data.frame(country = c("UK", "US", "DE", "FR", "AUS", "CL"),
-                        hemisphere = c(rep("NH",4), "SH","SH"))
-checking<- list()
-
-for(c in countries$country){
-     data_f   <- all_countries %>% 
-          select(country, year, age_group, week, season, hsp_rate_flu, denominator,hsp_abs_flu) %>% 
-          filter(country == c, age_group == 'ALL' )
-     checking[[c]] <- data_f
-
+     data$season <-
+          ifelse((data$hemisphere == "NH" & data$year == year_start & data$week %in% c(40:52)) | 
+                      (data$hemisphere == "NH" & data$year == year_end & data$week %in% c(1:39)), p_season,
+                 ifelse(
+                      (data$hemisphere == "SH"& data$year == year_start & data$week   %in% c(14:52)) |
+                           (data$hemisphere == "SH"& data$year == year_end & data$week %in% c(1:13)),p_season,data$season))
+     
 }
 
-# To see in the environmnet
-x <- checking$UK
-
-############################################
-###### Standardized data DE and USA #######
-############################################
-# No used it as well.
-# Table of NH countries
-
-# nh_countries <- countries[countries$hemisphere == "NH",]
-# 
-# data_all_ages <- filter(all_countries,country =="V") # to create the data set
-#      
-# for(i in nh_countries$country){
-#      for(l in seasons$seas){
-#           db_norm <- all_countries  %>% 
-#                filter(country == i, season == l, age_group == "ALL") %>% 
-#                mutate(min = min(hsp_abs_flu, na.rm = T),
-#                       max = max(hsp_abs_flu, na.rm = T)) %>% 
-#                mutate(norm_flu = round((hsp_abs_flu - min)/(max-min),3))
-#                
-#           data_all_ages <- rbind(data_all_ages,db_norm)
-#      }
-# }
-
-######################################################
-######## RATE USING 3% OF THE POPULATION ############
-#############    AUS - FR      #################
-
-# Subset varibales
-subset_countries <- all_countries %>% 
-     select(country, data_source, hemisphere, week, year, age_group, denominator, hsp_rate_flu, hsp_abs_flu,hsp_rate_rsv, hsp_abs_rsv, hsp_rate_covid19, hsp_abs_covid,epi_dates, season) %>% 
-     filter(age_group == "ALL",data_source !='FluNet - Non Sentinel' )
-
-# New flu considering 3% population
-subset_countries$flu_rate <- ifelse(subset_countries$country == "AUS" |subset_countries$country == "FR",subset_countries$hsp_rate_flu/.03,subset_countries$hsp_rate_flu)
-
-# New RSV considering 3% population
-subset_countries$rsv_rate <- ifelse(subset_countries$country == "AUS" | subset_countries$country == "FR",subset_countries$hsp_rate_rsv/.03,subset_countries$hsp_rate_rsv)
-
-#New COVID-19 considering 3% population
-subset_countries$covid_rate <- ifelse(subset_countries$country == "AUS" | subset_countries$country == "FR",subset_countries$hsp_rate_covid19/.03, subset_countries$hsp_rate_covid19)
+#################################
+###### Northern Hemisphere ######
+#################################
 
 
-# Re-select 
-
-subset_countries_final <- subset_countries %>% 
-     select(country, data_source, hemisphere,epi_dates, year,week, year, season, flu_rate, rsv_rate, covid_rate)
-
-#### ################################################## ####
-#### ########## GRAPH NORTHERN HEMISPHER ############## ####
-#### ################################################## ####
-
-# Dataset for the northern hemisphere 
-
-data_graph <-  subset_countries_final %>%
+data_graph <-  data %>%
      filter(season != "2015-16", hemisphere == "NH", season != "2021-22") %>% 
      #week = factor(week,levels = c(40:52,1:39) original
      mutate(week = factor(week,levels = c(31:52,1:30)),
             season = as.factor(season),
             breaks_x = as.numeric(week),
             label_x = week) 
-
-data_graph$country[data_graph$country == "DE"] <- "GER"
-
-axis_nh <- length(unique(data_graph$season))-1
-
-# tried to get the mean of pre-covid season.(problem with 0 VS NA DATA)
-average_data_nh <- data_graph %>% 
-     filter(season == "2016-17", season == "2017-18", season == "2018-19")
-
-## To create a thicker line
-# data_graph_last_season <- data_graph %>% 
-#      filter(season == "2022-23")
+data_graph$week <- as.numeric(data_graph$week)
 
 
-####  ##############################################
-####  ########### INFLUENZA PLOTS NH ###############
-####  ##############################################
-# to make the rectangle 
-db_rect <- data_graph %>% 
-     group_by(country, week) %>% 
-     filter(week == 40, year == 2017, country == "UK" | country =="GER"|country == "US"|country == "FR")
 
-# Graph using face grid
-plot1_flu <-  data_graph %>% 
-     ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season), size = 1)+#size = 0.7, linetype = 1, alpha = 0.6) +
-     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week, limits = c(10,42))  +
-    # scale_color_manual(values=c('#999999','#E69F00', '#E69F00','#E69F00', '#E69F00')) +
-     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
-     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+
+##############################################
+##########   ####  #      #    #   ###########
+##########   #     #      #    #   ###########
+##########   # #   #      #    #   ###########
+##########   #     #      #    #   ###########
+##########   #     ####    ####    ###########      
+##############################################
+
+
+###### FLU NH COUNTRIES ######
+##############################
+
+seasons_color <- c("2016-17"='#C87479',
+                   "2017-18" ='#EEB702',
+                   "2018-19" = '#758B59', 
+                   "2022-23"='#4D4F80')
+
+#--- UK
+
+flu_uk <- data_graph %>% 
+               filter(country == "UK", data_source == "UKHSA") %>% 
+               droplevels(data_graph$season) %>% 
+          ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+          scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+          scale_colour_manual("Season", 
+                              values=c("2017-18" ='#EEB702',
+                                       "2018-19" = '#758B59', 
+                                       "2022-23"='#DC143C')) +
+          geom_line(size = 1) + theme_bw() +
+          scale_alpha_manual(values=c(0.7,0.7,1)) +
+                theme(
+               plot.title = element_text(size = 14, face = "bold", vjust = 2),
+               axis.title.x=element_blank(),
+               axis.text.x=element_blank(),
+               #axis.title.x = element_text(size=12),# face = "bold"),
+               axis.title.y=element_blank(),
+               #axis.title.y = element_text(size=12),# face = "bold"),
+               legend.position = "nono",
+               legend.title=element_text(size=12, face = "bold"), 
+               legend.text=element_text(size=11),
+               strip.text = element_text(size = 12, face = "bold"),
+               plot.margin = unit(c(25, 10, 0, 5.5),"pt")
+               ) +
+     # geom_text(x = 11, y = 15,
+     #           label = "UK",
+     #           color = "black",
+     #           size = 12) +
+     labs(title = "(A) Northern Hemisphere",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+flu_uk    
+
+#--- USA
+
+flu_usa <- data_graph %>% 
+     filter(country == "USA", age_group == "ALL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,1), guide = 'none') +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x=element_blank(),
+          #axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "bottom",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(5.5, 10, 0, 5.5),"pt")
+     ) +
+     labs(#title = "UK",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+flu_usa  
+
+#--- GER
+
+flu_ger <- data_graph %>% 
+     filter(country == "GER", age_group == "ALL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1)) +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 10, 0, 5.5),"pt")
+     ) +
+     labs(#title = "UK",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+flu_ger    
+
      
+#--- FR
 
-     # create a rectangle 
-     geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
+flu_fr <- data_graph %>% 
+     filter(country == "FRA", data_source == "FluNet - Sentinel", season != "2019-20") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) +  scale_alpha_manual(values=c(0.7,0.7,0.7,1)) +
+     theme_bw() +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          axis.title.y =element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.x =element_blank(),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 10, 0, 5.5),"pt"),
+          #plot.tag.position = c(-0.02, 0.5),
+          #plot.tag = element_text(angle=90)
+     ) +
+     labs(#title = "FRA",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          #tag = "arbitrary words",
+          caption = "")
+flu_fr
 
-flu_nh <- plot1_flu + theme_bw() +
-     theme(plot.title = element_text(size = 14, face = "bold"),
-           axis.title.x = element_text(size=12, face = "bold"),
-           axis.title.y = element_text(size=12, face = "bold"),
-           strip.placement = "outside",
-           strip.background = element_rect(fill="white", color="white"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal",
-           legend.title=element_text(size=12, face = "bold"), 
-           legend.text=element_text(size=11),
-           strip.text = element_text(size = 12, face = "bold")) +
-     
-     labs(title = "Hospitalization rate for influenza, by year",
-          subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)",
+
+
+###### FLU SH COUNTRIES ######
+##############################
+
+data_graph_sh <- data %>% 
+     filter(hemisphere == "SH", data_source != "AUS DOH", year != 2023) %>% 
+     mutate(season = as.factor(year),
+            breaks_x = as.numeric(week),
+            label_x = week)
+
+
+#--- AUS
+
+flu_aus <- data_graph_sh %>% 
+     filter(country == "AUS") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(1,52, 2), labels = seq(1,52, 2), expand = c(0, 0)) + 
+     #scale_x_continuous(breaks = data$breaks_x, labels = data$week, expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016" ='#8f90b3',
+                                  "2017" ='#EEB702',
+                                  "2018" = '#758B59',
+                                  "2019" = '#dc9334',
+                                  "2022"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1)) +
+     theme(
+          plot.title = element_text(size = 14, face = "bold", vjust = 2),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(5.5, 5.5, 0, 5.5),"pt")
+     ) +
+     labs(title = "(B) Southern Hemisphere",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+flu_aus  
+
+#---- Chi
+
+flu_chi <- data_graph_sh %>% 
+     filter(country == "CHI", data_source == "EPI MINSAL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_flu, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(1,52, 2), labels = seq(1,52, 2), expand = c(0, 0)) +
+     #scale_x_continuous(breaks = data$breaks_x, labels = data$week, expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016" ='#8f90b3',
+                                  "2017" ='#EEB702',
+                                  "2018" = '#758B59',
+                                  "2019" = '#dc9334',
+                                  "2022"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1), guide = 'none') +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x=element_blank(),
+          #axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "bottom",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 5.5, 0, 5.5),"pt")
+     ) +
+     labs(#title = "AUS",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
           caption = "")
 
-# # Plot only 2022-23, to highlight it
-# flu_nh_last <- flu_nh +
-#      geom_line(data = data_graph_last_season,
-#                aes(as.numeric(week),flu_rate),
-#                color = "#FF66CC",
-#                size = 0.75)
+######## MAKING THE LAS FLU GRAPH FOR BOTH HEMISPHERES #####
 
-##
+#create country labels
+title_aus <- ggdraw() + 
+     draw_label("AUS",fontface = 'bold',x = 0.4,hjust = 0,angle = 90)+theme(plot.margin = margin(0, 0, 0, 0))
+title_chi <- ggdraw() + 
+     draw_label("CHI",fontface = 'bold',x = 0.4,hjust = 0,angle =90)+theme(plot.margin = margin(0, 0, 0, 0))
 
-#Save
+country_grid_sh <- plot_grid(title_aus,title_chi,nrow=2)
+
+country_grid_sh
+
+flu_sh <-(country_grid_sh+p_lab | flu_aus  /flu_chi) + plot_layout(widths = c(.1, 1))
+flu_sh
 ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH.png'),
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_NH_2.png'),
      flu_nh,
-     width=9,
-     height=9
+     width=6.5,
+     height=6.5
 )
 
-####  ##############################################
-####  ########### RSV PLOTS NH    ##################
-####  ##############################################
+#####################################
+###### FLU PLOT BOTH HEMISPHER #######
+######################################
+
+### Cretate y axis
+
+#--- Y axis 
+glob_lab <- "Hospitalisation per 100,000 Persons"
+p_lab <- 
+     ggplot() + 
+     annotate(geom = "text", x = 1, y = 1, label = glob_lab, angle = 90) +
+     coord_cartesian(clip = "off")+
+     theme_void() + theme(plot.margin = margin(0, 0, 0, 0))
+
+####
+#create country labels
+title_uk <- ggdraw() + 
+     draw_label("UK",fontface = 'bold',x = 0.4,hjust = 0,angle = 90)+theme(plot.margin = margin(0, 0, 0, 0))
+title_ger <- ggdraw() + 
+     draw_label("GER",fontface = 'bold',x = 0.4,hjust = 0,angle =90)+theme(plot.margin = margin(0, 0, 0, 0))
+title_fra <- ggdraw() + 
+     draw_label("FRA",fontface = 'bold',x = 0.4,hjust = 0,angle =90)+theme(plot.margin = margin(20, 0, 10, 0))
+title_usa <- ggdraw() + 
+     draw_label("USA",fontface = 'bold',x = 0.4,hjust = 0,angle=90)+theme(plot.margin = margin(30, 0, 0, 0))
+
+country_grid <- plot_grid(title_uk,title_ger,title_fra,title_usa,nrow=4)
 
 
+## The two hemispheres 
+northern_flu <- (flu_uk/ flu_ger /  flu_fr / flu_usa)
+southen_flu <- (flu_aus / flu_chi)
 
-# Graph using face grid
-plot1_rsv <-  data_graph %>% 
-     ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season), size = 1) +#(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
-     scale_linetype_manual(values=c(rep("solid", axis_nh), "twodash"))+
-     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
-     # create a rectangle 
-     geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
+# Final plot
+influenza_plot <-country_grid + p_lab + northern_flu + country_grid_sh + southen_flu +
+     plot_layout(widths = c(.2,.2,5,.2,5),
+                 #guides = "collect",
+                 design = "
+                 12345
+                 12345
+                 12345
+                 12345
+              ") +
+     plot_annotation(title = 'Hospitalisation rate for influenza by Hemisphere',
+                     theme = theme(plot.title = element_text(size = 14, vjust = -0.7, hjust = 0.09, face = "bold")))
 
-rsv_nh <- plot1_rsv + theme_bw() +
-     theme(plot.title = element_text(size = 14, face = "bold"),
-           axis.title.x = element_text(size=12, face = "bold"),
-           axis.title.y = element_text(size=12, face = "bold"),
-           strip.placement = "outside",
-           strip.background = element_rect(fill="white", color="white"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal",
-           legend.title=element_text(size=12, face = "bold"), 
-           legend.text=element_text(size=11),
-           strip.text = element_text(size = 12, face = "bold")) +
-
-
-     labs(title = "Hospitalization rate for RSV, by year",
-          subtitle = "Northern Hemisphere, 2016-17 through 2022–23 seasons",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)") 
-
-# # Plot only 2022-23, to highlight it
-# rsv_nh_last <- rsv_nh +
-#      geom_line(data = data_graph_last_season,
-#                aes(as.numeric(week),rsv_rate),
-#                color = "#FF66CC",
-#                size = 0.75)
-
-
-# Save
 ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_NH.png'),
-     rsv_nh,
-     width=9,
-     height=9
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu.png'),
+     influenza_plot,
+     width=10,
+     height=7
 )
 
-####  ##############################################
-####  ########### COVID PLOTS NH    ##################
-####  ##############################################
 
-# Graph using face grid
-plot1_covid <-  data_graph %>% 
-     filter(season == "2022-23") %>% 
-     ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season), size = 1) +#(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph$breaks_x, labels = data_graph$week,limits = c(10,42))  +
-     scale_linetype_manual(values=c(rep("solid", axis_nh), "solid"))+
-     scale_size_manual(values=c(rep(0.5, axis_nh), 0.7))+     
-     # create a rectangle 
-     geom_rect(data = db_rect, aes(xmin = 10, xmax = 42, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
-
-covid_nh <- plot1_covid + theme_bw() +
-     theme(plot.title = element_text(size = 14, face = "bold"),
-           axis.title.x = element_text(size=12, face = "bold"),
-           axis.title.y = element_text(size=12, face = "bold"),
-           strip.placement = "outside",
-           strip.background = element_rect(fill="white", color="white"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal",
-           legend.title=element_text(size=12, face = "bold"), 
-           legend.text=element_text(size=11),
-           strip.text = element_text(size = 12, face = "bold"))+
-     
-     labs(title = "Hospitalization rate for COVID",
-          subtitle = "Northern Hemisphere, 2022–23 season",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)")
-
-
-# Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_NH.png'),
-#      covid_nh,
-#      width=10,
-#      height=6
-# )
+##############################################
+##########   #####   ####  #      #   ###########
+##########   #   #  #      #      #   ###########
+##########   ####    ####   #    #    ###########
+##########   #  #        #   #  #     ###########
+##########   #   #  #####     #       ###########      
+##############################################
 
 
 
-#### ################################################## ####
-#### ########## GRAPH SOUTHERN HEMISPHER ############## ####
-#### ################################################## ####
+###-- NORTHEN COUNTRIES
 
-# Data ser
-#week = factor(week,levels = c(20:52,1:19)
+#--- UK
 
-# data_graph_sh <-  subset_countries_final %>%
-#      filter(season != "2015-16", hemisphere == "SH", data_source != "AUS DOH", season != "2021-22") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
-#      mutate(week = factor(week,levels = c(8:52,1:7)),
-#             season = as.factor(season),
-#             breaks_x = as.numeric(week),
-#             label_x = week)
-data_graph_sh <- subset_countries %>% 
-     filter(hemisphere == "SH", data_source != "AUS DOH") %>% 
-     mutate(season = as.factor(year),
-            breaks_x = as.numeric(week),
-            label_x = week)
+rsv_uk <- data_graph %>% 
+     filter(country == "UK", data_source == "UKHSA") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,1)) +
+     theme(
+          plot.title = element_text(size = 14, face = "bold", vjust = 2),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          axis.title.y=element_blank(),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(25, 10, 0, 5.5),"pt")
+     ) +
+     # geom_text(x = 11, y = 15,
+     #           label = "UK",
+     #           color = "black",
+     #           size = 12) +
+     labs(title = "(A) Northern Hemisphere",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+rsv_uk    
 
-# 
-# data_graph_sh <-  subset_countries_final %>%
-#      filter(season != "2015-16", hemisphere == "SH", data_source != "AUS DOH", season != "2021-22") %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
-#      mutate(week = factor(week,levels = c(8:52,1:7)),
-#             season = as.factor(season),
-#             breaks_x = as.numeric(week),
-#             label_x = week)
+#--- USA
 
-axis_sh <- length(unique(data_graph_sh$season))-1
+rsv_usa <- data_graph %>% 
+     filter(country == "USA", age_group == "ALL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,1), guide = 'none') +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x=element_blank(),
+          #axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "bottom",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(5.5, 10, 0, 5.5),"pt")
+     ) +
+     labs(#title = "UK",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+rsv_usa  
 
-## To create a thicker line
-# data_graph_last_season_sh <- data_graph_sh %>% 
-#      filter(season == "2022-23")
+#--- GER
+
+rsv_ger <- data_graph %>% 
+     filter(country == "GER", age_group == "ALL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1)) +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 10, 0, 5.5),"pt")
+     ) +
+     labs(#title = "UK",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+rsv_ger    
+
+
+#--- FR
+
+rsv_fr <- data_graph %>% 
+     filter(country == "FRA", data_source == "FluNet - Sentinel", season != "2019-20") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016-17" ='#8f90b3',
+                                  "2017-18" ='#EEB702',
+                                  "2018-19" = '#758B59', 
+                                  "2022-23"='#DC143C')) +
+     geom_line(size = 1) +  scale_alpha_manual(values=c(0.7,0.7,0.7,1)) +
+     theme_bw() +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          axis.title.y =element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.x =element_blank(),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 10, 0, 5.5),"pt"),
+          #plot.tag.position = c(-0.02, 0.5),
+          #plot.tag = element_text(angle=90)
+     ) +
+     labs(#title = "FRA",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          #tag = "arbitrary words",
+          caption = "")
+rsv_fr
+
+###------ SOUTHERN HEMISPHERE
+
+#--- AUS
+
+rsv_aus <- data_graph_sh %>% 
+     filter(country == "AUS", !is.na(hsp_abs_rsv)) %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(1,52, 2), labels = seq(1,52, 2), expand = c(0, 0)) + 
+     #scale_x_continuous(breaks = data$breaks_x, labels = data$week, expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016" ='#8f90b3',
+                                  "2017" ='#EEB702',
+                                  "2018" = '#758B59',
+                                  "2019" = '#dc9334',
+                                  "2022"='#DC143C')) +
+     geom_line(size = 1) +  theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1)) +
+     theme(
+          plot.title = element_text(size = 14, face = "bold", vjust = 2),
+          axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          #axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "none",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(5.5, 5.5, 0, 5.5),"pt")
+     ) +
+     labs(title = "(B) Southern Hemisphere",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+rsv_aus  
 
 
 
-####  ##############################################
-####  ########### INFLUENZA PLOTS SH ###############
-####  ##############################################
-# to make the rectangle 
+#---- Chi
 
-db_rect_sh <- data_graph_sh %>% 
-     group_by(country, week) %>% 
-     filter(week == 40, year == 2017, country == "AUS" | country =="CL")
+rsv_chi <- data_graph_sh %>% 
+     filter(country == "CHI", data_source == "EPI MINSAL") %>% 
+     droplevels(data_graph$season) %>% 
+     ggplot(aes(week, hsp_rate_rsv, group = season, color = season, alpha = season)) +
+     scale_x_continuous(breaks = seq(1,52, 2), labels = seq(1,52, 2), expand = c(0, 0)) +
+     #scale_x_continuous(breaks = data$breaks_x, labels = data$week, expand = c(0, 0)) +
+     scale_colour_manual("Season", 
+                         values=c("2016" ='#8f90b3',
+                                  "2017" ='#EEB702',
+                                  "2018" = '#758B59',
+                                  "2019" = '#dc9334',
+                                  "2022"='#DC143C')) +
+     geom_line(size = 1) + theme_bw() +
+     scale_alpha_manual(values=c(0.7,0.7,0.7,0.7,1), guide = 'none') +
+     theme(
+          plot.title = element_text(size = 14, face = "bold"),
+          #axis.title.x=element_blank(),
+          #axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.title.x = element_text(size=12),# face = "bold"),
+          #axis.title.y = element_text(size=12),# face = "bold"),
+          legend.position = "bottom",
+          legend.title=element_text(size=12, face = "bold"), 
+          legend.text=element_text(size=11),
+          strip.text = element_text(size = 12, face = "bold"),
+          plot.margin = unit(c(0, 5.5, 0, 5.5),"pt")
+     ) +
+     labs(#title = "AUS",
+          x= "Epi week",
+          y = "Hospitalisation per \n 100,000 Persons",
+          caption = "")
+rsv_chi
 
-# Using facet_grid
+#### THE FINAL PLOT ####
 
-plot1_flu_sh <-  data_graph_sh %>% 
-     filter(hemisphere == "SH") %>% 
-     ggplot(aes(as.numeric(week),flu_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season), size = 1) + #(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week, expand = c(0, 0))  +
-     scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
-     scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+          
-     
-     # create a rectangle 
-     geom_rect(data = db_rect_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
+## The two hemispheres 
+northern_rsv <- (rsv_uk/ rsv_ger /  rsv_fr / rsv_usa)
+southen_rsv <- (rsv_aus / rsv_chi)
 
-flu_sh <- plot1_flu_sh + theme_bw() +
-     theme(plot.title = element_text(size = 14, face = "bold"),
-           axis.title.x = element_text(size=12, face = "bold"),
-           axis.title.y = element_text(size=12, face = "bold"),
-           strip.placement = "outside",
-           strip.background = element_rect(fill="white", color="white"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal",
-           legend.title=element_text(size=12, face = "bold"), 
-           legend.text=element_text(size=11),
-           strip.text = element_text(size = 12, face = "bold")) +
-     
-     labs(title = "Hospitalization rate for influenza, by year",
-          subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)")
+# Final plot
+rsv_plot <-country_grid + p_lab + northern_rsv + country_grid_sh + southen_rsv +
+     plot_layout(widths = c(.2,.2,5,.2,5),
+                 #guides = "collect",
+                 design = "
+                 12345
+                 12345
+                 12345
+                 12345
+              ") +
+     plot_annotation(title = 'Hospitalisation rate for RSV by Hemisphere',
+                     theme = theme(plot.title = element_text(size = 14, vjust = -0.7, hjust = 0.09, face = "bold")))
 
+rsv_plot
 
-# # Plot only 2022-23, to highlight it
-# flu_sh_last <- flu_sh +
-#      geom_line(data = data_graph_last_season_sh,
-#                aes(as.numeric(week),flu_rate),
-#                color = "#FF66CC",
-#                size = 0.75)
-# 
-
-# Save
 ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_flu_SH.png'),
-     flu_sh,
-     width=9,
-     height=9
+     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_RSV.png'),
+     rsv_plot,
+     width=10,
+     height=7
 )
 
-####  ##############################################
-####  ########### RSV PLOTS SH ####################
-####  ##############################################
-
-
-plot1_rsv_sh <-  data_graph_sh %>% 
-     filter(hemisphere == "SH") %>% 
-     ggplot(aes(as.numeric(week),rsv_rate, group = season, color = season)) +
-     geom_line(aes(linetype = season),size = 1) + #(size = 0.4, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh$breaks_x, labels = data_graph_sh$week, expand = c(0, 0))  +
-     scale_linetype_manual(values=c(rep("solid", axis_sh), "twodash"))+
-     scale_size_manual(values=c(rep(0.5, axis_sh), 0.7))+ 
-     
-     # create a rectangle 
-     geom_rect(data = db_rect_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
-
-rsv_sh <- plot1_rsv_sh + theme_bw() +
-     theme(plot.title = element_text(size = 14, face = "bold"),
-           axis.title.x = element_text(size=12, face = "bold"),
-           axis.title.y = element_text(size=12, face = "bold"),
-           strip.placement = "outside",
-           strip.background = element_rect(fill="white", color="white"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "bottom", 
-           legend.direction = "horizontal",
-           legend.title=element_text(size=12, face = "bold"), 
-           legend.text=element_text(size=11),
-           strip.text = element_text(size = 12, face = "bold")) +
-     
-     labs(title = "Hospitalization rate for RSV, by year",
-          subtitle = "Southern Hemisphere, 2016 through 2022 seasons",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)")
-
-# # Plot only 2022-23, to highlight it
-# rsv_sh_last <- rsv_sh +
-#      geom_line(data = data_graph_last_season_sh,
-#                aes(as.numeric(week),rsv_rate),
-#                color = "#FF66CC",
-#                size = 0.75)
-
-# Save
-ggsave(
-     paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_rsv_SH.png'),
-     rsv_sh,
-     width=9,
-     height=9
-)
-
-####  ##############################################
-####  ########### COVID PLOTS SH    ##################
-####  ##############################################
-
-
-data_graph_sh_covid <-  subset_countries_final %>%
-     filter( hemisphere == "SH",  data_source != "fluNet", year == 2022) %>% # Excluding 2021-22 season (only 13 month outside of sriveillance weeks)
-     mutate(season = as.factor(year),
-            breaks_x = as.numeric(week),
-            label_x = week)
-
-# to make the rectangle 
-
-db_rect_covid_sh <- data_graph_sh_covid %>% 
-     group_by(country, week) %>% 
-     filter(week == 40, year == 2022, country == "AUS" | country =="CL")
-
-
-# Graph using face grid
-plot1_covid_sh <-  data_graph_sh_covid %>% 
-     ggplot(aes(as.numeric(week),covid_rate, group = season, color = season)) +
-     geom_line(size = 0.5, linetype = 1) +
-     scale_x_continuous(breaks = data_graph_sh_covid$breaks_x, labels = data_graph_sh_covid$week)  +
-     
-     
-     geom_rect(data = db_rect_covid_sh, aes(xmin = 16, xmax = 40, ymin = -Inf, ymax = Inf),color = NA, fill = '#E06666', alpha = 0.1)   +
-     facet_grid(country ~ ., scales = "free_y", ) 
-#facet_wrap(vars(country), scales = "free_y")
-
-covid_sh <- plot1_covid_sh + theme_bw() +
-     theme(strip.placement = "outside",
-           strip.background = element_rect(fill="grey90", color="grey50"),
-           panel.spacing=unit(0.1,"cm"),
-           legend.position = "none") +
-     labs(title = "Hospitalization rate for COVID",
-          subtitle = "Southern Hemisphere, 2022 season",
-          x= "Calendar week",
-          y = "hospitalization (per 100,000)")
-
-
-# Save
-# ggsave(
-#      paste0('output/Fig 02 - Hospitalization rates by season/Fig02_Hospitalization_rates_covid_SH.png'),
-#      covid_sh,
-#      width=10,
-#      height=4
-# )
-
-
-
-#### MEAN ###
-
-z <- data_graph %>% 
-     select(country, week, season, flu_rate)
-z <- unique(z)
-
-z <- pivot_wider(z,names_from = week, values_from = flu_rate )
