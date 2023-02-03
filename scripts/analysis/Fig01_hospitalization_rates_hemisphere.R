@@ -11,6 +11,7 @@
 
 library(tidyverse)
 library(lubridate)
+library(stringr)
 
 library(RColorBrewer)
 
@@ -62,7 +63,7 @@ Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop F
                values_to = "hsp_rate_pathogen") |> 
   mutate(Virus = case_when(pathogen=="hsp_rate_flu"~"Influenza",
                               pathogen=="hsp_rate_rsv"~"RSV",
-                              pathogen=="hsp_rate_covid19"~"COVID-19")) |>
+                              pathogen=="hsp_rate_covid19"~"SARS-CoV-2")) |>
   group_by(hemisphere, Virus, epi_dates) |>
   summarise(total_hsp_rate = sum(hsp_rate_pathogen, na.rm = TRUE))
 
@@ -70,7 +71,7 @@ Total_hosp_virus <- data |> filter(data_source!="FluNet - Sentinel") |> # Drop F
 ### Preparation of data for NH -----------------------------------------
 
 
-# Filter on NH, exclude dates outside range, remove 0 values from COVID-19 entries
+# Filter on NH, exclude dates outside range, remove 0 values from SARS-CoV-2 entries
 
 Total_hosp_NH <-
   Total_hosp |> filter(hemisphere == "NH" 
@@ -85,10 +86,10 @@ Total_hosp_virus_NH <-
   filter(
     Virus == "RSV" |
       Virus == "Influenza" |
-      (Virus == "COVID-19" & epi_dates > "2021-12-31")
+      (Virus == "SARS-CoV-2" & epi_dates > "2021-12-31")
   )
 
-# Empty row to show the rest of this 22/23 season
+# Empty row to show the rest of the 22/23 season
 Total_hosp_NH[nrow(Total_hosp_NH) + 1, ] <-
   list("NH", as.Date("2023-05-11"), 0)
 
@@ -103,19 +104,40 @@ NH_breaks <-
     "2022-09-25"  # beginning 22-23 
   )
 
-# Create Season labels for plots
-NH_season_labels <-
-  c(
-    "Season 2016/2017",
-    "Season 2017/2018",
-    "Season 2018/2019",
-    "Season 2019/2020",
-    "Season 2020/2021",
-    "Season 2021/2022",
-    "Season 2022/2023"
-  )
+# Labels for NH seasons
+space<-strrep(" ", 15)
+years <- 2016:2022
+NH_seasons_geom <-
+  data.frame(
+    A = space,
+    B = "Season",
+    C = years,
+    D = "/",
+    E = years + 1,
+    F = space,
+    x = seq.Date(as.Date("2017-01-18"), as.Date("2023-01-18"), by = "1 year"), # X label position
+    y = 149 # Y label position
+  ) |> mutate(label = paste(A, B, as.character(C), D, as.character(E), F))
 
-NH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-03-10"), as.Date("2023-03-10"), by="1 year"),y=116,NH_season_labels)
+# 
+# # Create Season labels for plots
+# NH_season_labels <-
+#   c(
+#     "                  Season 2016/2017                  ",
+#     "                  Season 2017/2018                  ",
+#     "                  Season 2018/2019                  ",
+#     "                  Season 2019/2020                  ",
+#     "                  Season 2020/2021                  ",
+#     "                  Season 2021/2022                  ",
+#     "                  Season 2022/2023                  "
+#   )
+# 
+# 
+# NH_seasons_geom <-
+#   data.frame(x = seq.Date(as.Date("2017-01-18"), as.Date("2023-01-18"), by =
+#                             "1 year"),
+#              y = 150,
+#              NH_season_labels)
 
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
@@ -128,16 +150,19 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
     date_labels = '%b' # Short month Name
   ) +
  scale_x_break(breaks = NH_breaks)+ # This is ggbreak, breaks up from specified vector
-  scale_y_continuous(breaks=seq(0,140,20))+ # Organize y axis
+  scale_y_continuous(breaks=seq(0,150,20))+ # Organize y axis
   #scale_colour_viridis_d(option="B")+
  # scale_color_brewer(palette="Set2")+
-  scale_colour_manual("", values=c("#ff880d", "#99d326", "#00337C"))+
-  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#D9F0FF"))+
+  scale_colour_manual("", 
+                      #breaks=c("SARS-CoV-2", "Influenza", "RSV"), 
+                      values=c("#ff880d", "#008000", "#00337C"))+
+  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
   theme_bw() +
   theme(
-    legend.position = "bottom", 
+    legend.position = "bottom",
     plot.title=element_text(hjust=0.5),
     plot.subtitle = element_text(hjust=0.5),
+    axis.title.y.left = element_text(hjust=0.7),
     # Styling of X axis
     axis.line.x = element_line(colour = 'black', size = 1),
     axis.ticks.x = element_line(colour = 'black', size = 1),
@@ -148,41 +173,43 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
     axis.title.x.bottom = element_blank()
     ) +
   labs(
-   # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+    # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
     # subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
-    y = "Hospitalizations (n/100,000)"
+    y = "Hospitalisations per 100,000 persons"
   ) +
-  geom_text(mapping = aes(x, y, label = NH_season_labels), NH_seasons_geom) # Provide season labels
+  geom_label(mapping = aes(x, y, label = label), NH_seasons_geom, fill="grey80", size=4,
+             label.padding=unit(0.5, "lines")) # Provide season labels
   
-
 Figure_1_NH
 
 ### Preparation of data for SH ----------------------------------------------
 
 Total_hosp_SH <-
   Total_hosp |> filter(hemisphere == "SH" 
-                        & epi_dates > "2017-03-22" 
+                        & epi_dates > "2016-03-22" 
                         & epi_dates < "2022-11-01"
                        )
 
 
 Total_hosp_virus_SH <-
   Total_hosp_virus |> filter(hemisphere == "SH"
-                             & epi_dates > "2017-03-22"
+                             & epi_dates > "2016-03-22"
                              & epi_dates < "2022-11-01"
                              ) |>
   filter(
     Virus == "RSV" |
       Virus == "Influenza" |
-      (Virus == "COVID-19" & epi_dates > "2021-12-31")
+      (Virus == "SARS-CoV-2" & epi_dates > "2021-12-31")
   )
 
 # Empty row to show the rest of this 22/23 season
 #Total_hosp_SH[nrow(Total_hosp_SH) + 1, ] <-
  # list("SH", as.Date("2023-05-15"), 0)
 
-# Create breaks for X axis for NH
+
+
+# Create breaks for X axis for SH
 SH_breaks <-
   c(
     "2017-11-01", # end 16-17
@@ -191,7 +218,34 @@ SH_breaks <-
     "2019-03-22", # beginning 18-19
     "2019-11-01", # ending 18-19
     "2022-03-22"  # beginning 22-23 
-    #"2022-11-01",   # end  22-23
+  )
+
+# Labels for NH seasons
+space<-strrep(" ", 15)
+years <- 2016:2022
+SH_seasons_geom2 <-
+  data.frame(
+    A = space,
+    B = "Season",
+    C = years,
+    F = space,
+    x = seq.Date(as.Date("2016-07-15"), as.Date("2022-07-15"), by = "1 year"), # X label position
+    y = 75 # Y label position
+  ) |> mutate(label = paste(A, B, as.character(C), F))
+
+
+# Create breaks for X axis for NH
+SH_breaks <-
+  c(#"2016-03-22", # beginning 16
+    "2016-11-01", # end 17
+    "2017-03-22", # beginning 17
+    "2017-11-01", # end 17
+    "2018-03-22", # beginning 18
+    "2018-11-01", # end 18
+    "2019-03-22", # beginning 18-19
+    "2019-11-01", # ending 18-19
+    "2022-03-22"  # beginning 22-23 
+    #"2022-11-01"   # end  22-23
     #"2023-03-22"
   )
 
@@ -212,6 +266,51 @@ SH_seasons_geom <- data.frame(x=seq.Date(as.Date("2017-09-01"), as.Date("2022-09
 
 
 ## Total hospitalizations in the NH - overall and by virus -----------------
+
+Figure_1_SH2 <- Total_hosp_SH |> ggplot() +
+  geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
+  geom_line(mapping = aes(epi_dates, total_hsp_rate, color = Virus), linewidth=1, data = Total_hosp_virus_SH, alpha=0.8) +
+  scale_x_date(
+    date_breaks = "1 months",    # labels for every month
+    date_labels = '%b', # Short month Name
+    limits = as.Date(c("2016-04-01", "2022-11-01"))
+  ) +
+  scale_x_break(breaks = SH_breaks)+ # This is ggbreak, breaks up from specified vector
+  scale_y_continuous(breaks=seq(0,80,20))+ # Organize y axis
+  #scale_colour_viridis_d(option="B")+
+  # scale_color_brewer(palette="Set2")+
+  scale_colour_manual("", 
+                      #breaks=c("SARS-CoV-2", "Influenza", "RSV"), 
+                      values=c("#ff880d", "#008000", "#00337C"))+
+  scale_fill_manual("", breaks=c('Total hospitalisations'), values=c("Total hospitalisations"="#bee3ff"))+
+  theme_bw() +
+  theme(
+    legend.position = "bottom",
+    plot.title=element_text(hjust=0.5),
+    plot.subtitle = element_text(hjust=0.5),
+    axis.title.y.left = element_text(hjust=0.7),
+    # Styling of X axis
+    axis.line.x = element_line(colour = 'black', size = 1),
+    axis.ticks.x = element_line(colour = 'black', size = 1),
+    # These are fixes to remove double axis introduced by scale x break
+    axis.text.x.top = element_blank(),
+    axis.ticks.x.top = element_blank(),
+    axis.line.x.top = element_blank(),
+    axis.title.x.bottom = element_blank()
+  ) +
+  labs(
+    # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
+    # subtitle = "Total hospitalisation rate and hospitalisations by virus",
+    x = "Time",
+    y = "Hospitalisations per 100,000 persons"
+  ) +
+  geom_label(mapping = aes(x, y, label = label), SH_seasons_geom2, fill="grey80", size=4,
+             label.padding=unit(0.5, "lines")) # Provide season labels
+
+
+Figure_1_SH2
+
+
 
 Figure_1_SH <- Total_hosp_SH |> ggplot() +
   geom_col(mapping = aes(epi_dates, total_hsp_rate, fill='Total hospitalisations'), data = Total_hosp_SH) +
@@ -242,11 +341,12 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
     title = "Hospitalisation rate in the Southern hemisphere, seasons 2016-2019 and 2022-23",
     subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
-    y = "Hospitalizations (n/100,000)"
+    y = "Hospitalisations per 100,000 people"
   ) +
   geom_text(mapping = aes(x, y, label = SH_season_labels), SH_seasons_geom) # Provide season labels
 
 
+Figure_1_SH
 
 # Plot to PNG -------------------------------------------------------------
 
@@ -261,9 +361,9 @@ ggsave(
 
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_1_SH.png',
-  Figure_1_SH,
-  width=8,
-  height=2.5
+  Figure_1_SH2,
+  width=12,
+  height=4
 )
 
 
