@@ -16,9 +16,9 @@ sankey_data_journey <- ggplot(df, aes(x = x,
                fill = factor(node),
                label = node)) +
      geom_sankey(flow.alpha = 0.7, node.color = 1) +
-     geom_sankey_label(size = 5, color = 1, fill = "white") +
+     geom_sankey_label(size = 3, color = 1, fill = "white") +
      scale_fill_viridis_d(option="B") +
-     theme_sankey(base_size = 18) +
+     theme_sankey(base_size = 3) +
      guides(fill = guide_legend(title = "Title"))+
      theme(legend.position = "none",
            axis.title = element_blank())
