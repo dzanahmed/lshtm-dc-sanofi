@@ -42,12 +42,13 @@ ger_data_flu <- ger_data_flu %>% pivot_longer(cols = c('hsp_rate_flu','cases_rat
 
 #create plot for flu
 flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
-     facet_wrap(.~season,scales='free') +
+     facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
-     xlab('Epi Week') +
-     ylab(expression(paste('Rate per 100,000 Persons'))) +
+     xlab('Month') +
+     ylab(expression(paste('Rate per 100,000 persons'))) +
      theme(axis.title.y = element_text(size=9)) +
-     theme(legend.position = 'none') 
+     theme(legend.position = 'none') +
+     theme(strip.background =element_rect(fill="white"))
 
 #filter to only relevant columns for rsv
 ger_data_rsv <- ger_data %>%
@@ -56,11 +57,12 @@ ger_data_rsv <- ger_data_rsv %>% pivot_longer(cols = c('hsp_rate_rsv','cases_rat
 
 #create plot for rsv
 rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
-     facet_wrap(.~season,scales='free') +
+     facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
-     xlab('Epi Week') +
-     ylab(expression(paste('Rate per 100,000 Persons'))) +
-     theme(axis.title.y = element_text(size=9)) +
+     xlab('Month') +
+     ylab(expression(paste('Rate per 100,000 persons'))) +
+     theme(axis.title.y = element_blank()) +
+     theme(strip.background =element_rect(fill="white")) +
      theme(legend.position = 'none') 
 
 rsv_plot
@@ -74,12 +76,14 @@ ger_data_covid <- ger_data_covid %>% drop_na(rate)
 #create plot for covid
 covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
      facet_wrap(.~season,scales='free') +
+     scale_y_sqrt() +
      theme_bw() +
-     xlab('Epi Week') +
-     ylab(expression(paste('Rate per 100,000 Persons'))) +
-     theme(axis.title.y = element_text(size=9)) +
+     xlab('Month') +
+     ylab(expression(paste('Rate per 100,000 persons'))) +
+     theme(axis.title.y = element_blank()) +
      theme(legend.position = 'bottom') +
-     scale_color_discrete(name="Laboratory vs. Hospital Case",
+     theme(strip.background =element_rect(fill="white")) +
+     scale_color_discrete(name="",
                          breaks=c('hsp_rate_covid19','cases_rate_covid19'),
                          labels=c('Hospital Case','Laboratory Case'))
 
@@ -104,3 +108,5 @@ graph_grid <- plot_grid(flu_plot,rsv_plot,covid_plot_no_leg,nrow=1)
 whole_grid <- plot_grid(graph_grid,legend,nrow = 2, rel_heights = c(1,0.1))
 with_title_grid <- plot_grid(virus_grid,whole_grid,nrow=2,rel_heights = c(0.1,1))
 with_title_grid
+
+ggsave('output/lab_case_figure.png',with_title_grid,width = 9, height = 4,bg = 'white')
