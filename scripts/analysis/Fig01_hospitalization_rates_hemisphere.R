@@ -155,7 +155,7 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
     x = "Time",
     y = "Hospitalisations per\n 100,000 persons"
   ) +
-  geom_label(mapping = aes(x, y, label = label, fontface='bold'), NH_seasons_geom, fill="grey80", size=4,
+  geom_label(mapping = aes(x, y, label = label, fontface='bold'), NH_seasons_geom, fill="white", size=4,
              label.padding=unit(0.5, "lines")) # Provide season labels
   
 
@@ -237,7 +237,7 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
     x = "Time",
     y = "Hospitalisations per\n 100,000 persons"
   ) +
-  geom_label(mapping = aes(x, y, label = label, fontface='bold'), SH_seasons_geom, fill="grey80", size=4,
+  geom_label(mapping = aes(x, y, label = label, fontface='bold'), SH_seasons_geom, fill="white", size=4,
              label.padding=unit(0.6, "lines")) # Provide season labels
 
 Figure_1_SH

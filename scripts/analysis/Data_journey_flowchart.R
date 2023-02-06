@@ -17,7 +17,7 @@ sankey_data_journey <- ggplot(df, aes(x = x,
                next_node = next_node,
                fill = factor(node),
                label = node)) +
-     geom_sankey(flow.alpha = 1.0, node.color = 1) +
+     geom_sankey(flow.alpha = 1.0, node.color = 1, width=0.5) +
      geom_sankey_label(size = 2.5, color = 1, fill = "white", alpha=0.99) +
      scale_fill_viridis_d(option="plasma") +
      theme_sankey(base_size = 12) +
