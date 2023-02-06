@@ -19,7 +19,7 @@ data$epi_dates <- as.Date(data$epi_dates)
 viruses <- c('Influenza' = '#ff880d',
              'RSV' = '#99d326',
              'SARS-CoV-2' = '#00337C',
-             'Total' = '#D9F0FF')
+             'Total' = '#bee3ff')
 
 ### CHILE ###
 chi_data <- data %>% filter(country == 'CL' & age_group == 'ALL')
@@ -44,9 +44,9 @@ chi_22 <- chi_data %>% filter(year == 2022)
 
 #generate individual plots, then merge
 chi_plot_16 <- ggplot() + 
-     geom_col(data=chi_16,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=chi_16,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
@@ -60,9 +60,9 @@ chi_plot_16 <- ggplot() +
      theme(legend.position = 'none')
 
 chi_plot_17 <- ggplot() + 
-     geom_col(data=chi_17,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=chi_17,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("", values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -76,9 +76,9 @@ chi_plot_17 <- ggplot() +
      theme(legend.position = 'none')
 
 chi_plot_18 <- ggplot() + 
-     geom_col(data=chi_18,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=chi_18,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -92,9 +92,9 @@ chi_plot_18 <- ggplot() +
      theme(legend.position = 'none')
 
 chi_plot_19 <- ggplot() +
-     geom_col(data=chi_19,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=chi_19,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      xlab('Month') +
@@ -108,10 +108,10 @@ chi_plot_19 <- ggplot() +
      theme(legend.position = 'none')
 
 chi_plot_22 <- ggplot() +
-     geom_col(data=chi_22,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2')) +
+     geom_col(data=chi_22,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      xlab('Month') +
@@ -148,9 +148,9 @@ aus_22 <- aus_data %>% filter(year == 2022)
 
 #generate individual plots, then merge
 aus_plot_16 <- ggplot() + 
-     geom_col(data=aus_16,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=aus_16,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',breaks=c('Total'),values=viruses) +
      ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
@@ -163,9 +163,9 @@ aus_plot_16 <- ggplot() +
      theme(legend.position = 'none')
 
 aus_plot_17 <- ggplot() + 
-     geom_col(data=aus_17,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=aus_17,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -178,9 +178,9 @@ aus_plot_17 <- ggplot() +
      theme(legend.position = 'none')
 
 aus_plot_18 <- ggplot() + 
-     geom_col(data=aus_18,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=aus_18,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -193,9 +193,9 @@ aus_plot_18 <- ggplot() +
      theme(legend.position = 'none')
 
 aus_plot_19 <- ggplot() + 
-     geom_col(data=aus_19,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_col(data=aus_19,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
      scale_color_manual("", values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -208,10 +208,10 @@ aus_plot_19 <- ggplot() +
      theme(legend.position = 'none')
 
 aus_plot_22 <- ggplot() + 
-     geom_col(data=aus_22,aes(x=epi_dates,y=hsp_rate,fill='Total'),alpha=0.8) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2')) +
+     geom_col(data=aus_22,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2'),size=1.5) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',breaks=c('Total'),values=viruses) +
      theme_bw() +

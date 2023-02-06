@@ -41,7 +41,7 @@ ger_data_flu <- ger_data %>%
 ger_data_flu <- ger_data_flu %>% pivot_longer(cols = c('hsp_rate_flu','cases_rate_flu'),names_to = 'hos_lab_case',values_to = 'rate')
 
 #create plot for flu
-flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
      facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
      xlab('Month') +
@@ -56,7 +56,7 @@ ger_data_rsv <- ger_data %>%
 ger_data_rsv <- ger_data_rsv %>% pivot_longer(cols = c('hsp_rate_rsv','cases_rate_rsv'),names_to = 'hos_lab_case',values_to = 'rate')
 
 #create plot for rsv
-rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
      facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
      xlab('Month') +
@@ -74,7 +74,7 @@ ger_data_covid <- ger_data_covid %>% pivot_longer(cols = c('hsp_rate_covid19','c
 ger_data_covid <- ger_data_covid %>% drop_na(rate)
 
 #create plot for covid
-covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity') + 
+covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
      facet_wrap(.~season,scales='free') +
      scale_y_sqrt() +
      theme_bw() +
