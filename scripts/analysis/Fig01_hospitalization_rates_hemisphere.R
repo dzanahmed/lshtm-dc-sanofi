@@ -1,6 +1,6 @@
 # Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
 # (complete time series for full time period: 2016 - 2023)
-# Design: line graph
+# Design: line graph + column graph for totals
 # X-axis: 2016 - 2023 with a second x-axis label that identifies the seasons
 
 # install.packages("ggbreak")
@@ -12,10 +12,8 @@ library(tidyverse)
 library(lubridate)
 library(stringr)
 
-library(RColorBrewer)
-
 library(ggbreak)
-library(patchwork) # Not sure if necessary after updates
+library(patchwork) 
 
 data <- read.csv(file='data/merged_data/merged_data.csv')
 epi_weeks <- read_csv(file="data/epi_weeks.csv")
@@ -24,7 +22,7 @@ data$epi_dates <- as.Date(data$epi_dates)
 
 # Consider deleting -------------------------------------------------------
 
-#  Modification for France - not sure if applicable
+#  Modification for France - VESTIGIAL
 # #
 # data <- data |> mutate(hsp_rate_flu =
 #                                case_when(country == "FR" ~ (hsp_abs_flu *100000 /(68000000 * 0.3)),
@@ -242,7 +240,7 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
 
 Figure_1_SH
 
-# Plot to PNG -------------------------------------------------------------
+# Plot to PNG (NH / SH )-----------------------------------------------------
 
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
@@ -260,6 +258,7 @@ ggsave(
 
 # Use Patchwork lib to merge these into one graph  -------------------------
 
+# Add margins to prepare for aligned patching
 Figure_1_A <- Figure_1_NH +
   labs(title = "Northern Hemisphere") +
   theme(
@@ -268,7 +267,6 @@ Figure_1_A <- Figure_1_NH +
     legend.text = element_text(size = 11.5),
     legend.margin = margin(l = 23, r = 25)
   )
-
 
 Figure_1_B <- Figure_1_SH +
   labs(title = "Southern Hemisphere") +
@@ -281,24 +279,15 @@ Figure_1_B <- Figure_1_SH +
     legend.position = "none"
   )
 
-  
+# Patched Figure (Both hemispheres)
 Figure_1_Both <- (Figure_1_A/Figure_1_B)+
   plot_annotation(tag_levels = 'A') & 
   theme(plot.tag = element_text(face = 'bold', size = 16))
 
-
+# View
 Figure_1_Both
 
-## Plot to PNG -------------------------------------------------------------
-
-ggsave(
-  'output/Fig 01 - Hospitalization rates per 100k/Figure_Both.png',
-  Figure_1_Both,
-  width=12,
-  height=8.5
-)
-
-
+## Plot to PNG (NH+SH) ----------------------------------------------------
 
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_Both_Presentation.png',
