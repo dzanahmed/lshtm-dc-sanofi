@@ -11,11 +11,10 @@ Potential secondary questions:
 - Would the assessment be different if burden is disaggregated by hospitalisations vs. laboratory confirmed cases? 
 
 **Client:** Sanofi\
-**Supervisor:** Naomi Waterlow, Research Fellow, LSHTM
+**Supervisor:** Dr Naomi Waterlow, Research Fellow, LSHTM
 
 Members:
 - Ignacio Escobar [IgnaLeiva](https://github.com/IgnaLeiva)
 - Jessica Caterson [jjcato9](https://github.com/jjcato9)
 - Dzan Ahmed Jesenkovic [dzanahmed](https://github.com/dzanahmed)
-- Lucas Raschke [LaRascal](https://github.com/LaRascal)
 - Naomi Medina [naomedina](https://github.com/naomedina)
