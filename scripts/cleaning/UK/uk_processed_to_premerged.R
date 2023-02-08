@@ -1,6 +1,7 @@
+### UK PROCESSED TO PREMERGED ###
 library(tidyverse)
-library(readr)
 
+#change working directory as needed
 setwd('~/lshtm-dc-sanofi')
 
 #open processed files
@@ -10,20 +11,19 @@ flu <- flu %>% select(!X)
 covid <- read.csv('data/processed_data/UK/hsp_rates_cov_flu_2223_updated.csv')
 covid <- covid %>% select(!hsp_flu_rate)
 
-
+#merge csv data together keeping all columns
 premerged_data <- merge(flu,rsv,by=c('week','year'),all=T)
 premerged_data <- merge(premerged_data,covid,by=c('week','year'),all=T)
-premerged_data$age.x <- NULL
+premerged_data$age.x <- NULL #drop duplicate columns
 premerged_data$age.y <- NULL
-premerged_data$age <- 'ALL'
-
+premerged_data$age <- 'ALL' #add age data
 
 ## open template
-template <- read.csv('data/template.csv',blank.lines.skip=T)
+template <- read.csv('data/template.csv',blank.lines.skip=T) #read in template to merge data with
 
 #open population csv (for later)
 pop <- read.csv('data/raw_data/Countries_population.csv')
-uk_pop <- pop %>% filter(code == 'UK')
+uk_pop <- pop %>% filter(code == 'UK') #select UK population and relevant rows
 uk_pop <- uk_pop %>% select('year','population')
 
 #change premerged colnames to match template colnames
@@ -38,6 +38,7 @@ combined$age <- NULL
 #now fill in df rows with relevant information
 names(combined) #getsnames to fill
 
+#add metadata information
 combined$id <- seq(1:nrow(combined))
 combined$data_source <- 'UKHSA'
 combined$country <- 'UK'
