@@ -5,8 +5,9 @@
 - **processed_data** contains files that are made as an output from cleaning scripts performed on raw data. 
   - Every country has its own subfolder
 - **premerged_data** contains files that are a result of standardizing outputs from cleaned data to a premade template
-- Countries have separate files (usually one for total, and one for age stratified data)
+  - Countries have separate files (usually one for total, and one for age stratified data)
 - **merged_data** contains final standardized csv file
+  - merged_data.csv
 
 Additional csv files
 -- data_journey.csv - for creation of Data processing flowchart / Sankey graph
