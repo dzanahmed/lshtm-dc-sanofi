@@ -6,7 +6,7 @@ library(tidyverse)
 library(readr)
 
 #set wd - amend as required
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 ### Extract flu & covid rates 22/23
 
