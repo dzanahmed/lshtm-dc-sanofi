@@ -13,7 +13,7 @@ library(cowplot)
 ##----------------------------------------------------------------
 
 
-data <- read_csv("/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/merged_data/merged_data.csv")
+data <- read_csv("data/merged_data/merged_data.csv")
 
 data$country[data$country == "DE"] <- "GER"
 data$country[data$country == "FR"] <- "FRA"
