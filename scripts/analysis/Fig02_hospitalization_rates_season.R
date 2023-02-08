@@ -1,15 +1,17 @@
-################
-### Packages ###
-################
+##----------------------------------------------------------------
+##                           Packages                           --
+##----------------------------------------------------------------
 library(tidyverse)
 library(ggplot2)
 library(readr)
 library(patchwork)
 library(cowplot)
 
+##----------------------------------------------------------------
+##                          Last data:                          --
+##                            2/2/23                            --
+##----------------------------------------------------------------
 
-### Data last update 2/2/23 ###
-###############################
 
 data <- read_csv("/Users/igna/Documents/LSHTM/Term 2/Data Challenge/lshtm-dc-sanofi/data/merged_data/merged_data.csv")
 
@@ -18,9 +20,11 @@ data$country[data$country == "FR"] <- "FRA"
 data$country[data$country == "CL"] <- "CHI"
 data$country[data$country == "US"] <- "USA"
 
-#################################
-##### NEW VARABLE: SEASON #######
-#################################
+##---------------------------------------------------------------
+##                    CREATE A NEW VARABLE:                    --
+##---------------------------------------------------------------
+
+# Data frame to use in the loop.
 
 seasons <- data.frame(start = c(2015:2022),
                       end = c(2016:2023),
@@ -41,15 +45,20 @@ for(i in c(seasons$start)) {
 
 }
 
-## TO CREATE season in SH
+## To create season in SH
 
 data$season[data$hemisphere == "SH"] <-as.character(data$year)
 
-########################
-## NORTHEM HEMISPHERE ##
-########################
 
-# Cleaning dataset and creating variables to be used in graph
+##################################################################
+##                     NORTHERN HEMISPHERE:                     ##
+##                      CLEANING AND PLOTS                      ##
+##################################################################
+
+
+##----------------------------------------------------------------
+##                           cleaning                           --
+##----------------------------------------------------------------
 
 data_graph_nh <-     data %>% 
      filter(age_group == "ALL", season != "2015-16",season != "2021-22", season != "2019-20", data_source != 	
@@ -59,49 +68,56 @@ data_graph_nh <-     data %>%
             breaks_x = as.numeric(week),
             label_x = week) 
 
-# Transform week to numeric (x-axis graph), drop levels
+# Transform week to numeric (x-axis graph) & drop levels
 
 data_graph_nh <- data_graph_nh %>% 
      mutate(week = as.numeric(week)) %>% 
      droplevels(data_graph_nh$season)
 
-########################
-## NorTHERN HEMISPHERE ##
-########################
-graph_nh <- list()
+##----------------------------------------------------------------
+##                           Plots                           --
+##----------------------------------------------------------------
+
+graph_nh <- list() # list for storing the plots.
 
 for(v in c("hsp_rate_flu", "hsp_rate_rsv")){
      for(i in c("UK", "USA", "GER", "FRA")){
 
-nh_country <- data_graph_nh %>% 
-     filter(country == i) %>% 
-     select(week, season, virus = v) %>% 
-     ggplot(aes(week, virus, group = season, color = season, alpha = season)) +
-     scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
-     scale_colour_manual("Season", 
-                         values=c("2016-17" ='#8f90b3',
-                                  "2017-18" ='#EEB702',
-                                  "2018-19" = '#758B59', 
-                                  "2022-23"='#DC143C')) +
-     geom_line(size = 1) + theme_bw() +
-     scale_alpha_manual(values=c(rep(0.7,data_graph_nh %>% filter(country == i) %>% summarise(n = length(unique(season)))-1),1),guide = 'none') +
-     theme(
-          plot.title = element_text(size = 14, face = "bold", vjust = 2),
-          axis.title.y=element_blank(),
-          legend.position = "bottom",
-          legend.title=element_text(size=12, face = "bold"), 
-          legend.text=element_text(size=11),
-          plot.margin = unit(c(0, 10, 5.5, 5.5),"pt") #plot.margin(top, right, bottom, and left margins)
-     )
-graph_nh[[paste0(v,i)]] <-nh_country
+          nh_country <- data_graph_nh %>% 
+               filter(country == i) %>% 
+               select(week, season, virus = v) %>% 
+               ggplot(aes(week, virus, group = season, color = season, alpha = season)) +
+               scale_x_continuous(breaks = seq(10,43, 2), labels = c(seq(40,52, 2),seq(2,21, 2)), limits = c(10,43),expand = c(0, 0)) +
+               scale_colour_manual("Season", 
+                                   values=c("2016-17" ='#8f90b3',
+                                            "2017-18" ='#EEB702',
+                                            "2018-19" = '#758B59', 
+                                            "2022-23"='#DC143C')) +
+               geom_line(size = 1) + theme_bw() +
+               scale_alpha_manual(values=c(rep(0.7,data_graph_nh %>% filter(country == i) %>% summarise(n = length(unique(season)))-1),1),guide = 'none') +
+               theme(
+                    plot.title = element_text(size = 14, face = "bold", vjust = 2),
+                    axis.title.y=element_blank(),
+                    legend.position = "bottom",
+                    legend.title=element_text(size=12, face = "bold"), 
+                    legend.text=element_text(size=11),
+                    plot.margin = unit(c(0, 10, 5.5, 5.5),"pt") #plot.margin(top, right, bottom, and left margins)
+               )
+          graph_nh[[paste0(v,i)]] <-nh_country
+          
+               }
+          }
 
-     }
-}
+
+##################################################################
+##                     SOUTHERN HEMISPHERE:                     ##
+##                      CLEANING AND PLOTS                      ##
+##################################################################
 
 
-########################
-## SOUTHERN HEMISPHERE ##
-########################
+##----------------------------------------------------------------
+##                           cleaning                           --
+##----------------------------------------------------------------
 
 data_graph_sh <- data %>% 
      filter(hemisphere == "SH", data_source != "AUS DOH", year != 2023, data_source != "EPI MINSAL - Ministry of Science", !is.na(hsp_rate_rsv)) %>% 
@@ -109,8 +125,11 @@ data_graph_sh <- data %>%
             breaks_x = as.numeric(week),
             label_x = week)
 
+##----------------------------------------------------------------
+##                           Plots                           --
+##----------------------------------------------------------------
 
-graph_sh <- list()
+graph_sh <- list() #list for storing the plots.
 
 for(v in c("hsp_rate_flu", "hsp_rate_rsv")){
      for(i in c("AUS", "CHI")){
@@ -137,60 +156,67 @@ for(v in c("hsp_rate_flu", "hsp_rate_rsv")){
                     legend.title=element_text(size=12, face = "bold"), 
                     legend.text=element_text(size=11),
                     strip.text = element_text(size = 12, face = "bold"),
-                    plot.margin = unit(c(0, 5.5, 0, 5.5),"pt")
+                    plot.margin = unit(c(0, 5.5, 0, 5.5),"pt") 
                ) +
-               labs(#title = "AUS",
-                    x= "Epi week",
+               labs(x= "Epi week",
                     y = "Hospitalisation per \n 100,000 Persons",
                     caption = "")
           graph_sh[[paste0(v,i)]] <-sh_country
-          
+
      }
 }
 
-#plot.margin(top, right, bottom, and left margins)
+##################################################################
+##                          PATCHWORK:                          ##
+##                            PLOTS                             ##
+##################################################################
 
-#######################################
-######## PATCHWORK PLOTS###########
-#################################
 # Theme to delete legend and x axis
 theme1 <- theme(axis.title.x=element_blank(),axis.text.x=element_blank(),legend.position = "none")
 
-
-#### Tag for countries
+##----------------------------------------------------------------
+##                        countries tags                        --
+##----------------------------------------------------------------
 tag <- list()
 for(i in c("UK","GER","FRA","USA", "AUS","CHI")){
      title <- ggdraw()+ draw_label(i,fontface = 'bold',x = 0.4,hjust = 0,angle = 90)
     tag[[i]]<-title
 }  
-#northern
+
+# NORTHERN
 grid_nh<-plot_grid(tag$UK,tag$GER, (tag$FRA +theme(plot.margin = margin(20, 0, 10, 0))), (tag$USA+ theme(plot.margin = margin(35, 0, 0, 0))),nrow=4)
-#Sourthern
+
+# SOURTHERN
 grid_sh<-plot_grid(tag$AUS,tag$CHI, nrow=2)
 
-
-## y axis for plots
-
+# Y-AXIS FOR PATCHWORK
 p_lab <- 
      ggplot() + 
      annotate(geom = "text", x = 1, y = 1, label = "Hospitalisation per 100,000 Persons", angle = 90) +
      coord_cartesian(clip = "off")+
      theme_void() + theme(plot.margin = margin(0, 0, 0, 0))
 
+#################################################################
+##                             FLU                             ##
+##                            PLOTS                            ##
+#################################################################
 
-###############
-### FLU #####
-#############
+##----------------------------------------------------------------
+##                         NH countries                         --
+##----------------------------------------------------------------
 
-#--- Northern countries (modify plots)
-hsp_rate_fluUK <- graph_nh$hsp_rate_fluUK + labs(title = "A. Northern Hemisphere")+ theme1  #+ #theme(plot.margin = unit(c(25, 10, 0, 5.5),"pt")) + theme1
+# Some counties are modified to make the patchwork
+hsp_rate_fluUK <- graph_nh$hsp_rate_fluUK + labs(title = "A. Northern Hemisphere")+ theme1  
 
 hsp_rate_fluUSA <- graph_nh$hsp_rate_fluUSA +  theme(axis.title.x = element_text(size=12)) + labs(x = "Epi week")
 
+# Final flu NH graph
 flu_nh <- (hsp_rate_fluUK / (graph_nh$hsp_rate_fluGER + theme1) /  (graph_nh$hsp_rate_fluFRA + theme1) / hsp_rate_fluUSA)                                       
 
 
-#---- Southern countries (modify plots)
+##----------------------------------------------------------------
+##                         SH countries                         --
+##----------------------------------------------------------------
 hsp_rate_fluAUS <- graph_sh$hsp_rate_fluAUS + 
           labs(title = "B. Southern Hemisphere",
                x= "Epi week",
@@ -203,10 +229,13 @@ hsp_rate_fluAUS <- graph_sh$hsp_rate_fluAUS +
                     plot.margin = unit(c(25, 5.5, 0, 5.5),"pt") 
 )
 
+# Final flu SH graph
 flu_sh <- (hsp_rate_fluAUS / graph_sh$hsp_rate_fluCHI)
 
 
-# Final plot FLU
+##----------------------------------------------------------------
+##                        Final Flu Plot                        --
+##----------------------------------------------------------------
 influenza_plot <-grid_nh + p_lab + flu_nh + grid_sh + flu_sh +
      plot_layout(widths = c(.2,.2,5,.2,5),
                  #guides = "collect",
@@ -226,19 +255,28 @@ influenza_plot <-grid_nh + p_lab + flu_nh + grid_sh + flu_sh +
 #      height=7
 # )
 
-###############
-### RSV #####
-#############
+#################################################################
+##                             RSV                             ##
+##                            PLOTS                            ##
+#################################################################
+
+##----------------------------------------------------------------
+##                         NH countries                         --
+##----------------------------------------------------------------
 
 #--- Northern countries (modify plots)
 hsp_rate_rsvUK <- graph_nh$hsp_rate_rsvUK + labs(title = "A. Northern Hemisphere")+ theme1  #+ #theme(plot.margin = unit(c(25, 10, 0, 5.5),"pt")) + theme1
 
 hsp_rate_rsvUSA <- graph_nh$hsp_rate_rsvUSA +  theme(axis.title.x = element_text(size=12)) + labs(x = "Epi week")
 
+# Final RSV NH graph
 rsv_nh <- (hsp_rate_rsvUK / (graph_nh$hsp_rate_rsvGER + theme1) /  (graph_nh$hsp_rate_rsvFRA + theme1) / hsp_rate_rsvUSA)                                       
 
 
-#---- Southern countries (modify plots)
+##----------------------------------------------------------------
+##                         SH countries                         --
+##----------------------------------------------------------------
+
 hsp_rate_rsvAUS <- graph_sh$hsp_rate_rsvAUS + 
      labs(title = "B. Southern Hemisphere",
           x= "Epi week",
@@ -250,11 +288,14 @@ hsp_rate_rsvAUS <- graph_sh$hsp_rate_rsvAUS +
                legend.position = "none",
                plot.margin = unit(c(25, 5.5, 0, 5.5),"pt") 
           )
-
+# Final RSV SH graph
 rsv_sh <- (hsp_rate_rsvAUS / graph_sh$hsp_rate_rsvCHI)
 
 
-# Final plot RSV
+##----------------------------------------------------------------
+##                        Final RSV Plot                        --
+##----------------------------------------------------------------
+
 rsv_plot <-grid_nh + p_lab + rsv_nh + grid_sh + rsv_sh +
      plot_layout(widths = c(.2,.2,5,.2,5),
                  #guides = "collect",
