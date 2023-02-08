@@ -2,7 +2,7 @@
 library(tidyverse)
 
 #change working directory as needed
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 #open processed files
 rsv <- read.csv('data/processed_data/UK/rsv_all_yrs_all_ages_updated.csv')
