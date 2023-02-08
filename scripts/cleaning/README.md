@@ -1,7 +1,3 @@
-# Scripts for cleaning
+# Scripts for cleaning data
 
-To be written
-
-General structure:
-
-Raw data (downloaded/scraped/queried) -> Processed -> Premerged country data -> Merge
+Raw data (downloaded/scraped/queried) :arrow_forward: Processed data :arrow_forward: Premerged country data :arrow_forward: Merge
