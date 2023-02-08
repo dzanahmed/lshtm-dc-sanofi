@@ -24,7 +24,7 @@ sankey_data_journey <- ggplot(df, aes(x = x,
                fill = factor(node),
                label = node)) +
      geom_sankey(flow.alpha = 1.0, node.color = 0, width=0.5) +
-     geom_sankey_label(size = 2.5, color = 1, fill = "white", alpha=0.99) +
+     geom_sankey_label(size = 3.0, color = 1, fill = "white", alpha=0.99) +
      scale_fill_viridis_d(option="plasma") +
      theme_sankey(base_size = 12) +
      guides(fill = guide_legend(title = "Title"))+
@@ -39,7 +39,7 @@ ggsave(
      sankey_data_journey,
      file = 'output/Data_journey_flowchart/sankey_flowchart_report.png',
      width = 12,
-     height = 5
+     height = 5.8
 )
 
 # This is for the presentation (narrower 4:3 aspect ratio - almost square)
