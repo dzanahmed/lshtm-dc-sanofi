@@ -11,13 +11,17 @@ Members:
 - Jessica Caterson [jjcato9](https://github.com/jjcato9)
 - Dzan Ahmed Jesenkovic [dzanahmed](https://github.com/dzanahmed)
 - Naomi Medina [naomedina](https://github.com/naomedina)
-   
-   
-   
+
+  
+` `   
+` `   
+` `   
+` `   
    
 ### :question: How do hospitalisations as a result of the tri-demic of RSV, influenza and SARS-CoV-2 in the 2022 post-pandemic season compare to the 2016 - 2019 pre-pandemic circulation of RSV and influenza?\
-\  
-\  
+  
+` `   
+` `   
 :grey_question: Include analyses of different geographical locations (e.g. Northern/Southern hemisphere) and by age group.
 
 :grey_question: Would the assessment be different if burden is disaggregated by hospitalisations vs. laboratory confirmed cases? 
