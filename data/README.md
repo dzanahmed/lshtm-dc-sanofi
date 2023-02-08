@@ -1,15 +1,14 @@
 # Data
 
-- Folder raw_data should contain files exported from online sources in .csv or other tabular forms
+- **raw_data** - Data from online databases is placed in here and contains files exported from online sources in .csv or other tabular forms
   - Every country has its own subfolder
-- Folder processed_data should contain cleaned files that are made as an output from cleaning scripts performed on raw data
+- **processed_data** contains files that are made as an output from cleaning scripts performed on raw data. 
   - Every country has its own subfolder
-- Folder metadata can be used to add metadata, notes and comments on datasets
+- **premerged_data** contains files that are a result of standardizing outputs from cleaned data to a premade template
+- Countries have separate files (usually one for total, and one for age stratified data)
+- **merged_data** contains final standardized csv file
 
-
-## Template
-
-template.csv is available for data mining. Refer to google doc for harmonization: 
-
-https://docs.google.com/spreadsheets/d/1a1-3xqPRRHLe9nzeIkKiEu56xiE-eYoZgnXn6ZNKe9Q/edit?usp=sharing  
-Don't forget to check the subsheet variable_dictionary for harmonization instructions
+Additional csv files
+-- data_journey.csv - for creation of Data processing flowchart / Sankey graph
+-- epi_weeks.csv - for standardizing weeks according to CDC MMWR standard
+-- template.csv - to provide structure for premerged_data
