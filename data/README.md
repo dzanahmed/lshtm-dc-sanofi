@@ -1,5 +1,7 @@
 # Data
 
+Contains data from :australia:, :chile:, :de:, :fr:, :uk:, :us: & :united_nations: WHO across different stages. 
+
 - **raw_data** - Data from online databases is placed in here and contains files exported from online sources in .csv or other tabular forms
   - Every country has its own subfolder
 - **processed_data** contains files that are made as an output from cleaning scripts performed on raw data. 
