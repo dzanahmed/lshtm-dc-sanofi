@@ -12,14 +12,10 @@ Members:
 - Dzan Ahmed Jesenkovic [dzanahmed](https://github.com/dzanahmed)
 - Naomi Medina [naomedina](https://github.com/naomedina)
 
-  
 &nbsp;<br>
 &nbsp;<br>
 &nbsp;<br> 
-   
 ### :question: How do hospitalisations as a result of the tri-demic of RSV, influenza and SARS-CoV-2 in the 2022 post-pandemic season compare to the 2016 - 2019 pre-pandemic circulation of RSV and influenza?\
-  
-&nbsp;<br>
 &nbsp;<br>
 :grey_question: Include analyses of different geographical locations (e.g. Northern/Southern hemisphere) and by age group.
 
