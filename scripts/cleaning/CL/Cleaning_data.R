@@ -6,6 +6,7 @@ library(tidyverse)
 library(ggplot2)
 library(readxl)
 library(readr)
+library(lubridate)
 
 ##----------------------------------------------------------------
 ##                     Countries population                     --
@@ -14,7 +15,7 @@ library(readr)
 #Population based on INE [Instituto de estadistica]
 #(https://www.ine.gob.cl/estadisticas/sociales/demografia-y-vitales/proyecciones-de-poblacion)
 
-population <- read_csv("/data/raw_data/Countries_population.csv")
+population <- read_csv("data/raw_data/Countries_population.csv")
 population <- population %>% 
      filter(code == "CL") %>% 
      select(year, population)
@@ -23,7 +24,7 @@ population <- population %>%
 ##        Data set all for COVID-19 hospitalization ages        --
 ##----------------------------------------------------------------
 
-hospilalised <- read_csv("/data/raw_data/CL/HospitalizadosEtario_Acumulado_std.csv")
+hospilalised <- read_csv("data/raw_data/CL/HospitalizadosEtario_Acumulado_std.csv")
 colnames(hospilalised) <- c("age_group", "sex", "date", "number")
 
 hospilalised$date <- as.Date(hospilalised$date, "%d-%m-%Y")
@@ -72,7 +73,7 @@ hospilalised_week$denominator <- as.numeric(ifelse(hospilalised_week$year == 202
 ##             Data from SARI cases (sentinel data)             --
 ##----------------------------------------------------------------
 
-sari_chile <- read_csv('/data/raw_data/CL/SARI_minsal.csv')
+sari_chile <- read_csv('data/raw_data/CL/SARI_minsal.csv')
 sari_chile <- sari_chile[,c(1:5)]
 
 sari_chile$virus2 <- ifelse(sari_chile$virus %in% c("Influenza A","Influenza B"),"flu",
