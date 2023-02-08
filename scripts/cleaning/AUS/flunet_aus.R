@@ -1,20 +1,17 @@
 # import WHO FluNet FluID RSV data and collate into one dataset for 
   # Australia
 
-library(tidyr)
 library(tidyverse)
-library(dplyr)
-library(readr)
 
-setwd("~/Desktop/LSHTM/2491. Data Challenge/Project Analysis")
+#setwd("~/Desktop/LSHTM/2491. Data Challenge/Project Analysis")
 
 #----------------------------------------------------------------
 # import FluID and FluNet data
 # FluID
-VIW_FID_EPI <- read_csv("VIW_FID_EPI.csv")
+VIW_FID_EPI <- read_csv("data/raw_data/FluNet/VIW_FID_EPI.csv")
 
 # FluNet
-VIW_FNT <- read_csv("VIW_FNT.csv")
+VIW_FNT <- read_csv("data/raw_data/FluNet/VIW_FNT.csv")
 
 #----------------------------------------------------------------
 # australia
