@@ -1,13 +1,20 @@
-# INIT
+# This is to create a data processing flowchart as a Sankey diagram 
+# and explain the workflow. 
+# DiagrammeR has been used at first, however ggsankey solution proved more elegant.
+
+### INSTALL PACKAGES // UNCOMMENT IF NECESSARY ----
+# install.packages("tidyverse")
 # install.packages("ggsankey")
 
-# Call tidyverse and ggsankey
+# INIT --------------------------------------------------------------------
 
 library(tidyverse)
 library(ggsankey)
 
+# Load and transform data -------------------------------------------------
+
 # Call data journey CSV
-data_journey <- read_csv(file='data/other/data_journey.csv')
+data_journey <- read_csv(file='data/data_journey.csv')
 colnames(data_journey)
 
 # Pivot to long for ggsankey format, declare df
@@ -15,7 +22,10 @@ df <- data_journey |> make_long("Database (Raw data source)",
                                 "Processed data",
                                 "Country data",
                                 "Merged data") 
-                                
+
+
+# Create Sankey plot ---------------------------------------------------
+
 # Create gg object + theming
 sankey_data_journey <- ggplot(df, aes(x = x, 
                next_x = next_x, 
@@ -33,6 +43,9 @@ sankey_data_journey <- ggplot(df, aes(x = x,
 
 # See the output
 sankey_data_journey
+
+
+# Outputs -----------------------------------------------------------------
 
 # This is for the report (wide 12x5)
 ggsave(

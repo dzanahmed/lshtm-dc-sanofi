@@ -1,7 +1,7 @@
 # Figure 01: Overall hospitalization by virus (Influenza, RSV, COVID-19) for 
 # the NH and SH (complete time series for full time period: 2016 - 2023)
 # Design: line graph + column graph for totals
-# X-axis: 2016 - 2023
+# X-axis: 2016 - 2023, break
 
 ### INSTALL PACKAGES // UNCOMMENT IF NECESSARY ----
 # install.packages("tidyverse")
@@ -15,7 +15,6 @@
 library(tidyverse)
 library(lubridate)
 library(stringr)
-
 library(ggbreak)
 library(patchwork) 
 
