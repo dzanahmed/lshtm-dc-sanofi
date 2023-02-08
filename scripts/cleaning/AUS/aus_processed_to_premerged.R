@@ -3,7 +3,7 @@ library(tidyverse)
 library(readr)
 
 #Update working directory as required
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 #read in csv files made in previous step for merging
 aus_covid <- read.csv('data/processed_data/AUS/australia_covid_all_updated.csv')
