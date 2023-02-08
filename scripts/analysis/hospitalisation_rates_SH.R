@@ -12,12 +12,11 @@ require(scales)
 data <- read.csv('data/merged_data/merged_data.csv')
 
 #change start_date to data
-## changed to epi_dates using merged_data2.csv
 data$epi_dates <- as.Date(data$epi_dates)
 
 ## Theme Settings
 viruses <- c('Influenza' = '#ff880d',
-             'RSV' = '#99d326',
+             'RSV' = '#008000',
              'SARS-CoV-2' = '#00337C',
              'Total' = '#bee3ff')
 
@@ -25,6 +24,8 @@ viruses <- c('Influenza' = '#ff880d',
 chi_data <- data %>% filter(country == 'CL' & age_group == 'ALL')
 chi_data <- chi_data %>% rowwise() %>% 
      mutate(hsp_rate = sum(hsp_rate_flu,hsp_rate_rsv,hsp_rate_covid19,na.rm=T))
+
+#Find data within winter seasons
 chi_data <- chi_data %>% mutate(season =
                                      case_when(week >= 15 & week <= 45 & year == 2016 ~ '16/17',
                                                week >= 15 & week <= 45 & year == 2017 ~ '17/18',
@@ -33,6 +34,8 @@ chi_data <- chi_data %>% mutate(season =
                                                week >= 15 & week <= 45 & year == 2022 ~ '22/23'
                                      )
 )
+
+#Drop data rows outside of season
 chi_data <- chi_data %>% drop_na(season)
 
 #create data sets for plotting
@@ -43,10 +46,11 @@ chi_19 <- chi_data %>% filter(year == 2019)
 chi_22 <- chi_data %>% filter(year == 2022)
 
 #generate individual plots, then merge
+#2016
 chi_plot_16 <- ggplot() + 
      geom_col(data=chi_16,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=chi_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
@@ -59,10 +63,11 @@ chi_plot_16 <- ggplot() +
      theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=9)) +
      theme(legend.position = 'none')
 
+#2017
 chi_plot_17 <- ggplot() + 
      geom_col(data=chi_17,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=chi_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("", values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -75,10 +80,11 @@ chi_plot_17 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2018
 chi_plot_18 <- ggplot() + 
      geom_col(data=chi_18,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=chi_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -91,10 +97,11 @@ chi_plot_18 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2019
 chi_plot_19 <- ggplot() +
      geom_col(data=chi_19,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=chi_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      xlab('Month') +
@@ -107,11 +114,12 @@ chi_plot_19 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2022
 chi_plot_22 <- ggplot() +
      geom_col(data=chi_22,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
-     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2'),size=1.5) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_line(data=chi_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      xlab('Month') +
@@ -124,11 +132,13 @@ chi_plot_22 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#Merge plots by year into one grid
 chi_grid <- plot_grid(chi_plot_16,chi_plot_17,chi_plot_18,chi_plot_19,chi_plot_22,nrow=1,rel_widths = c(1.2,1,1,1,1))
-chi_grid
 
 ### AUSTRALIA ###
 aus_data <- data %>% filter(country == 'AUS' & age_group == 'ALL')
+
+#Get seasonal data
 aus_data <- aus_data %>% mutate(season =
                                      case_when(week >= 15 & week <= 45 & year == 2016 ~ '16/17',
                                                week >= 15 & week <= 45 & year == 2017 ~ '17/18',
@@ -137,6 +147,8 @@ aus_data <- aus_data %>% mutate(season =
                                                week >= 15 & week <= 45 & year == 2022 ~ '22/23'
                                      )
 )
+
+#Drop rows of data outside the seasons
 aus_data <- aus_data %>% drop_na(season)
 
 #create data sets for plotting
@@ -147,10 +159,11 @@ aus_19 <- aus_data %>% filter(year == 2019)
 aus_22 <- aus_data %>% filter(year == 2022)
 
 #generate individual plots, then merge
+#2016
 aus_plot_16 <- ggplot() + 
      geom_col(data=aus_16,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=aus_16,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',breaks=c('Total'),values=viruses) +
      ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
@@ -162,10 +175,11 @@ aus_plot_16 <- ggplot() +
      theme(axis.text.y = element_text(size=10), axis.title.y = element_text(size=9)) +
      theme(legend.position = 'none')
 
+#2017
 aus_plot_17 <- ggplot() + 
      geom_col(data=aus_17,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=aus_17,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -177,10 +191,11 @@ aus_plot_17 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2018
 aus_plot_18 <- ggplot() + 
      geom_col(data=aus_18,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=aus_18,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -192,10 +207,11 @@ aus_plot_18 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2019
 aus_plot_19 <- ggplot() + 
      geom_col(data=aus_19,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
+     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=aus_19,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
      scale_color_manual("", values = viruses) +
      scale_fill_manual('',values=viruses) +
      theme_bw() +
@@ -207,11 +223,12 @@ aus_plot_19 <- ggplot() +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
 
+#2022
 aus_plot_22 <- ggplot() + 
      geom_col(data=aus_22,aes(x=epi_dates,y=hsp_rate,fill='Total')) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza'),size=1.5) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV'),size=1.5) +
-     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2'),size=1.5) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_flu,color='Influenza')) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_rsv,color='RSV')) +
+     geom_line(data=aus_22,aes(x=epi_dates,y=hsp_rate_covid19,color='SARS-CoV-2')) +
      scale_color_manual("",values = viruses) +
      scale_fill_manual('',breaks=c('Total'),values=viruses) +
      theme_bw() +
@@ -222,12 +239,11 @@ aus_plot_22 <- ggplot() +
      theme(axis.title.y = element_blank()) +
      theme(axis.text.y = element_blank()) +
      theme(legend.position = 'none')
-aus_plot_22
 
+#Combine all years into Australia grid
 aus_grid <- plot_grid(aus_plot_16,aus_plot_17,aus_plot_18,aus_plot_19,aus_plot_22,nrow=1,rel_widths = c(1.2,1,1,1,1))
-aus_grid
 
-## OVERALL GRID ##
+## BUILD OVERALL GRID ##
 
 #create overall plot titles
 title_16 <- ggdraw() + 
@@ -251,7 +267,7 @@ title_chi <- ggdraw() +
 
 country_grid <- plot_grid(title_aus,title_chi,nrow=2)
 
-## plot three countries together
+## plot countries together with labels
 graph_grid <- plot_grid(aus_grid,chi_grid,nrow=2,rel_heights = c(1,1.2))
 
 season_plot <- plot_grid(title_grid,graph_grid,nrow=2,rel_heights = c(0.1,1))
