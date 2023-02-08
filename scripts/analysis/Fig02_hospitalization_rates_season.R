@@ -5,6 +5,7 @@ library(tidyverse)
 library(ggplot2)
 library(readr)
 library(patchwork)
+library(cowplot)
 
 
 ### Data last update 2/2/23 ###
@@ -34,8 +35,8 @@ for(i in c(seasons$start)) {
      year_end <- (seasons$end[seasons$start== i])
      p_season <- (seasons$seas[seasons$start== i])
      
-     # Differentiate NH VS SH
-data$season <-ifelse((data$hemisphere == "NH" & data$year == year_start & data$week %in% c(40:52)) | 
+ 
+     data$season <-ifelse((data$hemisphere == "NH" & data$year == year_start & data$week %in% c(40:52)) | 
           (data$hemisphere == "NH" & data$year == year_end & data$week %in% c(1:39)), p_season,data$season)
 
 }
@@ -165,7 +166,7 @@ for(i in c("UK","GER","FRA","USA", "AUS","CHI")){
 #northern
 grid_nh<-plot_grid(tag$UK,tag$GER, (tag$FRA +theme(plot.margin = margin(20, 0, 10, 0))), (tag$USA+ theme(plot.margin = margin(35, 0, 0, 0))),nrow=4)
 #Sourthern
-rid_sh<-plot_grid(tag$AUS,tag$CHI, nrow=2)
+grid_sh<-plot_grid(tag$AUS,tag$CHI, nrow=2)
 
 
 ## y axis for plots
@@ -184,7 +185,7 @@ p_lab <-
 #--- Northern countries (modify plots)
 hsp_rate_fluUK <- graph_nh$hsp_rate_fluUK + labs(title = "A. Northern Hemisphere")+ theme1  #+ #theme(plot.margin = unit(c(25, 10, 0, 5.5),"pt")) + theme1
 
-hsp_rate_fluUSA <- graph_nh$hsp_rate_fluUSA +  theme(axis.title.x = element_text(size=12))
+hsp_rate_fluUSA <- graph_nh$hsp_rate_fluUSA +  theme(axis.title.x = element_text(size=12)) + labs(x = "Epi week")
 
 flu_nh <- (hsp_rate_fluUK / (graph_nh$hsp_rate_fluGER + theme1) /  (graph_nh$hsp_rate_fluFRA + theme1) / hsp_rate_fluUSA)                                       
 
@@ -215,7 +216,7 @@ influenza_plot <-grid_nh + p_lab + flu_nh + grid_sh + flu_sh +
                  12345
                  12345
               ") +
-     plot_annotation(title = 'Hospitalisation rate for influenza by Hemisphere',
+     plot_annotation(#title = 'Hospitalisation rate for influenza by Hemisphere',
                      theme = theme(plot.title = element_text(size = 14, vjust = -0.7, hjust = 0.09, face = "bold")))
 
 # ggsave(
@@ -232,7 +233,7 @@ influenza_plot <-grid_nh + p_lab + flu_nh + grid_sh + flu_sh +
 #--- Northern countries (modify plots)
 hsp_rate_rsvUK <- graph_nh$hsp_rate_rsvUK + labs(title = "A. Northern Hemisphere")+ theme1  #+ #theme(plot.margin = unit(c(25, 10, 0, 5.5),"pt")) + theme1
 
-hsp_rate_rsvUSA <- graph_nh$hsp_rate_rsvUSA +  theme(axis.title.x = element_text(size=12))
+hsp_rate_rsvUSA <- graph_nh$hsp_rate_rsvUSA +  theme(axis.title.x = element_text(size=12)) + labs(x = "Epi week")
 
 rsv_nh <- (hsp_rate_rsvUK / (graph_nh$hsp_rate_rsvGER + theme1) /  (graph_nh$hsp_rate_rsvFRA + theme1) / hsp_rate_rsvUSA)                                       
 
@@ -263,7 +264,7 @@ rsv_plot <-grid_nh + p_lab + rsv_nh + grid_sh + rsv_sh +
                  12345
                  12345
               ") +
-     plot_annotation(title = 'Hospitalisation rate for RSV by Hemisphere',
+     plot_annotation(#title = 'Hospitalisation rate for RSV by Hemisphere',
                      theme = theme(plot.title = element_text(size = 14, vjust = -0.7, hjust = 0.09, face = "bold")))
 
 # ggsave(
