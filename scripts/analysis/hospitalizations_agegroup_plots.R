@@ -108,7 +108,7 @@ usa_flu_16_17_plot <- ggplot() +
                          breaks = c('0-4 yr','5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                          values = c("0-4 yr"="deepskyblue2", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
      xlab('Epi Week') +
-     ylab('Hospitalisations per 100,000 persons') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
      ggtitle(label = 'A. Influenza', subtitle = '2016-17') +
      theme_bw() +
      scale_x_date(
@@ -117,8 +117,10 @@ usa_flu_16_17_plot <- ggplot() +
           limits = c(as.Date(min(usa_flu_16$epi_dates) - 2), as.Date(max(usa_flu_16$epi_dates)))
      ) +
      ylim(0, 50) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-     theme(legend.position='none')
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+           legend.position='none',
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 # flu plot (2017 - 18) 
 
@@ -142,8 +144,11 @@ usa_flu_17_18_plot <- ggplot() +
           limits = c(as.Date(min(usa_flu_17$epi_dates) - 2), as.Date(max(usa_flu_17$epi_dates)))
      ) +
      ylim(0, 50) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank()) +
-     theme(legend.position='none')
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+           legend.position='none',
+           axis.text.y=element_blank(),
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 # flu plot (2018 - 19) 
 
@@ -167,8 +172,11 @@ usa_flu_18_19_plot <- ggplot() +
           limits = c(as.Date(min(usa_flu_18$epi_dates) + 6), as.Date(max(usa_flu_18$epi_dates) + 5))
      ) +
      ylim(0, 50) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank()) +
-     theme(legend.position='none')
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+           legend.position='none',
+           axis.text.y=element_blank(),
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 # flu plot (2022 - 23) 
 
@@ -192,7 +200,10 @@ usa_flu_22_23_plot <- ggplot() +
           limits = c(as.Date(min(usa_flu_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
      ylim(0, 50) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank())
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), 
+           axis.text.y=element_blank(),
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold"))
 
 # arrange plots
 usa_flu_plots <- usa_flu_16_17_plot + 
@@ -221,7 +232,7 @@ usa_rsv_18_19_plot <- ggplot() +
                         values = c("0-<6 mos"="cornflowerblue", '6-<12 mos'="cyan3", '1-<2 yr'="cadetblue2", '2-4 yr'="dodgerblue3", "5-17 yr"="orange", 'Total'='black')) +
      
      xlab('Epi Week') +
-     ylab('Hospitalisations per 100,000 persons') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
      ylim(0, 300) +
      ggtitle(label = 'B. RSV', subtitle = '2018-19') +
      theme_bw() +
@@ -230,8 +241,10 @@ usa_rsv_18_19_plot <- ggplot() +
           date_labels = '%U',
           limits = c(as.Date(min(usa_rsv_18$epi_dates) + 5), as.Date(max(usa_rsv_18$epi_dates)))
      ) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-     theme(legend.position='none')
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+           legend.position='none',
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 # rsv plot (2022 - 23) 
 
@@ -256,7 +269,10 @@ usa_rsv_22_23_plot <- ggplot() +
           date_labels = '%U',
           limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), axis.text.y=element_blank()) 
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1), 
+           axis.text.y=element_blank(),
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 # arrange plots
 usa_rsv_plots <- usa_rsv_18_19_plot + usa_rsv_22_23_plot 
@@ -279,7 +295,7 @@ usa_covid19_22_23_plot <- ggplot() +
                         breaks = c('0-6 mos', '6 mos-4 yr', '5-17 yr', '18-49 yr', '50-64 yr', '65+ yr', 'Total'),
                         values = c("0-6 mos"="cornflowerblue", '6 mos-4 yr'="darkslategray3", "5-17 yr"="orange", '18-49 yr'='forestgreen', '50-64 yr'='purple', '65+ yr'='indianred', 'Total'='black')) +
      xlab('Epi Week') +
-     ylab('Hospitalisations per 100,000 persons') +
+     ylab(expression(paste('Hospitalisations per \n 100,000 persons'))) +
      ggtitle(label = "C. SARS-CoV-2", subtitle = '2022-23') +
      theme_bw() +
      scale_x_date(
@@ -287,7 +303,9 @@ usa_covid19_22_23_plot <- ggplot() +
           date_labels = '%U',
           limits = c(as.Date(min(usa_covid19_22$epi_dates) - 2), as.Date("2023-04-23"))
      ) +
-     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) 
+     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1),
+           plot.title = element_text(face = "bold"),
+           plot.subtitle = element_text(face = "bold")) 
 
 usa_covid19_22_23_plot
 
@@ -297,6 +315,6 @@ ggsave(filename = 'output/Fig 04 - Hospitalization by age group/usa_covid19_hosp
 # arrange all plots together
 all_plots <- (usa_flu_plots) / ((usa_rsv_18_19_plot | usa_rsv_22_23_plot) | usa_covid19_22_23_plot)
 
-ggsave(filename = 'output/Fig 04 - Hospitalization by age group/hosp_byage_plots.pdf', plot = all_plots, width=15, height=9)
+ggsave(filename = 'output/Fig 04 - Hospitalization by age group/hosp_byage_plots.pdf', plot = all_plots, width=12, height=7.2)
 
 ## end of file ##
