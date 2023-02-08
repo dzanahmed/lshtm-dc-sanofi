@@ -10,10 +10,10 @@ MSc in Health Data Science 22/23
 :grey_question: Would the assessment be different if burden is disaggregated by hospitalisations vs. laboratory confirmed cases? 
 
 ## Summary :page_with_curl:
-> The project idea was conceputalized by Sanofi, to compare hospitalizations during the current post-pandemic season with pre-pandemic seasons between 2016 and 2019. 
-> Six countries were selected based on data availability and source reputability, with priority given to countries specified by Sanofi. Hospitalization data were collected and standardised, and seasonality of hospitalizations were compared using time series analysis methods. 
-> The results showed that hospitalizations due to RSV, influenza, and SARS-CoV-2 were higher than in pre-pandemic seasons, with similar rates of influenza and RSV hospitalizations and the addition of SARS-CoV-2 hospitalizations. The shift in hospitalization peaks led to 2-5 times higher hospitalizations, with adults over 65 and children under 5 having the highest hospitalization rates. 
-> Report recommends reducing hospitalizations in future winter seasons through continued vaccination programs and public engagement in spread-reducing measures.
+> The project idea was conceputalized by Sanofi, to compare hospitalizations during the current post-pandemic season with pre-pandemic seasons between 2016 and 2019.   
+> Six countries were selected based on data availability and source reputability, with priority given to countries specified by Sanofi. Hospitalization data were collected and standardised, and seasonality of hospitalizations were compared using time series analysis methods.   
+> The results showed that hospitalizations due to RSV, influenza, and SARS-CoV-2 were higher than in pre-pandemic seasons, with similar rates of influenza and RSV hospitalizations and the addition of SARS-CoV-2 hospitalizations. The shift in hospitalization peaks led to 2-5 times higher hospitalizations, with adults over 65 and children under 5 having the highest hospitalization rates.   
+> Report recommends reducing hospitalizations in future winter seasons through continued vaccination programs and public engagement in spread-reducing measures.   
 
 **Client:** Sanofi\
 **Supervisor:** Dr Naomi Waterlow, Research Fellow, LSHTM
