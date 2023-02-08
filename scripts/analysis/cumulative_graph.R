@@ -8,7 +8,7 @@ library(cowplot)
 library(forcats)
 
 #set working directory - amend as required
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 #read in data
 all_data <- read.csv('data/merged_data/merged_data.csv')
