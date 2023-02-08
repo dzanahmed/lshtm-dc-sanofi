@@ -4,7 +4,8 @@
 
 ### INSTALL PACKAGES // UNCOMMENT IF NECESSARY ----
 # install.packages("tidyverse")
-# install.packages("ggsankey")
+#install.packages("devtools")
+#devtools::install_github("davidsjoberg/ggsankey")
 
 # INIT --------------------------------------------------------------------
 
