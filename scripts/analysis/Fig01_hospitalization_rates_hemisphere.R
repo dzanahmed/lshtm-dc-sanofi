@@ -1,8 +1,12 @@
-# Overall hospitalization by virus (Influenza, RSV, COVID-19) for the NH and SH 
-# (complete time series for full time period: 2016 - 2023)
+# Figure 01: Overall hospitalization by virus (Influenza, RSV, COVID-19) for 
+# the NH and SH (complete time series for full time period: 2016 - 2023)
 # Design: line graph + column graph for totals
-# X-axis: 2016 - 2023 with a second x-axis label that identifies the seasons
+# X-axis: 2016 - 2023
 
+### INSTALL PACKAGES // UNCOMMENT IF NECESSARY ----
+# install.packages("tidyverse")
+# install.packages("lubridate")
+# install.packages("stringr")
 # install.packages("ggbreak")
 # install.packages("patchwork")
 
@@ -20,21 +24,9 @@ epi_weeks <- read_csv(file="data/epi_weeks.csv")
 
 data$epi_dates <- as.Date(data$epi_dates)
 
-# Consider deleting -------------------------------------------------------
-
-#  Modification for France - VESTIGIAL
-# #
-# data <- data |> mutate(hsp_rate_flu =
-#                                case_when(country == "FR" ~ (hsp_abs_flu *100000 /(68000000 * 0.3)),
-#                                          TRUE ~ hsp_rate_flu)) |>
-#         mutate(hsp_rate_rsv =
-#                        case_when(country == "FR" ~ (hsp_abs_rsv *100000 /(68000000 * 0.3)),
-#                                  TRUE ~ hsp_rate_rsv))
-
-
 # Data preparation --------------------------------------------------------
 
-space<-strrep(" ", 30) # Spacing for labeled titles (Seasons)
+space <- strrep(" ", 30) # Spacing for labeled titles (Seasons)
 years <- 2016:2022
 
 ## Preparation for graphs by hemispheres ------------------------------------
@@ -146,17 +138,22 @@ Figure_1_NH <- Total_hosp_NH |> ggplot() +
     axis.ticks.x.top = element_blank(),
     axis.line.x.top = element_blank(),
     axis.title.x.bottom = element_blank(),
-    axis.text.x.bottom = element_text(size=11)
+    axis.text.x.bottom = element_text(size=12, angle = 90, vjust=0.2)
     ) +
   labs(
     # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
     # subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
-    y = "Hospitalisations per 100,000 persons"
+    y = "Hospitalisations per\n100,000 persons"
   ) +
-  geom_label(mapping = aes(x, y, label = label, fontface='bold'), NH_seasons_geom, fill="white", size=4,
-             label.padding=unit(0.5, "lines")) # Provide season labels
-  
+  geom_label(
+    mapping = aes(x, y, label = label, fontface = 'bold'),
+    NH_seasons_geom,
+    fill = "white",
+    size = 4,
+    label.padding = unit(0.5, "lines")
+  ) # Provide season labels
+
 
 ### Preparation of data for SH ----------------------------------------------
 
@@ -229,20 +226,25 @@ Figure_1_SH <- Total_hosp_SH |> ggplot() +
     axis.ticks.x.top = element_blank(),
     axis.line.x.top = element_blank(),
     axis.title.x.bottom = element_blank(),
-    axis.text.x.bottom = element_text(size=11)
+    axis.text.x.bottom = element_text(size=13, angle = 90, vjust=0.2)
   ) +
   labs(
     # title = "Hospitalisation rate in the Northern hemisphere, seasons 2016-2019 and 2022-23",
     # subtitle = "Total hospitalisation rate and hospitalisations by virus",
     x = "Time",
-    y = "Hospitalisations per 100,000 persons"
+    y = "Hospitalisations per\n100,000 persons"
   ) +
-  geom_label(mapping = aes(x, y, label = label, fontface='bold'), SH_seasons_geom, fill="white", size=4,
-             label.padding=unit(0.6, "lines")) # Provide season labels
+  geom_label(
+    mapping = aes(x, y, label = label, fontface = 'bold'),
+    SH_seasons_geom,
+    fill = "white",
+    size = 4,
+    label.padding = unit(0.6, "lines")
+  ) # Provide season labels
 
 Figure_1_SH
 
-# Plot to PNG (NH / SH )-----------------------------------------------------
+# Plot to PNG (NH / SH)-----------------------------------------------------
 
 ggsave(
   'output/Fig 01 - Hospitalization rates per 100k/Figure_1_NH.png',
@@ -262,38 +264,37 @@ ggsave(
 
 # Add margins to prepare for aligned patching
 Figure_1_A <- Figure_1_NH +
-  labs(title = "A     Northern Hemisphere") +
+  labs(title = "A. Northern Hemisphere") +
   theme(
-    plot.title = element_text(face = 'bold', size = 14, hjust = 0.027),
+    plot.title = element_text(face = 'bold', 
+                              size = 14, 
+                              hjust = 0.027),
+    # Legend format and positioning for the patched Figure
     legend.position = "right",
     legend.text = element_text(size = 11.5),
     legend.margin = margin(l = 23, r = 25)
   )
 
 Figure_1_B <- Figure_1_SH +
-  labs(title = "B     Southern Hemisphere") +
+  labs(title = "B. Southern Hemisphere") +
   theme(
-    plot.title = element_text(
-      face = 'bold',
-      size = 14,
-      hjust = 0.023
-    ),
+    plot.title = element_text(face = 'bold',
+                              size = 14,
+                              hjust = 0.023),
     legend.position = "none"
   )
 
-# Patched Figure (Both hemispheres)
+# Patched Figure 01 (Both hemispheres)
 Figure_1_Both <- (Figure_1_A/Figure_1_B)
-  #plot_annotation(tag_levels = 'A') & 
-  #theme(plot.tag = element_text(face = 'bold', size = 16))
 
 # View
 Figure_1_Both
 
-## Plot to PNG (NH+SH) ----------------------------------------------------
+## Plot to PNG (Patchwork: NH+SH) -----------------------------------------
 
 ggsave(
-  'output/Fig 01 - Hospitalization rates per 100k/Figure_Both_Presentation_2.png',
+  'output/Fig 01 - Hospitalization rates per 100k/Figure_Both_Presentation.png',
   Figure_1_Both,
   width=14,
-  height=6.5
+  height=7
 )
