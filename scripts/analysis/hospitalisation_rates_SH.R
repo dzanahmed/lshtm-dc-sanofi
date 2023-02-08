@@ -1,7 +1,7 @@
 ###### HOSPITALISATIONS FIG - SOUTHERN HEMISPHERE ######
 
 #set up
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 require(ggplot2)
 require(tidyverse) 
 require(cowplot)
