@@ -1,6 +1,6 @@
 # Data Challenge Project :chart_with_upwards_trend:
 
-:bookmark: LSHTM 2491 Data Challenge Module\  
+:bookmark: LSHTM 2491 Data Challenge Module  
 :mortar_board: MSc in Health Data Science 22/23
 
 **Client:** Sanofi\
