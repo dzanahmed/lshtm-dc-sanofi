@@ -4,7 +4,7 @@
 library(tidyverse)
 library(ggplot2)
 library(cowplot)
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 #read in merged data csv - USING MERGED CSV 2 FOR NOW
 data <- read.csv('data/merged_data/merged_data.csv')
