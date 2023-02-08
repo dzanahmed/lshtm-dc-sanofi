@@ -7,6 +7,9 @@ require(cowplot)
 require(rvest)
 require(scales)
 
+#set working directory
+#setwd('~/lshtm-dc-sanofi')
+
 #read merged data file
 data <- read.csv('data/merged_data/merged_data.csv')
 
