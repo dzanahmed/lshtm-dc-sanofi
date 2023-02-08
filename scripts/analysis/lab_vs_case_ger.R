@@ -1,4 +1,6 @@
 ### GER HOSP VS. LAB FIGURE ###
+
+##Set up
 library(tidyverse)
 library(ggplot2)
 library(cowplot)
@@ -8,8 +10,9 @@ setwd('~/lshtm-dc-sanofi')
 data <- read.csv('data/merged_data/merged_data.csv')
 
 #create dummy data for complete 22/23 season
-data[nrow(data) + 1,] = c(99999999,NA,'DE','NH',20,2023,'ALL',0,NA,NA,NA,NA,NA,NA,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,'2023-05-14')
+data[nrow(data) + 1,] = c(99999999,NA,'DE','NH',20,2023,'ALL',0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,'2023-05-14')
 
+#Correct column classes after addition of dummy data
 data$hsp_rate <- as.numeric(data$hsp_rate)
 data$epi_dates <- as.Date(data$epi_dates)
 data$hsp_rate_covid19 <- as.numeric(data$hsp_rate_covid19)
@@ -41,7 +44,7 @@ ger_data_flu <- ger_data %>%
 ger_data_flu <- ger_data_flu %>% pivot_longer(cols = c('hsp_rate_flu','cases_rate_flu'),names_to = 'hos_lab_case',values_to = 'rate')
 
 #create plot for flu
-flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
+flu_plot <- ggplot() + geom_line(data=ger_data_flu,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.2) + 
      facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
      xlab('Month') +
@@ -56,7 +59,7 @@ ger_data_rsv <- ger_data %>%
 ger_data_rsv <- ger_data_rsv %>% pivot_longer(cols = c('hsp_rate_rsv','cases_rate_rsv'),names_to = 'hos_lab_case',values_to = 'rate')
 
 #create plot for rsv
-rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
+rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.2) + 
      facet_wrap(.~season,scales = 'free_x') +
      theme_bw() +
      xlab('Month') +
@@ -65,33 +68,40 @@ rsv_plot <- ggplot() + geom_line(data=ger_data_rsv,aes(x=epi_dates,y=rate,col=ho
      theme(strip.background =element_rect(fill="white")) +
      theme(legend.position = 'none') 
 
-rsv_plot
-
 #filter to only relevant columns for rsv
 ger_data_covid <- ger_data %>%
      select('week','year','hsp_rate_covid19','cases_rate_covid19','epi_dates','season')
 ger_data_covid <- ger_data_covid %>% pivot_longer(cols = c('hsp_rate_covid19','cases_rate_covid19'),names_to = 'hos_lab_case',values_to = 'rate')
 ger_data_covid <- ger_data_covid %>% drop_na(rate)
+ger_data_covid <- ger_data_covid %>% filter(rate != 0) #drop weeks after data finalised
+
+#add dummy data for end of 22/23 season
+ger_data_covid$epi_dates <- as.character(ger_data_covid$epi_dates)
+ger_data_covid[nrow(ger_data_covid) + 1,] = list(NA,NA,'2023-04-14','22/23','hsp_rate_covid19',NA)
+ger_data_covid$epi_dates <- as.Date(ger_data_covid$epi_dates)
 
 #create plot for covid
-covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.5) + 
+covid_plot <- ggplot() + geom_line(data=ger_data_covid,aes(x=epi_dates,y=rate,col=hos_lab_case),position='identity',size=1.2) +
      facet_wrap(.~season,scales='free') +
      scale_y_sqrt() +
      theme_bw() +
      xlab('Month') +
      ylab(expression(paste('Rate per 100,000 persons'))) +
+     scale_x_date(date_breaks = 'months',date_labels='%b') +
      theme(axis.title.y = element_blank()) +
      theme(legend.position = 'bottom') +
      theme(strip.background =element_rect(fill="white")) +
      scale_color_discrete(name="",
                          breaks=c('hsp_rate_covid19','cases_rate_covid19'),
                          labels=c('Hospital Case','Laboratory Case'))
-
-covid_plot_no_leg <- covid_plot + theme(legend.position = 'none')
-covid_plot_no_leg
-
-#create legend title
+covid_plot
+#create legend title by getting legend
 legend <- get_legend(covid_plot)
+
+#Drop legend
+covid_plot_no_leg <- covid_plot + theme(legend.position = 'none')
+
+### BUILD FINAL GRID ###
 
 #create virus labels
 title_flu <- ggdraw() + 
@@ -101,7 +111,7 @@ title_rsv <- ggdraw() +
 title_covid <- ggdraw() + 
      draw_label("SARS-CoV-2",fontface = 'bold',x = 0.35,hjust = 0)+theme(plot.margin = margin(0, 0, 0, 0))
 
-virus_grid <- plot_grid(title_flu,title_rsv,title_covid,nrow=1)
+virus_grid <- plot_grid(title_flu,title_rsv,title_covid,nrow=1,labels=c('A','B','C'))
 
 #plot grid
 graph_grid <- plot_grid(flu_plot,rsv_plot,covid_plot_no_leg,nrow=1)
@@ -109,4 +119,4 @@ whole_grid <- plot_grid(graph_grid,legend,nrow = 2, rel_heights = c(1,0.1))
 with_title_grid <- plot_grid(virus_grid,whole_grid,nrow=2,rel_heights = c(0.1,1))
 with_title_grid
 
-ggsave('output/lab_case_figure.png',with_title_grid,width = 9, height = 4,bg = 'white')
+ggsave('output/lab_case_figure.png',with_title_grid,width = 9, height = 5,bg = 'white')
