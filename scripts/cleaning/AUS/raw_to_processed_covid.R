@@ -2,7 +2,7 @@
 library(tidyverse)
 
 #change working directory if needed
-setwd('~/lshtm-dc-sanofi')
+#setwd('~/lshtm-dc-sanofi')
 
 #read in raw data file
 aus_covid <- read.csv('data/raw_data/AUS/aus_covid_national_update.csv')
