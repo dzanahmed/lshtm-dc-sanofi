@@ -14,5 +14,5 @@ Contains data from :australia:, :chile:, :de:, :fr:, :uk:, :us: & :united_nation
 
 ## :paperclip: Additional csv files  
 - data_journey.csv - for creation of Data processing flowchart / Sankey graph
-- epi_weeks.csv - for standardizing weeks according to CDC MMWR standard
+- epi_weeks.csv - for standardizing weeks according to [CDC MMWR week standard](https://ibis.doh.nm.gov/resource/MMWRWeekCalendar.html)
 - template.csv - to provide structure for premerged_data
