@@ -12,7 +12,6 @@ Before running any script, please ensure the following:
 2. You have installed all the required packages, these are:
 - `tidyverse`
 - `cowplot`
-- `stringr`
 - `patchwork`
 - `ggsankey`
 - `lubridate`
