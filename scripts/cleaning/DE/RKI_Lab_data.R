@@ -6,7 +6,6 @@
 #install.packages('stringr')
 
 library(tidyverse)
-library(stringr)
 
 # All RKI Lab data is here
 dir <- "data/raw_data/DE/RKI_Lab_data" 

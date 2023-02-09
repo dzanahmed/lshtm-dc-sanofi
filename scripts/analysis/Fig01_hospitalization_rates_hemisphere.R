@@ -6,7 +6,6 @@
 ### INSTALL PACKAGES // UNCOMMENT IF NECESSARY ----
 # install.packages("tidyverse")
 # install.packages("lubridate")
-# install.packages("stringr")
 # install.packages("ggbreak")
 # install.packages("patchwork")
 
@@ -14,7 +13,6 @@
 
 library(tidyverse)
 library(lubridate)
-library(stringr)
 library(ggbreak)
 library(patchwork) 
 

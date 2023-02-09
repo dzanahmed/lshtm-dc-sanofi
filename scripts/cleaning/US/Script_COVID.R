@@ -5,7 +5,6 @@
 # Author: Dzan
 
 library(tidyverse)
-library(stringr)
 
 us_covid <- read_csv("data/raw_data/US/COVID-19Surveillance_All_Data.csv")
 

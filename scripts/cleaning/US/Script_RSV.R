@@ -5,7 +5,6 @@
 # Author: Dzan
 
 library(tidyverse)
-library(stringr)
 
 us_rsv <- read_csv("data/raw_data/US/Weekly_Rates_of_Laboratory-Confirmed_RSV_Hospitalizations_from_the_RSV-NET_Surveillance_System.csv")
 

@@ -2,7 +2,6 @@
 #install.packages('stringr')
 
 library(tidyverse)
-library(stringr)
 
 # For template and variable order
 source(file = 'scripts/cleaning/var_order_merged_csv.R')
