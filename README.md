@@ -48,7 +48,7 @@ All the dependancies can be installed by running the following code:
 `devtools::install_github("davidsjoberg/ggsankey")`
 
 After these, you can run the scripts in scripts/cleaning for each country.
-- Check `README.MD` in scripts folder to understand the workflow.
+- Check [`README.MD`](https://github.com/dzanahmed/lshtm-dc-sanofi/blob/main/scripts/cleaning/README.md) in scripts folder to understand the workflow.
 - In case new raw data is added to `data/raw_data`, running scripts for each country will result in updated processed and premerged datasets. 
 - Finally, `merge.R` from `scripts/cleaning` can be run to coalesce the processed data to `data/merged_data/merged_data.csv`.
 
