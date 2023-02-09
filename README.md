@@ -49,12 +49,12 @@ All the dependancies can be installed by running the following code:
 
 After these, you can run the scripts in scripts/cleaning for each country.
 - Check [`README.MD`](https://github.com/dzanahmed/lshtm-dc-sanofi/blob/main/scripts/cleaning/README.md) in scripts folder to understand the workflow.
-- In case new raw data is added to `data/raw_data`, running scripts for each country will result in updated processed and premerged datasets. 
+- In case new raw data is added to [`data/raw_data`](./data/raw_data), running scripts for each country will result in updated processed and premerged datasets. 
 - Finally, `merge.R` from `scripts/cleaning` can be run to coalesce the processed data to `data/merged_data/merged_data.csv`.
 
 ## :bar_chart: Script outputs
-After the data has been coalesced into one aggregated dataset, scripts from `scripts/analysis` can be run to create the figures.
-Figure outputs are placed in output folder, and exported as high-res PNG or PDF files. 
+After the data has been coalesced into one aggregated dataset, scripts from `scripts/analysis` can be run to create the figures.  
+Figure outputs are placed in `output` folder, and exported as high-res PNG or PDF files. 
 
 ## :memo: Final report
 Final report was created through Google Docs in the form of a research paper, exported to PDF and submitted through Moodle.
