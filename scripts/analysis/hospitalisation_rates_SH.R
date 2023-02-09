@@ -2,6 +2,13 @@
 
 #set up
 #setwd('~/lshtm-dc-sanofi')
+
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('rvest')
+#install.packages('scales')
+#install.packages('cowplot')
+
 require(ggplot2)
 require(tidyverse) 
 require(cowplot)

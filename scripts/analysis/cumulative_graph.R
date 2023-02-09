@@ -1,6 +1,12 @@
 ### SUPPLEMENTARY FIGURE - CUMULATIVE GRAPH ###
 ### MEDIAN CASE WEEK TABLE ###
 
+## Install required packages
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('cowplot')
+#install.packages('forcats')
+
 #import required libraries
 library(tidyverse)
 library(ggplot2)

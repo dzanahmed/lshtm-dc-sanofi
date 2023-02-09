@@ -1,6 +1,10 @@
 ### GER HOSP VS. LAB FIGURE ###
 
 ##Set up
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('cowplot')
+
 library(tidyverse)
 library(ggplot2)
 library(cowplot)

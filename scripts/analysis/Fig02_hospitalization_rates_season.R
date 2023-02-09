@@ -1,6 +1,12 @@
 ##----------------------------------------------------------------
 ##                           Packages                           --
 ##----------------------------------------------------------------
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('readr')
+#install.packages('patchwork')
+#install.packages('cowplot')
+
 library(tidyverse)
 library(ggplot2)
 library(readr)

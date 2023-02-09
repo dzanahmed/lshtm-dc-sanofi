@@ -1,6 +1,12 @@
 # -------- SET UP ------------------------------------------------------------
+## set up packages required for analysis
 
-# set up packages required for analysis
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('rvest')
+#install.packages('scales')
+#install.packages('cowplot')
+
 require(ggplot2)
 require(tidyverse) 
 require(cowplot)

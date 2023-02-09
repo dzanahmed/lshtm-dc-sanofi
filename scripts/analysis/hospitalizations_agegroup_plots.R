@@ -7,6 +7,9 @@
 
 #setwd("~/Desktop/LSHTM/Github/lshtm-dc-sanofi")
 
+#install.packages('tidyverse')
+#install.packages('patchwork')
+
 library(tidyverse)
 library(patchwork)
 
