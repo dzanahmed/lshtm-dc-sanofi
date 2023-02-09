@@ -1,8 +1,10 @@
 # import WHO FluNet FluID RSV data and collate into one dataset for 
   # France
 
+#install.packages('tidyverse')
 library(tidyverse)
 
+#amend as appropriate if required
 #setwd("~/Desktop/LSHTM/Github/lshtm-dc-sanofi")
 
 #----------------------------------------------------------------

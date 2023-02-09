@@ -2,6 +2,7 @@
 
 # Output is a file 'RKI_Covid_hosp_data.csv' with year, week, age_group, hsp_abs_covid, hsp_rate_covid19
 
+#install.packages('tidyverse')
 library(tidyverse)
 
 # Setting up helpers

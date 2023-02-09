@@ -1,6 +1,11 @@
 ##----------------------------------------------------------------
 ##                           Packages                           --
 ##----------------------------------------------------------------
+#install.packages('tidyverse')
+#install.packages('ggplot2')
+#install.packages('readxl')
+#install.packages('readr')
+#install.packages('lubridate')
 
 library(tidyverse)
 library(ggplot2)

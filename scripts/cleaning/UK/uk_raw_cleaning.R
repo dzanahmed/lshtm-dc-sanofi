@@ -1,9 +1,9 @@
 ### UK: RAW TO PROCESSED SCRIPT ###
-
+#Author: Jess
+#install.packages('tidyverse')
 #install.packages('readODS')
 library(readODS)
 library(tidyverse)
-library(readr)
 
 #set wd - amend as required
 #setwd('~/lshtm-dc-sanofi')

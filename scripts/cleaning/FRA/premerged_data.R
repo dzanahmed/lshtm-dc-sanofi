@@ -1,4 +1,6 @@
 ## France non_sentinel
+#install.packages('tidyverse')
+library(tidyverse)
 
 preclean_fran_flu<- read_csv("data/processed_data/FRA/france_fluNet.csv")
 preclean_fran_covid<- read_csv("data/processed_data/FRA/france_covid19.csv")

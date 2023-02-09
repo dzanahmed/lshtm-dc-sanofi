@@ -1,5 +1,9 @@
 ###### CREATE EPI TABLES ######
-setwd('~/lshtm-dc-sanofi')
+#install.packages('tidyverse')
+library(tidyverse)
+
+#set working directory if needed
+#setwd('~/lshtm-dc-sanofi')
 
 ### 2016 ###
 epi_dates <- seq(as.Date("2016/01/03"), as.Date("2016/12/25"), "7 days")

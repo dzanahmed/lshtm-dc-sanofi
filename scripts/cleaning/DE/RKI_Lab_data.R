@@ -2,6 +2,9 @@
 
 # Output is a file 'RKI_Lab_data.csv' with year, week, age_group, cases_rate_flu, cases_rate_covid19
 
+#install.packages('tidyverse')
+#install.packages('stringr')
+
 library(tidyverse)
 library(stringr)
 
