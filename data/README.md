@@ -1,4 +1,4 @@
-# Data
+# :page_facing_up: Data
 
 Contains data from :australia:, :chile:, :de:, :fr:, :uk:, :us: & :united_nations: WHO across different stages. 
 
@@ -12,8 +12,7 @@ Contains data from :australia:, :chile:, :de:, :fr:, :uk:, :us: & :united_nation
   - merged_data.csv
 
 
-
-Additional csv files  
+## :paperclip: Additional csv files  
 - data_journey.csv - for creation of Data processing flowchart / Sankey graph
 - epi_weeks.csv - for standardizing weeks according to CDC MMWR standard
 - template.csv - to provide structure for premerged_data
