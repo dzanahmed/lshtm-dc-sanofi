@@ -40,11 +40,11 @@ Otherwise, scripts can be run by setting the working directory into folder where
 
 All the dependancies can be installed by running the following code:
 
-`install.packages("tidyverse")`
-`install.packages("cowplot")`
-`install.packages("patchwork")`
-`install.packages("lubridate")`
-`install.packages("devtools")`
+`install.packages("tidyverse")`\
+`install.packages("cowplot")`\
+`install.packages("patchwork")`\
+`install.packages("lubridate")`\
+`install.packages("devtools")`\
 `devtools::install_github("davidsjoberg/ggsankey")`
 
 After these, you can run the scripts in scripts/cleaning for each country.
