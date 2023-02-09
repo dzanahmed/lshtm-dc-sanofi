@@ -30,15 +30,31 @@
   - `tidyverse`
   - `cowplot`
   - `patchwork`
-  - `ggsankey`
   - `lubridate`
+  - `ggsankey`
 
 ## :desktop_computer: Running the scripts
-
+You can fork or download the repository as a .zip file and extract it on your computer. 
 It is recommended to load the `LSHTM-DC-Sanofi.Rproj` into your R environment to ensure reproducibility.
-Otherwise, scripts can be run by setting the working directory into folder where repository files are located using `setwd()` command.
+Otherwise, scripts can be run by setting the working directory into folder where repository files are located using `setwd()` command in R console.
+
+All the dependancies can be installed by running the following code:
+
+`install.packages("tidyverse")
+install.packages("cowplot")
+install.packages("patchwork")
+install.packages("lubridate")
+install.packages("devtools")
+devtools::install_github("davidsjoberg/ggsankey")`
+
+After these, you can run the scripts in scripts/cleaning for each country.
+- Check `README.MD` in scripts folder to understand the workflow.
+- In case new raw data is added to `data/raw_data`, running scripts for each country will result in updated processed and premerged datasets. 
+- Finally, `merge.R` from `scripts/cleaning` can be run to coalesce the processed data to `data/merged_data/merged_data.csv`.
 
 ## :bar_chart: Script outputs
+After the data has been coalesced into one aggregated dataset, scripts from scripts/analysis can be run to create the figures.
+Figure outputs are placed in output folder, and exported as high-res PNG or PDF files. 
 
 ## :memo: Final report
 Final report was created through Google Docs in the form of a research paper, exported to PDF and submitted through Moodle.
