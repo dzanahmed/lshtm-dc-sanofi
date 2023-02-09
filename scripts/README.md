@@ -15,7 +15,9 @@ Before running any script, please ensure the following:
   - `lubridate`
 
 3. For any package not installed, uncomment the relevant `#install.packages('package')` in the file you are trying to run
-&nbsp; <br>
+
+
+
 In this section, there are two types of scripts:
 - Cleaning: Scripts used to scrape data from raw files and convert it to the finalised format
 - Analysis: Scripts used to build figures and tables for the final report
