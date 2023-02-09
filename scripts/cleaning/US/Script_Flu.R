@@ -1,4 +1,7 @@
 # US Flu Cleaning
+#install.packages('tidyverse')
+#install.packages('stringr')
+
 # Author: Dzan
 
 library(tidyverse)

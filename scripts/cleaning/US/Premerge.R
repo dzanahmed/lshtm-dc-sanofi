@@ -1,3 +1,6 @@
+#install.packages('tidyverse')
+#install.packages('stringr')
+
 library(tidyverse)
 library(stringr)
 

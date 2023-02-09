@@ -1,4 +1,7 @@
 # US COVID-19 Cleaning
+#install.packages('tidyverse')
+#install.packages('stringr')
+
 # Author: Dzan
 
 library(tidyverse)
