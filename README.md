@@ -24,9 +24,19 @@
 
 ## :gear: Requirements
 
-R 4.2.2, RStudio, list of packages
+- R 4.2.2 
+- RStudio
+- R Packages:
+  - `tidyverse`
+  - `cowplot`
+  - `patchwork`
+  - `ggsankey`
+  - `lubridate`
 
 ## :desktop_computer: Running the scripts
+
+It is recommended to load the LSHTM-DC-Sanofi.Rproj into your R environment to ensure reproducibility.
+Otherwise, scripts can be run by setting the working directory into folder where repository files are located using `setwd()` command.
 
 ## :bar_chart: Script outputs
 
