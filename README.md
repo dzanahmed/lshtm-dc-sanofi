@@ -40,12 +40,12 @@ Otherwise, scripts can be run by setting the working directory into folder where
 
 All the dependancies can be installed by running the following code:
 
-`install.packages("tidyverse")\
-install.packages("cowplot")\
-install.packages("patchwork")\
-install.packages("lubridate")\
-install.packages("devtools")\
-devtools::install_github("davidsjoberg/ggsankey")`
+`install.packages("tidyverse")`
+`install.packages("cowplot")`
+`install.packages("patchwork")`
+`install.packages("lubridate")`
+`install.packages("devtools")`
+`devtools::install_github("davidsjoberg/ggsankey")`
 
 After these, you can run the scripts in scripts/cleaning for each country.
 - Check `README.MD` in scripts folder to understand the workflow.
@@ -53,7 +53,7 @@ After these, you can run the scripts in scripts/cleaning for each country.
 - Finally, `merge.R` from `scripts/cleaning` can be run to coalesce the processed data to `data/merged_data/merged_data.csv`.
 
 ## :bar_chart: Script outputs
-After the data has been coalesced into one aggregated dataset, scripts from scripts/analysis can be run to create the figures.
+After the data has been coalesced into one aggregated dataset, scripts from `scripts/analysis` can be run to create the figures.
 Figure outputs are placed in output folder, and exported as high-res PNG or PDF files. 
 
 ## :memo: Final report
