@@ -2,7 +2,6 @@
 # Author: Dzan
 
 library(tidyverse)
-library(stringr)
 
 us_flu <- read_csv("data/raw_data/US/FluSurveillance_Custom_Download_Data.csv")
 

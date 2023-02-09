@@ -1,5 +1,4 @@
 library(tidyverse)
-library(stringr)
 
 # Import order of the header columns
 source(file='scripts/cleaning/var_order_merged_csv.R') 
